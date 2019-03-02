@@ -1,0 +1,25 @@
+sudo: true
+os:
+  - linux
+
+language: generic
+
+jobs:
+  include:
+    - stage: build images
+      if: branch = master
+      script:
+        # builder images
+        - make go-builder
+        # container images
+        - make go-alpine
+        - make go-scratch
+        - docker images
+        - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+        # push images
+        - make go-builder-push
+        - make go-scratch-push
+        - make go-alpine-push
+
+stages:
+  - build images
