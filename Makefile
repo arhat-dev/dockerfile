@@ -34,7 +34,7 @@ go-alpine: .build-container-image
 # Push images
 #
 .push-image:
-	$(eval TARGET := $(MAKECMDGOALS))
+	$(eval TARGET := $(MAKECMDGOALS:-push=))
 	$(DOCKERPUSH) $(DOCKER_REPO)/$(TARGET):onbuild
 
 go-builder-push: .push-image
