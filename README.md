@@ -1,6 +1,8 @@
-# Arhat Dockerfile
+# Dockerfile
 
-Build application with simple template and `make`
+[![Build Status](https://travis-ci.com/arhat-dev/dockerfile.svg?branch=master)](https://travis-ci.com/arhat-dev/dockerfile)
+
+Building blocks for [arhat-dev](https://github.com/arhat-dev)
 
 ## Rules
 
