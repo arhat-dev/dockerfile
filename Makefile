@@ -50,7 +50,8 @@ go-ci: .build-container-image
 #
 .push-image:
 	$(eval IMAGE_NAME := $(DOCKER_REPO)/$(MAKECMDGOALS:push-%=%))
-	$(DOCKERPUSH) $(IMAGE_NAME):latest $(IMAGE_NAME):onbuild
+	$(DOCKERPUSH) $(IMAGE_NAME):latest
+	$(DOCKERPUSH) $(IMAGE_NAME):onbuild
 
 push-base-go: .push-image
 push-builder-go: .push-image
