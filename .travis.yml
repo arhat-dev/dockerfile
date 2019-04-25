@@ -9,17 +9,21 @@ jobs:
     - stage: build images
       if: branch = master
       script:
+        - make base-go
         # builder images
-        - make go-builder
+        - make builder-go
         # container images
         - make go-alpine
         - make go-scratch
+        - make go-ci
         - docker images
         - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
         # push images
-        - make go-builder-push
-        - make go-scratch-push
-        - make go-alpine-push
+        - make push-base-go
+        - make push-builder-go
+        - make push-go-alpine
+        - make push-go-ci
+        - make push-go-scratch
 
 stages:
   - build images

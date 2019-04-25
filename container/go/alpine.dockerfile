@@ -1,4 +1,4 @@
-FROM arhatdev/go-builder:onbuild as builder
+FROM arhatdev/builder-go:onbuild as builder
 FROM alpine:3.9
 
 ONBUILD ARG TARGET
