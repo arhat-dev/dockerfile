@@ -45,6 +45,8 @@ go-scratch: .build-container-image
 go-alpine: .build-container-image
 go-ci: .build-container-image
 
+python-prom: .build-container-image
+
 #
 # Push images
 #
@@ -59,3 +61,5 @@ push-builder-go: .push-image
 push-go-alpine: .push-image
 push-go-ci: .push-image
 push-go-scratch: .push-image
+
+push-python-prom: .push-image

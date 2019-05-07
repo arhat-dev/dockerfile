@@ -16,6 +16,8 @@ jobs:
         - make go-alpine
         - make go-scratch
         - make go-ci
+        - make python-prom
+        # check images
         - docker images
         - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
         # push images
@@ -24,6 +26,7 @@ jobs:
         - make push-go-alpine
         - make push-go-ci
         - make push-go-scratch
+        - make push-python-prom
 
 stages:
   - build images
