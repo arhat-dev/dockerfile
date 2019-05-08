@@ -16,6 +16,7 @@ MAKECMDGOALS ?= base-go
 
 base-go: .build-base-image
 base-python-alpine-armv7: .build-base-image
+base-python-alpine-arm64: .build-base-image
 
 #
 # Builder Images
@@ -28,6 +29,7 @@ base-python-alpine-armv7: .build-base-image
 
 builder-go: .build-builder-image
 builder-python-alpine-armv7: .build-builder-image
+builder-python-alpine-arm64: .build-builder-image
 
 #
 # Container Images
@@ -43,6 +45,7 @@ go-alpine: .build-container-image
 go-ci: .build-container-image
 
 python-alpine-armv7: .build-container-image
+python-alpine-arm64: .build-container-image
 
 #
 # Push images
@@ -54,12 +57,15 @@ python-alpine-armv7: .build-container-image
 
 push-base-go: .push-image
 push-base-python-alpine-armv7: .push-image
+push-base-python-alpine-arm64: .push-image
 
 push-builder-go: .push-image
 push-builder-python-alpine-armv7: .push-image
+push-builder-python-alpine-arm64: .push-image
 
 push-go-alpine: .push-image
 push-go-ci: .push-image
 push-go-scratch: .push-image
 
 push-python-alpine-armv7: .push-image
+push-python-alpine-arm64: .push-image

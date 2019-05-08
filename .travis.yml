@@ -16,11 +16,13 @@ jobs:
         #
         - make base-go
         - make base-python-alpine-armv7
+        - make base-python-alpine-arm64
         #
         # builder images
         #
         - make builder-go
         - make builder-python-alpine-armv7
+        - make builder-python-alpine-arm64
         #
         # container images
         #
@@ -30,6 +32,7 @@ jobs:
         - make go-ci
         # python
         - make python-alpine-armv7
+        - make python-alpine-arm64
         #
         # check images
         #
@@ -46,8 +49,11 @@ jobs:
         - make push-go-scratch
         # python
         - make push-base-python-alpine-armv7
+        - make push-base-python-alpine-arm64
         - make push-builder-python-alpine-armv7
+        - make push-builder-python-alpine-arm64
         - make push-python-alpine-armv7
+        - make push-python-alpine-arm64
 
 stages:
   - build images
