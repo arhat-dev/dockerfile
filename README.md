@@ -13,6 +13,8 @@ Building blocks for [arhat-dev](https://github.com/arhat-dev), suitable for orga
 
 ## Usage
 
+__NOTE:__ To use multi-arch build, you may need to run `docker run --rm --privileged multiarch/qemu-user-static:register` first.
+
 - Method 1: build with arbitrary make target
 
     ```bash
