@@ -34,7 +34,7 @@ builder-python-alpine-armv7: .build-builder-image
 #
 .build-container-image:
 	$(eval IMAGE_NAME := $(DOCKER_REPO)/$(MAKECMDGOALS))
-	$(eval DOCKERFILE := container/$(firstword $(subst -, ,$(MAKECMDGOALS)))/$(lastword $(subst -, ,$(MAKECMDGOALS))).dockerfile)
+	$(eval DOCKERFILE := container/$(firstword $(subst -, ,$(MAKECMDGOALS)))/$(MAKECMDGOALS:$(firstword $(subst -, ,$(MAKECMDGOALS)))-%=%).dockerfile)
 	$(DOCKERBUILD) -f $(DOCKERFILE) \
 		-t $(IMAGE_NAME):latest -t $(IMAGE_NAME):onbuild .
 
