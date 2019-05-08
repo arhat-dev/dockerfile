@@ -2,11 +2,14 @@
 
 [![Build Status](https://travis-ci.com/arhat-dev/dockerfile.svg?branch=master)](https://travis-ci.com/arhat-dev/dockerfile)
 
-Building blocks for [arhat-dev](https://github.com/arhat-dev)
+Building blocks for [arhat-dev](https://github.com/arhat-dev), suitable for organizations using same project structure.
 
 ## Rules
 
-All builder images are based on debian
+| Language | Toolchain | Built Binary           | App Path |
+| -------- | --------- | ---------------------- | -------- |
+| `Go`     | `make`    | `/app/build/${TARGET}` | `/app`   |
+| `Python` | `pipenv`  | `/app/*`               | `/app/*` |
 
 ## Usage
 
