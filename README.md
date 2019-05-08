@@ -6,10 +6,10 @@ Building blocks for [arhat-dev](https://github.com/arhat-dev), suitable for orga
 
 ## Rules
 
-| Language | Toolchain | Built Binary           | App Path |
-| -------- | --------- | ---------------------- | -------- |
-| `Go`     | `make`    | `/app/build/${TARGET}` | `/app`   |
-| `Python` | `pipenv`  | `/app/*`               | `/app/*` |
+| Language | Toolchain | Built Binary           | App Path | Entrypoint                         |
+| -------- | --------- | ---------------------- | -------- | ---------------------------------- |
+| `Go`     | `make`    | `/app/build/${TARGET}` | `/app`   | `/app`                             |
+| `Python` | `pipenv`  | `/app/*`               | `/app/*` | `sh`, `-c`, `python3 /app/main.py` |
 
 ## Usage
 

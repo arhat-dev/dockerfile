@@ -6,5 +6,4 @@ ONBUILD RUN . /app/.venv/bin/activate
 
 WORKDIR /app
 
-ENTRYPOINT [ "sh", "-c" ]
-CMD [ "python3", "main.py" ]
+ENTRYPOINT [ "sh", "-c", "python3 /app/main.py" ]
