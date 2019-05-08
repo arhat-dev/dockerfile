@@ -1,7 +1,6 @@
 DOCKERBUILD := docker build
 DOCKERPUSH := docker push
 
-DEBIAN_HTTPS_MIRROR_SITE := mirrors.ocf.berkeley.edu
 DOCKER_REPO := arhatdev
 
 MAKECMDGOALS ?= base-go
@@ -13,11 +12,10 @@ MAKECMDGOALS ?= base-go
 	$(eval IMAGE_NAME := $(DOCKER_REPO)/$(MAKECMDGOALS))
 	$(eval DOCKERFILE := base/$(MAKECMDGOALS:base-%=%).dockerfile)
 	$(DOCKERBUILD) -f $(DOCKERFILE) \
-		--build-arg MIRROR_SITE="$(DEBIAN_HTTPS_MIRROR_SITE)" \
 		-t $(IMAGE_NAME):latest -t $(IMAGE_NAME):onbuild .
 
 base-go: .build-base-image
-base-nodejs: .build-base-image
+base-python-alpine-armv7: .build-base-image
 
 #
 # Builder Images
@@ -26,11 +24,10 @@ base-nodejs: .build-base-image
 	$(eval IMAGE_NAME := $(DOCKER_REPO)/$(MAKECMDGOALS))
 	$(eval DOCKERFILE := builder/$(MAKECMDGOALS:builder-%=%).dockerfile)
 	$(DOCKERBUILD) -f $(DOCKERFILE) \
-		--build-arg MIRROR_SITE="$(DEBIAN_HTTPS_MIRROR_SITE)" \
 		-t $(IMAGE_NAME):latest -t $(IMAGE_NAME):onbuild .
 
 builder-go: .build-builder-image
-builder-nodejs: .build-builder-image
+builder-python-alpine-armv7: .build-builder-image
 
 #
 # Container Images
@@ -45,7 +42,7 @@ go-scratch: .build-container-image
 go-alpine: .build-container-image
 go-ci: .build-container-image
 
-python-prom: .build-container-image
+python-alpine-armv7: .build-container-image
 
 #
 # Push images
@@ -56,10 +53,13 @@ python-prom: .build-container-image
 	$(DOCKERPUSH) $(IMAGE_NAME):onbuild
 
 push-base-go: .push-image
+push-base-python-alpine-armv7: .push-image
+
 push-builder-go: .push-image
+push-builder-python-alpine-armv7: .push-image
 
 push-go-alpine: .push-image
 push-go-ci: .push-image
 push-go-scratch: .push-image
 
-push-python-prom: .push-image
+push-python-alpine-armv7: .push-image

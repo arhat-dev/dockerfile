@@ -1,8 +1,8 @@
 FROM arhatdev/base-go:latest
 
-WORKDIR /arhat
+WORKDIR /app
 
-ONBUILD COPY . /arhat
+ONBUILD COPY . /app
 ONBUILD ARG TARGET
 ONBUILD RUN \
   if [ ! -z "${TARGET}" ]; then \

@@ -2,7 +2,8 @@ FROM arhatdev/builder-go:onbuild as builder
 FROM scratch
 
 ONBUILD ARG TARGET
-ONBUILD COPY --from=builder /arhat/build/${TARGET} /app
+ONBUILD COPY --from=builder /app/build/${TARGET} /app
+ONBUILD RUN . ./app/.venv
 
 # set OCI default command
-ENTRYPOINT [ "/app" ]
+ENTRYPOINT [ "/app/" ]

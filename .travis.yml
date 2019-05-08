@@ -9,24 +9,27 @@ jobs:
     - stage: build images
       if: branch = master
       script:
+        - make base-python-alpine-armv7
         - make base-go
         # builder images
         - make builder-go
+        - make builder-python-alpine-armv7
         # container images
         - make go-alpine
         - make go-scratch
         - make go-ci
-        - make python-prom
+        - make python-alpine-armv7
         # check images
         - docker images
         - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
         # push images
         - make push-base-go
         - make push-builder-go
+        - make push-builder-python-alpine-armv7
         - make push-go-alpine
         - make push-go-ci
         - make push-go-scratch
-        - make push-python-prom
+        - make push-python-alpine-armv7
 
 stages:
   - build images

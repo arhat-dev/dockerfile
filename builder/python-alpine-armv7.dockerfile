@@ -1,0 +1,21 @@
+FROM arhatdev/base-python-armv7:latest
+
+# add qemu for cross build
+ADD https://github.com/multiarch/qemu-user-static/releases/download/v4.0.0/qemu-arm-static \
+    /usr/bin/qemu-arm-static
+
+# install build tools
+RUN apk --no-cache add ca-certificates wget build-base curl upx ;\
+    pip3 install pipenv ;
+
+# ensure pipenv will create vitrualenv in /app/.venv
+ENV PIPENV_VENV_IN_PROJECT 1
+
+WORKDIR /app
+
+ONBUILD COPY . /app
+ONBUILD ARG TARGET
+ONBUILD RUN \
+  if [ ! -z "${TARGET}" ]; then \
+    pipenv install ;\
+  fi
