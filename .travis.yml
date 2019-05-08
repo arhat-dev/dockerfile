@@ -9,6 +9,8 @@ jobs:
     - stage: build images
       if: branch = master
       script:
+        # prepare for multi-arch build with qemu (register archs using qemu)
+        - docker run --rm --privileged multiarch/qemu-user-static:register
         #
         # base images
         #
