@@ -5,7 +5,7 @@ ADD https://github.com/multiarch/qemu-user-static/releases/download/v4.0.0/qemu-
     /usr/bin/qemu-arm-static
 
 # install build tools
-RUN apk --no-cache add ca-certificates wget build-base curl upx ;\
+RUN apk --no-cache add ca-certificates wget build-base curl ;\
     pip3 install pipenv ;
 
 # ensure pipenv will create vitrualenv in /app/.venv
