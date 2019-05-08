@@ -1,4 +1,4 @@
-FROM arhatdev/builder-python-arm32v7:onbuild as builder
+FROM arhatdev/builder-python-alpine-armv7:onbuild as builder
 FROM arm32v7/alpine:3.9
 
 ONBUILD COPY --from=builder /app /app
