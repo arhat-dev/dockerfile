@@ -1,4 +1,4 @@
-FROM arhatdev/builder-go:onbuild as builder
+FROM arhatdev/builder-go-stretch:onbuild as builder
 FROM scratch
 
 ONBUILD ARG TARGET

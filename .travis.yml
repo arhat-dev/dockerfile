@@ -11,18 +11,9 @@ jobs:
       script:
         # prepare for multi-arch build with qemu (register archs using qemu)
         - docker run --rm --privileged multiarch/qemu-user-static:register
-        #
-        # base images
-        #
-        - ./build-targets.sh base
-        #
-        # builder images
-        #
-        - ./build-targets.sh builder
-        #
-        # container images
-        #
-        - ./build-targets.sh container
+        - make images-base
+        - make images-builder
+        - make images-container
         #
         # check images
         #
@@ -31,7 +22,7 @@ jobs:
         #
         # push images
         #
-        - ./build-targets.sh push
+        - make images-push
 
 stages:
   - build images

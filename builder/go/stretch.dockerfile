@@ -1,4 +1,4 @@
-FROM arhatdev/base-go:latest
+FROM arhatdev/base-go-stretch:latest
 
 WORKDIR /app
 
