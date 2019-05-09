@@ -14,7 +14,7 @@ domake() {
     echo "---------------Build-Start---------------"
     for r in $RECIPES; do
         echo "make $r"
-        # make "$r"
+        make "$r"
     done
 }
 
