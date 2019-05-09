@@ -5,7 +5,7 @@ RUN wget --quiet -O /qemu-arm-static \
     https://github.com/multiarch/qemu-user-static/releases/download/v4.0.0/qemu-arm-static ;\
     chmod +x /qemu-arm-static
 
-FROM arhatdev/base-python-alpine-armv7:latest
+FROM arm32v7/python:3.7-alpine3.9
 
 # add qemu for cross build
 COPY --from=downloader /qemu-arm-static  \
@@ -14,15 +14,3 @@ COPY --from=downloader /qemu-arm-static  \
 # install build tools
 RUN apk --no-cache add ca-certificates wget build-base curl ;\
     pip3 install pipenv ;
-
-# ensure pipenv will create vitrualenv in /app/.venv
-ENV PIPENV_VENV_IN_PROJECT 1
-
-WORKDIR /app
-
-ONBUILD COPY . /app
-ONBUILD ARG TARGET
-ONBUILD RUN \
-  if [ ! -z "${TARGET}" ]; then \
-    pipenv install ;\
-  fi
