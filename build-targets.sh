@@ -8,7 +8,7 @@ GREP=$(which ggrep || which grep)
 ALL_TARGETS=$(make -qp | awk -F':' '/^[a-zA-Z0-9][^$#\/\t=]*:([^=]|$)/ {split($1,A,/ /);for(i in A)print A[i]}' | sort -u)
 
 domake() {
-    local RECIPES=$1
+    RECIPES=$1
     echo "-----------------Targets-----------------"
     echo "$RECIPES"
     echo "---------------Build-Start---------------"
