@@ -9,7 +9,7 @@ Building blocks for [arhat-dev](https://github.com/arhat-dev), suitable for orga
 | Language | Toolchain | Built Binary           | App Path | Entrypoint                                                      |
 | -------- | --------- | ---------------------- | -------- | --------------------------------------------------------------- |
 | `Go`     | `make`    | `/app/build/${TARGET}` | `/app`   | `/app`                                                          |
-| `Python` | `pipenv`  | `/app/*`               | `/app/main.py` | [`/usr/local/bin/entrypoint`](./container/python/entrypoint.sh) |
+| `Python` | `pipenv`  | `/app/*`               | `/app/main.py` | [`/usr/local/bin/entrypoint`](./scripts/python-entrypoint.sh) |
 
 ## Usage
 
