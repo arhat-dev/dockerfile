@@ -22,9 +22,9 @@ __NOTE:__ To use multi-arch build, you may need to run `docker run --rm --privil
     $ export TARGET="my-app"
     $ export IMAGE_NAME="my-image-name"
 
-    # build in your project root (with `Makefile`)
-    $ docker build --build-arg TARGET=$(TARGET) \
-        -t $(IMAGE_NAME) \
+    # build in your project root
+    $ docker build --build-arg TARGET=${TARGET} \
+        -t ${IMAGE_NAME} \
         -f template/without-target.dockerfile .
     ```
 
@@ -34,6 +34,6 @@ __NOTE:__ To use multi-arch build, you may need to run `docker run --rm --privil
     # set image name
     $ export IMAGE_NAME="my-image-name"
 
-    # build in your project root (with `Makefile`)
-    $ docker build -t $(IMAGE_NAME) -f template/with-target.dockerfile
+    # build in your project root
+    $ docker build -t ${IMAGE_NAME} -f template/with-target.dockerfile
     ```
