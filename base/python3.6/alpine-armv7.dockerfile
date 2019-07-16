@@ -1,5 +1,5 @@
 # use native build to make sure qemu executable
-FROM alpine:3.9 as downloader
+FROM alpine:latest as downloader
 
 RUN wget --quiet -O /qemu-arm-static \
     https://github.com/multiarch/qemu-user-static/releases/download/v4.0.0/qemu-arm-static ;\

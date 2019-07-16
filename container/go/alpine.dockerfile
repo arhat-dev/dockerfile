@@ -3,7 +3,7 @@ ARG ARCH=amd64
 ARG DOCKER_ARCH=amd64
 
 FROM arhatdev/builder-go-stretch:onbuild as builder
-FROM ${DOCKER_ARCH}/alpine:3.9
+FROM ${DOCKER_ARCH}/alpine:latest
 
 ONBUILD ARG TARGET
 ONBUILD COPY --from=builder /app/build/${TARGET} /app
