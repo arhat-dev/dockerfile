@@ -1,5 +1,5 @@
 ARG ARCH=amd64
-FROM arhatdev/base-python3.6-alpine-${ARCH}:latest
+FROM arhatdev/base-python3.6:alpine-${ARCH}
 
 # ensure pipenv will create vitrualenv in /app/.venv
 ENV PIPENV_VENV_IN_PROJECT 1

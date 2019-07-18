@@ -2,7 +2,7 @@
 FROM alpine:latest as downloader
 
 RUN wget --quiet -O /qemu-arm-static \
-    https://github.com/multiarch/qemu-user-static/releases/download/v4.0.0/qemu-arm-static ;\
+    https://github.com/multiarch/qemu-user-static/releases/download/v4.0.0-5/qemu-arm-static ;\
     chmod +x /qemu-arm-static
 
 FROM arm32v7/python:3.6-alpine

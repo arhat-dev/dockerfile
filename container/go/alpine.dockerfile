@@ -2,7 +2,7 @@ ARG ARCH=amd64
 # docker flavored arch name
 ARG DOCKER_ARCH=amd64
 
-FROM arhatdev/builder-go-stretch:onbuild as builder
+FROM arhatdev/builder-go:stretch as builder
 FROM ${DOCKER_ARCH}/alpine:latest
 
 ONBUILD ARG TARGET
