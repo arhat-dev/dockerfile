@@ -37,3 +37,31 @@ __NOTE:__ To use multi-arch build, you may need to run `docker run --rm --privil
     # build in your project root
     $ docker build -t ${IMAGE_NAME} -f template/with-target.dockerfile
     ```
+
+## Conventions
+
+### Variables
+
+- `{language}` is the programming language
+  - languages without strong backward compatibilities will be versioned (e.g. `python3.6`, `python3.7`)
+- `{rootfs}` will appear in image tagname and makefile targets
+  - values can be in one of following formats:
+    - `{distro}-{arch}` means images support multiple platforms
+    - `{distro}` means images support linux/amd64 only
+
+### Image Types
+
+- Base images (`arhatdev/base-{language}:{rootfs}`)
+  - contians necessary build tools and environment for cross platform build
+- Builder images (`arhatdev/builder-{language}:{rootfs}`)
+  - based on base images (`arhatdev/base-{language}:{rootfs}`) but with build triggers to build project automatically
+- Contianer images `arhatdev/{language}:{rootfs}`
+  - copy built application from builders and setup environment for contianer running
+
+### Makefile Targets
+
+- Makefile image target name can be one of the following:
+  - `base-{language}-{rootfs}` for base images
+  - `builder-{language}-{rootfs}` for builder images
+  - `{language}-{rootfs}` for container images
+  - `push-xxx` to push images built by targets listed above
