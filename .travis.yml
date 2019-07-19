@@ -9,7 +9,7 @@ env:
     - DOCKER_CLI_EXPERIMENTAL=enabled
 
 before_script:
-  - ./scripts/travis.sh
+  - sudo ./scripts/travis.sh
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 
 script:
