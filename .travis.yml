@@ -4,6 +4,10 @@ os:
 
 language: generic
 
+env:
+  global:
+    - DOCKER_CLI_EXPERIMENTAL=enabled
+
 jobs:
   include:
     - stage: build images
