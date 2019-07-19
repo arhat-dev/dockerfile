@@ -1,5 +1,6 @@
 DOCKERBUILD := docker build
 DOCKERPUSH := docker push
+DOCKERMANIFEST := docker manifest
 
 DOCKER_REPO := arhatdev
 
@@ -38,6 +39,18 @@ DOCKER_REPO := arhatdev
 
 	$(DOCKERBUILD) -f $(DOCKERFILE) --build-arg ARCH=$(ARCH) -t $(IMAGE_NAME) .
 
+	$(eval MANIFEST_NAME := $(DOCKER_REPO)/$(LANGUAGE):latest)
+	$(eval MANIFEST_ARCH := $(ARCH:v7=))
+	$(eval MANIFEST_ARCH := $(MANIFEST_ARCH:v6=))
+	$(eval MANIFEST_VARIANT := $(ARCH:amd64%=%))
+	$(eval MANIFEST_VARIANT := $(MANIFEST_VARIANT:arm64%=%))
+	$(eval MANIFEST_VARIANT := $(MANIFEST_VARIANT:arm%=%))
+	$(eval MANIFEST_ARGS := --arch $(MANIFEST_ARCH) --os linux)
+	$(if $(MANIFEST_VARIANT),$(eval MANIFEST_ARGS := $(MANIFEST_ARGS) --variant $(MANIFEST_VARIANT)),)
+
+	$(DOCKERMANIFEST) create $(MANIFEST_NAME) --amend $(IMAGE_NAME)
+	$(DOCKERMANIFEST) annotate $(MANIFEST_NAME) $(IMAGE_NAME) $(MANIFEST_ARGS)
+
 #
 # Container Images (for scratch)
 #
@@ -61,17 +74,21 @@ DOCKER_REPO := arhatdev
 
 	$(DOCKERBUILD) -f $(DOCKERFILE) --build-arg ARCH=$(ARCH) \
 		--build-arg DOCKER_ARCH=$($(ARCH)) -t $(IMAGE_NAME) .
+	
+	$(eval MANIFEST_NAME := $(DOCKER_REPO)/$(LANGUAGE):latest)
+	$(eval MANIFEST_ARCH := $(ARCH:v7=))
+	$(eval MANIFEST_ARCH := $(MANIFEST_ARCH:v6=))
+	$(eval MANIFEST_VARIANT := $(ARCH:amd64%=%))
+	$(eval MANIFEST_VARIANT := $(MANIFEST_VARIANT:arm64%=%))
+	$(eval MANIFEST_VARIANT := $(MANIFEST_VARIANT:arm%=%))
+	$(eval MANIFEST_ARGS := --arch $(MANIFEST_ARCH) --os linux)
+	$(if $(MANIFEST_VARIANT),$(eval MANIFEST_ARGS := $(MANIFEST_ARGS) --variant $(MANIFEST_VARIANT)),)
+
+	$(DOCKERMANIFEST) create $(MANIFEST_NAME) --amend $(IMAGE_NAME)
+	$(DOCKERMANIFEST) annotate $(MANIFEST_NAME) $(IMAGE_NAME) $(MANIFEST_ARGS)
 
 #
 # Push images
 #
 .push-image:
-	$(eval IMAGE_PREFIX := $(MAKECMDGOALS:push-%=%))
-	$(eval TARGET := $(IMAGE_PREFIX:base-%=%))
-	$(eval TARGET := $(TARGET:builder-%=%))
-
-	$(eval LANGUAGE := $(firstword $(subst -, ,$(TARGET))))
-	$(eval ROOTFS := $(TARGET:$(LANGUAGE)-%=%))
-	$(eval IMAGE_NAME := $(DOCKER_REPO)/$(IMAGE_PREFIX:-$(ROOTFS)=):$(ROOTFS))
-	
-	$(DOCKERPUSH) $(IMAGE_NAME)
+	$(DOCKERPUSH) $(DOCKER_REPO)/$(MAKECMDGOALS:push-%=%)
