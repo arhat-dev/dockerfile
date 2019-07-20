@@ -1,4 +1,4 @@
-FROM arhatdev/base-go:stretch
+FROM arhatdev/base-go:debian
 
 WORKDIR /app
 
