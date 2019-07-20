@@ -60,13 +60,13 @@ QEMU_VERSION := v4.0.0-2
 	$(eval ARCH := $(lastword $(subst -, ,$(MAKECMDGOALS))))
 	$(eval LANGUAGE := $(firstword $(subst -, ,$(MAKECMDGOALS))))
 	$(eval DOCKERFILE := $(MAKECMDGOALS:$(firstword $(subst -, ,$(MAKECMDGOALS)))-%=%))
+	$(eval MANIFEST_NAME := $(DOCKER_REPO)/$(LANGUAGE):$(firstword $(subst -, , $(DOCKERFILE)))-latest)
 	$(eval DOCKERFILE := container/$(LANGUAGE)/$(DOCKERFILE:-$(ARCH)=).dockerfile)
 	$(eval IMAGE_NAME := $(DOCKER_REPO)/$(LANGUAGE):$(MAKECMDGOALS:$(LANGUAGE)-%=%))
 
 	$(DOCKERBUILD) -f $(DOCKERFILE) --build-arg ARCH=$(ARCH) \
 		--build-arg DOCKER_ARCH=$($(ARCH)) -t $(IMAGE_NAME) .
 	
-	$(eval MANIFEST_NAME := $(DOCKER_REPO)/$(LANGUAGE):latest)
 	$(eval MANIFEST_ARCH := $(ARCH:v7=))
 	$(eval MANIFEST_ARCH := $(MANIFEST_ARCH:v6=))
 	$(eval MANIFEST_VARIANT := $(ARCH:amd64%=%))
