@@ -1,4 +1,4 @@
-FROM arhatdev/builder-go:debian as builder
+FROM arhatdev/builder-go:debian-latest as builder
 FROM scratch
 
 ONBUILD ARG TARGET
