@@ -25,12 +25,12 @@ QEMU_VERSION := v4.0.0-2
 	$(eval DOCKERFILE := $(MAKECMDGOALS:builder-%=%))
 	$(eval LANGUAGE := $(firstword $(subst -, ,$(DOCKERFILE))))
 	$(eval DOCKERFILE := $(DOCKERFILE:$(LANGUAGE)-%=%))
+	$(eval MANIFEST_NAME := $(DOCKER_REPO)/builder-$(LANGUAGE):$(firstword $(subst -, , $(DOCKERFILE)))-latest)
 	$(eval DOCKERFILE := builder/$(LANGUAGE)/$(DOCKERFILE:-$(ARCH)=).dockerfile)
 	$(eval IMAGE_NAME := $(DOCKER_REPO)/builder-$(LANGUAGE):$(MAKECMDGOALS:builder-$(LANGUAGE)-%=%))
 
 	$(DOCKERBUILD) -f $(DOCKERFILE) --build-arg ARCH=$(ARCH) -t $(IMAGE_NAME) .
 
-	$(eval MANIFEST_NAME := $(DOCKER_REPO)/$(LANGUAGE):latest)
 	$(eval MANIFEST_ARCH := $(ARCH:v7=))
 	$(eval MANIFEST_ARCH := $(MANIFEST_ARCH:v6=))
 	$(eval MANIFEST_VARIANT := $(ARCH:amd64%=%))
@@ -39,7 +39,7 @@ QEMU_VERSION := v4.0.0-2
 	$(eval MANIFEST_ARGS := --arch $(MANIFEST_ARCH) --os linux)
 	$(if $(MANIFEST_VARIANT),$(eval MANIFEST_ARGS := $(MANIFEST_ARGS) --variant $(MANIFEST_VARIANT)),)
 
-	$(DOCKERMANIFEST) create $(MANIFEST_NAME) --amend $(IMAGE_NAME)
+	$(DOCKERMANIFEST) create $(MANIFEST_NAME) $(IMAGE_NAME) || $(DOCKERMANIFEST) create $(MANIFEST_NAME) --amend $(IMAGE_NAME)
 	$(DOCKERMANIFEST) annotate $(MANIFEST_NAME) $(IMAGE_NAME) $(MANIFEST_ARGS)
 
 #
