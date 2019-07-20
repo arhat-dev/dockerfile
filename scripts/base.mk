@@ -20,7 +20,7 @@ QEMU_VERSION := v4.0.0-2
 #
 # Builder Images
 #
-.build-builder-image:
+.build-builder-image: .docker-login
 	$(eval ARCH := $(lastword $(subst -, ,$(MAKECMDGOALS))))
 	$(eval DOCKERFILE := $(MAKECMDGOALS:builder-%=%))
 	$(eval LANGUAGE := $(firstword $(subst -, ,$(DOCKERFILE))))
@@ -57,7 +57,7 @@ QEMU_VERSION := v4.0.0-2
 #
 # Container Images
 #
-.build-container-image:
+.build-container-image: .docker-login
 	$(eval ARCH := $(lastword $(subst -, ,$(MAKECMDGOALS))))
 	$(eval LANGUAGE := $(firstword $(subst -, ,$(MAKECMDGOALS))))
 	$(eval DOCKERFILE := $(MAKECMDGOALS:$(firstword $(subst -, ,$(MAKECMDGOALS)))-%=%))
@@ -85,3 +85,6 @@ QEMU_VERSION := v4.0.0-2
 #
 .push-image:
 	$(DOCKERPUSH) $(DOCKER_REPO)/$(MAKECMDGOALS:push-%=%)
+
+.docker-login:
+	docker login -u=$(DOCKER_USERNAME) -p=$(DOCKER_PASSWORD)

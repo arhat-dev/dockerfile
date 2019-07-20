@@ -10,10 +10,10 @@ env:
 
 before_script:
   - sudo ./scripts/travis.sh
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 
 script:
   - make images-base
-  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - make images-builder
   - make images-container
 
