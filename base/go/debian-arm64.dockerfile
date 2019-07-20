@@ -11,7 +11,7 @@ FROM arm64v8/golang:stretch
 
 # add qemu for cross build
 COPY --from=downloader /qemu-aarch64-static  \
-    /usr/bin/qemu-arm-static
+    /usr/bin/qemu-aarch64-static
 
 ARG MIRROR_SITE=mirrors.ocf.berkeley.edu
 
