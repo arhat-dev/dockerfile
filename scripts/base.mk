@@ -4,6 +4,8 @@ DOCKERMANIFEST := docker manifest
 
 DOCKER_REPO := arhatdev
 
+QEMU_VERSION := v4.0.0-2
+
 #
 # Base Images
 #
@@ -13,7 +15,7 @@ DOCKER_REPO := arhatdev
 	$(eval DOCKERFILE := base/$(LANGUAGE)/$(DOCKERFILE:$(LANGUAGE)-%=%).dockerfile)
 	$(eval IMAGE_NAME := $(DOCKER_REPO)/base-$(LANGUAGE):$(MAKECMDGOALS:base-$(LANGUAGE)-%=%))
 
-	$(DOCKERBUILD) -f $(DOCKERFILE) -t $(IMAGE_NAME) .
+	$(DOCKERBUILD) -f $(DOCKERFILE) --build-arg QEMU_VERSION=$(QEMU_VERSION) -t $(IMAGE_NAME) .
 
 #
 # Builder Images
