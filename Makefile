@@ -3,6 +3,7 @@ MAKECMDGOALS ?= base-go
 # arch name mapping
 arm64 := arm64v8
 armv7 := arm32v7
+armv6 := arm32v6
 amd64 := amd64
 
 include scripts/base.mk
