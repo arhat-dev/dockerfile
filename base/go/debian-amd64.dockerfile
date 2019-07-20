@@ -17,5 +17,4 @@ RUN set -e ;\
     sed -i 's/http:/https:/g' /etc/apt/sources.list ;\
     apt-get update ;\
     apt-get upgrade -y ;\
-    apt-get install -y \
-              git make upx
+    apt-get install -y git make upx build-essential ;

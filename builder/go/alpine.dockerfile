@@ -1,5 +1,5 @@
 ARG ARCH=amd64
-FROM arhatdev/base-go:debian-${ARCH}
+FROM arhatdev/base-go:alpine-${ARCH}
 
 WORKDIR /app
 

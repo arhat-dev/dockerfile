@@ -19,17 +19,6 @@ DOCKER_REPO := arhatdev
 # Builder Images
 #
 .build-builder-image:
-	$(eval DOCKERFILE := $(MAKECMDGOALS:builder-%=%))
-	$(eval LANGUAGE := $(firstword $(subst -, ,$(DOCKERFILE))))
-	$(eval DOCKERFILE := builder/$(LANGUAGE)/$(DOCKERFILE:$(LANGUAGE)-%=%).dockerfile)
-	$(eval IMAGE_NAME := $(DOCKER_REPO)/builder-$(LANGUAGE):$(MAKECMDGOALS:builder-$(LANGUAGE)-%=%))
-
-	$(DOCKERBUILD) -f $(DOCKERFILE) -t $(IMAGE_NAME) .
-
-#
-# Multi-arch Builder Images
-#
-.build-multi-arch-builder-image:
 	$(eval ARCH := $(lastword $(subst -, ,$(MAKECMDGOALS))))
 	$(eval DOCKERFILE := $(MAKECMDGOALS:builder-%=%))
 	$(eval LANGUAGE := $(firstword $(subst -, ,$(DOCKERFILE))))
@@ -54,7 +43,7 @@ DOCKER_REPO := arhatdev
 #
 # Container Images (for scratch)
 #
-.build-container-image:
+.build-scratch-container-image:
 	$(eval LANGUAGE := $(firstword $(subst -, ,$(MAKECMDGOALS))))
 	$(eval DOCKERFILE := $(MAKECMDGOALS:$(firstword $(subst -, ,$(MAKECMDGOALS)))-%=%))
 	$(eval DOCKERFILE := container/$(LANGUAGE)/$(DOCKERFILE).dockerfile)
@@ -63,9 +52,9 @@ DOCKER_REPO := arhatdev
 	$(DOCKERBUILD) -f $(DOCKERFILE) -t $(IMAGE_NAME) .
 
 #
-# Multi-arch Container Images
+# Container Images
 #
-.build-multi-arch-container-image:
+.build-container-image:
 	$(eval ARCH := $(lastword $(subst -, ,$(MAKECMDGOALS))))
 	$(eval LANGUAGE := $(firstword $(subst -, ,$(MAKECMDGOALS))))
 	$(eval DOCKERFILE := $(MAKECMDGOALS:$(firstword $(subst -, ,$(MAKECMDGOALS)))-%=%))

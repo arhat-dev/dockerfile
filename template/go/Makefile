@@ -1,4 +1,4 @@
-# must have, will be invoked by docker image (`arhatdev/builder-go:stretch`)
+# must have, will be invoked by docker image (`arhatdev/builder-go:debian`)
 my-app:
 	go build -o build/my-app ./
 
