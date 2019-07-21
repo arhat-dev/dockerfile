@@ -14,9 +14,8 @@ before_script:
 
 script:
   - make images-base
-  - make images-builder DOCKER_USERNAME="$DOCKER_USERNAME" DOCKER_PASSWORD="$DOCKER_PASSWORD"
-  - make images-container DOCKER_USERNAME="$DOCKER_USERNAME" DOCKER_PASSWORD="$DOCKER_PASSWORD"
+  - make images-builder
+  - make images-container
 
 after_script:
   - docker images
-  - make images-push

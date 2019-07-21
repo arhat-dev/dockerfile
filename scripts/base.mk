@@ -16,11 +16,12 @@ QEMU_VERSION := v4.0.0-2
 	$(eval IMAGE_NAME := $(DOCKER_REPO)/base-$(LANGUAGE):$(MAKECMDGOALS:base-$(LANGUAGE)-%=%))
 
 	$(DOCKERBUILD) -f $(DOCKERFILE) --build-arg QEMU_VERSION=$(QEMU_VERSION) -t $(IMAGE_NAME) .
+	$(DOCKERPUSH) $(IMAGE_NAME)
 
 #
 # Builder Images
 #
-.build-builder-image: .docker-login
+.build-builder-image:
 	$(eval ARCH := $(lastword $(subst -, ,$(MAKECMDGOALS))))
 	$(eval DOCKERFILE := $(MAKECMDGOALS:builder-%=%))
 	$(eval LANGUAGE := $(firstword $(subst -, ,$(DOCKERFILE))))
@@ -30,6 +31,7 @@ QEMU_VERSION := v4.0.0-2
 	$(eval IMAGE_NAME := $(DOCKER_REPO)/builder-$(LANGUAGE):$(MAKECMDGOALS:builder-$(LANGUAGE)-%=%))
 
 	$(DOCKERBUILD) -f $(DOCKERFILE) --build-arg ARCH=$(ARCH) -t $(IMAGE_NAME) .
+	$(DOCKERPUSH) $(IMAGE_NAME)
 
 	$(eval MANIFEST_ARCH := $(ARCH:v7=))
 	$(eval MANIFEST_ARCH := $(MANIFEST_ARCH:v6=))
@@ -53,11 +55,12 @@ QEMU_VERSION := v4.0.0-2
 	$(eval IMAGE_NAME := $(DOCKER_REPO)/$(LANGUAGE):$(MAKECMDGOALS:$(LANGUAGE)-%=%))
 
 	$(DOCKERBUILD) -f $(DOCKERFILE) -t $(IMAGE_NAME) .
+	$(DOCKERPUSH) $(IMAGE_NAME)
 
 #
 # Container Images
 #
-.build-container-image: .docker-login
+.build-container-image:
 	$(eval ARCH := $(lastword $(subst -, ,$(MAKECMDGOALS))))
 	$(eval LANGUAGE := $(firstword $(subst -, ,$(MAKECMDGOALS))))
 	$(eval DOCKERFILE := $(MAKECMDGOALS:$(firstword $(subst -, ,$(MAKECMDGOALS)))-%=%))
@@ -65,9 +68,9 @@ QEMU_VERSION := v4.0.0-2
 	$(eval DOCKERFILE := container/$(LANGUAGE)/$(DOCKERFILE:-$(ARCH)=).dockerfile)
 	$(eval IMAGE_NAME := $(DOCKER_REPO)/$(LANGUAGE):$(MAKECMDGOALS:$(LANGUAGE)-%=%))
 
-	$(DOCKERBUILD) -f $(DOCKERFILE) --build-arg ARCH=$(ARCH) \
-		--build-arg DOCKER_ARCH=$($(ARCH)) -t $(IMAGE_NAME) .
-	
+	$(DOCKERBUILD) -f $(DOCKERFILE) --build-arg ARCH=$(ARCH) --build-arg DOCKER_ARCH=$($(ARCH)) -t $(IMAGE_NAME) .
+	$(DOCKERPUSH) $(IMAGE_NAME)
+
 	$(eval MANIFEST_ARCH := $(ARCH:v7=))
 	$(eval MANIFEST_ARCH := $(MANIFEST_ARCH:v6=))
 	$(eval MANIFEST_VARIANT := $(ARCH:amd64%=%))
@@ -79,12 +82,3 @@ QEMU_VERSION := v4.0.0-2
 	$(DOCKERMANIFEST) create $(MANIFEST_NAME) $(IMAGE_NAME) || $(DOCKERMANIFEST) create $(MANIFEST_NAME) --amend $(IMAGE_NAME)
 	$(DOCKERMANIFEST) annotate $(MANIFEST_NAME) $(IMAGE_NAME) $(MANIFEST_ARGS)
 	$(DOCKERMANIFEST) push $(MANIFEST_NAME)
-
-#
-# Push images
-#
-.push-image:
-	$(DOCKERPUSH) $(DOCKER_REPO)/$(MAKECMDGOALS:push-%=%)
-
-.docker-login:
-	docker login -u=$(DOCKER_USERNAME) -p=$(DOCKER_PASSWORD) || true
