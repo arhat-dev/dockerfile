@@ -87,4 +87,4 @@ QEMU_VERSION := v4.0.0-2
 	$(DOCKERPUSH) $(DOCKER_REPO)/$(MAKECMDGOALS:push-%=%)
 
 .docker-login:
-	docker login -u=$(DOCKER_USERNAME) -p=$(DOCKER_PASSWORD)
+	docker login -u=$(DOCKER_USERNAME) -p=$(DOCKER_PASSWORD) || true
