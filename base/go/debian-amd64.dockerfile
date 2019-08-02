@@ -18,6 +18,8 @@ RUN set -e ;\
     apt-get update ;\
     apt-get upgrade -y ;\
     apt-get install -y --no-install-recommends \
+    gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf libc-dev-armhf-cross \
+    gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libc-dev-arm64-cross \
     git make upx build-essential apparmor autoconf automake \
     bison curl e2fslibs-dev gawk gettext go-md2man iptables \
     pkg-config libaio-dev libcap-dev libfuse-dev libnet-dev \
