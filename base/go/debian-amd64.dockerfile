@@ -18,6 +18,7 @@ RUN set -e ;\
     apt-get update ;\
     apt-get upgrade -y ;\
     apt-get install -y --no-install-recommends \
+    gcc-arm-linux-gnueabi g++-arm-linux-gnueabi libc-dev-armel-cross \
     gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf libc-dev-armhf-cross \
     gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libc-dev-arm64-cross \
     git make upx build-essential apparmor autoconf automake \
