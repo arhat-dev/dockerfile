@@ -41,9 +41,4 @@ RUN apt-get update ;\
     liblzma-dev libglib2.0-dev libapparmor-dev \
     libaio-dev libcap-dev libfuse-dev libnet-dev \
     libnl-3-dev libostree-dev libprotobuf-dev libprotobuf-c-dev \
-    libseccomp-dev libudev-dev \
-    # libraries
-    libseccomp2 libdevmapper1.02.1 \
-    libseccomp2:armel libdevmapper1.02.1:armel \
-    libseccomp2:armhf libdevmapper1.02.1:armhf \
-    libseccomp2:arm64 libdevmapper1.02.1:arm64
+    libseccomp-dev libudev-dev ;
