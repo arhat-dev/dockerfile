@@ -6,9 +6,9 @@ Building blocks for [arhat-dev](https://github.com/arhat-dev), suitable for orga
 
 ## Rules
 
-| Language | Toolchain | Built Binary           | App Path | Entrypoint                                                      |
-| -------- | --------- | ---------------------- | -------- | --------------------------------------------------------------- |
-| `Go`     | `make`    | `/app/build/${TARGET}` | `/app`   | `/app`                                                          |
+| Language | Toolchain | Built Binary           | App Path       | Entrypoint                                                    |
+| -------- | --------- | ---------------------- | -------------- | ------------------------------------------------------------- |
+| `Go`     | `make`    | `/app/build/${TARGET}` | `/${TARGET}`   | `/${TARGET}`                                                  |
 | `Python` | `pipenv`  | `/app/*`               | `/app/main.py` | [`/usr/local/bin/entrypoint`](./scripts/python-entrypoint.sh) |
 
 ## Usage

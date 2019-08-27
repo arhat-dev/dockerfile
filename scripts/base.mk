@@ -26,7 +26,7 @@ QEMU_VERSION := v4.0.0-2
 	$(eval DOCKERFILE := $(MAKECMDGOALS:builder-%=%))
 	$(eval LANGUAGE := $(firstword $(subst -, ,$(DOCKERFILE))))
 	$(eval DOCKERFILE := $(DOCKERFILE:$(LANGUAGE)-%=%))
-	$(eval MANIFEST_NAME := $(DOCKER_REPO)/builder-$(LANGUAGE):$(firstword $(subst -, , $(DOCKERFILE)))-latest)
+	$(eval MANIFEST_NAME := $(DOCKER_REPO)/builder-$(LANGUAGE):$(firstword $(subst -, , $(DOCKERFILE))))
 	$(eval DOCKERFILE := builder/$(LANGUAGE)/$(DOCKERFILE:-$(ARCH)=).dockerfile)
 	$(eval IMAGE_NAME := $(DOCKER_REPO)/builder-$(LANGUAGE):$(MAKECMDGOALS:builder-$(LANGUAGE)-%=%))
 
@@ -64,7 +64,7 @@ QEMU_VERSION := v4.0.0-2
 	$(eval ARCH := $(lastword $(subst -, ,$(MAKECMDGOALS))))
 	$(eval LANGUAGE := $(firstword $(subst -, ,$(MAKECMDGOALS))))
 	$(eval DOCKERFILE := $(MAKECMDGOALS:$(firstword $(subst -, ,$(MAKECMDGOALS)))-%=%))
-	$(eval MANIFEST_NAME := $(DOCKER_REPO)/$(LANGUAGE):$(firstword $(subst -, , $(DOCKERFILE)))-latest)
+	$(eval MANIFEST_NAME := $(DOCKER_REPO)/$(LANGUAGE):$(firstword $(subst -, , $(DOCKERFILE))))
 	$(eval DOCKERFILE := container/$(LANGUAGE)/$(DOCKERFILE:-$(ARCH)=).dockerfile)
 	$(eval IMAGE_NAME := $(DOCKER_REPO)/$(LANGUAGE):$(MAKECMDGOALS:$(LANGUAGE)-%=%))
 

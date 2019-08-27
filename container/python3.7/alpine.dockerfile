@@ -2,7 +2,7 @@ ARG ARCH=amd64
 # docker flavored arch name
 ARG DOCKER_ARCH=amd64
 
-FROM arhatdev/builder-python3.7:alpine-${ARCH} as builder
+FROM arhatdev/builder-python3.7:alpine as builder
 FROM ${DOCKER_ARCH}/python:3.7-alpine
 
 ONBUILD COPY --from=builder /app /app
