@@ -8,5 +8,6 @@ FROM arhatdev/builder-go:debian as builder
 FROM ${DOCKER_ARCH}/debian:stable-slim
 
 ONBUILD ARG TARGET
-ONBUILD COPY --from=builder /app/build/${TARGET} /${TARGET}
+ONBUILD ARG APP=${TARGET}
+ONBUILD COPY --from=builder /app/build/${TARGET} /${APP}
 ONBUILD ENTRYPOINT [ "/${TARGET}" ]

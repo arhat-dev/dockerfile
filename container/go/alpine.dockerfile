@@ -8,5 +8,6 @@ FROM arhatdev/builder-go:alpine as builder
 FROM ${DOCKER_ARCH}/alpine:latest
 
 ONBUILD ARG TARGET
-ONBUILD COPY --from=builder /app/build/${TARGET} /${TARGET}
+ONBUILD ARG APP=${TARGET}
+ONBUILD COPY --from=builder /app/build/${TARGET} /${APP}
 ONBUILD ENTRYPOINT [ "/${TARGET}" ]
