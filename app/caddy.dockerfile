@@ -15,7 +15,7 @@ RUN /download qemu ${ARCH} ;\
     # build
     wget -O /usr/bin/builder.sh \
         https://raw.githubusercontent.com/jeffreystoke/caddy-docker/master/builder/builder.sh ;\
-    ENABLE_TELEMETRY=false GOOS=linux /bin/sh /usr/bin/builder.sh ;\
+    CGO_ENABLED=0 ENABLE_TELEMETRY=false GOOS=linux /bin/sh /usr/bin/builder.sh ;\
     # move to standard dir
     mv /install/caddy /app/build/caddy-linux-${ARCH}
 
