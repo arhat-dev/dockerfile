@@ -66,4 +66,3 @@ __NOTE:__ To use multi-arch build, you may need to run `docker run --rm --privil
   - `base-{language}-{rootfs}` for base images
   - `builder-{language}-{rootfs}` for builder images
   - `{language}-{rootfs}` for container images
-  - `push-xxx` to push images built by targets listed above

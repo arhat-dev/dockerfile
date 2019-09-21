@@ -23,6 +23,6 @@ images-builder:
 images-container:
 	./scripts/build-targets.sh container
 
-.PHONY: images-push
-images-push:
-	./scripts/build-targets.sh push
+.PHONY: images-app
+images-app:
+	./scripts/build-targets.sh app

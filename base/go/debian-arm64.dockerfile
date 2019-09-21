@@ -3,15 +3,13 @@ FROM alpine:latest as downloader
 
 ARG QEMU_VERSION
 
-RUN wget --quiet -O /qemu-aarch64-static \
-    https://github.com/multiarch/qemu-user-static/releases/download/${QEMU_VERSION}/qemu-aarch64-static ;\
-    chmod +x /qemu-aarch64-static
+COPY scripts/download.sh /download
+RUN set -ex; /download qemu arm64
 
 FROM arm64v8/golang:stretch
 
 # add qemu for cross build
-COPY --from=downloader /qemu-aarch64-static  \
-    /usr/bin/qemu-aarch64-static
+COPY --from=downloader /qemu* /usr/bin/
 
 ARG MIRROR_SITE=mirrors.ocf.berkeley.edu
 
