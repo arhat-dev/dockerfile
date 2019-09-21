@@ -3,7 +3,7 @@ ARG ARCH=amd64
 FROM abiosoft/caddy:builder as builder
 
 ARG VERSION="1.0.3"
-ARG PLUGINS="git,cors,realip,expires,cache,cloudflare,dyndns"
+ARG PLUGINS="cloudflare,dyndns"
 
 ARG ARCH=amd64
 ARG GOARCH=amd64
