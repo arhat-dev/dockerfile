@@ -27,6 +27,7 @@ caddy() {
   docker build -f app/caddy.dockerfile \
     -t "${DOCKER_REPO}/v2ray:${ARCH}" \
     --build-arg TARGET="caddy-linux-${ARCH}" \
+    --build-arg APP="caddy" \
     --build-arg ARCH="${ARCH}" \
     --build-arg GOARCH="${GOARCH}" \
     --build-arg GOARM="${GOARM}" .
