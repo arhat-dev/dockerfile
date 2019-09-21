@@ -1,8 +1,6 @@
 # use native build to make sure qemu executable
 FROM alpine:latest as downloader
 
-ARG QEMU_VERSION
-
 COPY scripts/download.sh /download
 RUN set -ex; /download qemu arm64
 
