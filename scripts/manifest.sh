@@ -11,7 +11,7 @@ create() {
     docker manifest create "${IMAGE_NAME}:${MANIFEST_TAG}" --amend "${IMAGE_NAME}:${IMAGE_TAG}"
 }
 
-annotata() {
+annotate() {
   local IMAGE_NAME=$1
   local IMAGE_TAG=$2
   local MANIFEST_TAG=$3
