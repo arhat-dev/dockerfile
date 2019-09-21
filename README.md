@@ -48,8 +48,8 @@ __NOTE:__ To use multi-arch build, you may need to run `docker run --rm --privil
   - languages without strong backward compatibilities will be versioned (e.g. `python3.6`, `python3.7`)
 - `{rootfs}` will appear in image tagname and makefile targets
   - values can be in one of following formats:
-    - `{distro}-{arch}` means images support multiple platforms
-    - `{distro}` means images support linux/amd64 only
+    - `{distro}-{arch}` means the image supports certain platform only
+    - `{distro}` means this image supports linux/{amd64,arm64,armv6,armv7}
 
 ### Image Types
 
@@ -63,6 +63,6 @@ __NOTE:__ To use multi-arch build, you may need to run `docker run --rm --privil
 ### Makefile Targets
 
 - Makefile image target name can be one of the following:
-  - `base-{language}-{rootfs}` for base images
-  - `builder-{language}-{rootfs}` for builder images
-  - `{language}-{rootfs}` for container images
+  - `base-{language}:{rootfs}` for base images
+  - `builder-{language}:{rootfs}` for builder images
+  - `{language}:{rootfs}` for container images
