@@ -27,11 +27,4 @@ RUN set -e ;\
     apt-get update ;\
     apt-get upgrade -y ;\
     apt-get install -y --no-install-recommends \
-    git make upx build-essential apparmor autoconf automake \
-    bison curl e2fslibs-dev gawk gettext go-md2man iptables \
-    pkg-config libaio-dev libcap-dev libfuse-dev libnet-dev \
-    libnl-3-dev libostree-dev libprotobuf-dev libprotobuf-c-dev \
-    libseccomp2 libseccomp-dev libtool libudev-dev protobuf-c-compiler \
-    protobuf-compiler libglib2.0-dev libapparmor-dev btrfs-tools \
-    libdevmapper1.02.1 libdevmapper-dev libgpgme11-dev liblzma-dev \
-    netcat socat lsof xz-utils unzip python3-yaml ;
+      git make upx curl build-essential wget ;
