@@ -1,0 +1,9 @@
+# glibc
+
+[target.arm-unknown-linux-gnueabi]
+linker = "gcc"
+
+# musl libc
+
+[target.arm-unknown-linux-musleabi]
+linker = "musl-gcc"

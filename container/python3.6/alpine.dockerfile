@@ -9,7 +9,7 @@ ONBUILD COPY --from=builder /app /app
 
 WORKDIR /app
 
-COPY scripts/python-entrypoint.sh /usr/local/bin/entrypoint
+COPY scripts/python/entrypoint.sh /usr/local/bin/entrypoint
 
 ENTRYPOINT [ "/usr/local/bin/entrypoint" ]
 CMD [ "python", "/app/main.py" ]

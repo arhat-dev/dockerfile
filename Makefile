@@ -10,6 +10,7 @@ include scripts/base.mk
 
 include scripts/go/go.mk
 include scripts/python/python.mk
+include scripts/rust/rust.mk
 
 .PHONY: images-base
 images-base:
