@@ -34,7 +34,7 @@ container() {
 
 _build_app_image() {
   local APP=${1}
-  local ARCH_SET=${2}
+  local ARCH_SET="${2}"
   local IMAGE_REPO="${DOCKER_REPO}/${APP}"
 
   for ARCH in ${ARCH_SET}; do
