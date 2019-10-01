@@ -25,15 +25,15 @@ DOCKER_REPO := arhatdev
 	$(eval DOCKERFILE := $(DOCKERFILE:$(LANGUAGE)-%=%))
 	$(eval MANIFEST_TAG := $(firstword $(subst -, , $(DOCKERFILE))))
 	$(eval DOCKERFILE := builder/$(LANGUAGE)/$(DOCKERFILE:-$(ARCH)=).dockerfile)
-	$(eval IMAGE_NAME := $(DOCKER_REPO)/builder-$(LANGUAGE))
+	$(eval IMAGE_REPO := $(DOCKER_REPO)/builder-$(LANGUAGE))
 	$(eval IMAGE_TAG := $(MAKECMDGOALS:builder-$(LANGUAGE)-%=%))
 
-	$(DOCKERBUILD) -f $(DOCKERFILE) --build-arg ARCH=$(ARCH) -t $(IMAGE_NAME):$(IMAGE_TAG) .
-	$(DOCKERPUSH) $(IMAGE_NAME):$(IMAGE_TAG)
+	$(DOCKERBUILD) -f $(DOCKERFILE) --build-arg ARCH=$(ARCH) -t $(IMAGE_REPO):$(IMAGE_TAG) .
+	$(DOCKERPUSH) $(IMAGE_REPO):$(IMAGE_TAG)
 
-	./scripts/manifest.sh create $(IMAGE_NAME) $(IMAGE_TAG) $(MANIFEST_TAG)
-	./scripts/manifest.sh annotate $(IMAGE_NAME) $(IMAGE_TAG) $(MANIFEST_TAG) $(ARCH)
-	./scripts/manifest.sh push $(IMAGE_NAME) $(MANIFEST_TAG)
+	./scripts/manifest.sh create $(IMAGE_REPO) $(IMAGE_TAG) $(MANIFEST_TAG)
+	./scripts/manifest.sh annotate $(IMAGE_REPO) $(IMAGE_TAG) $(MANIFEST_TAG) $(ARCH)
+	./scripts/manifest.sh push $(IMAGE_REPO) $(MANIFEST_TAG)
 
 #
 # Container Images (for scratch)
@@ -56,12 +56,12 @@ DOCKER_REPO := arhatdev
 	$(eval DOCKERFILE := $(MAKECMDGOALS:$(firstword $(subst -, ,$(MAKECMDGOALS)))-%=%))
 	$(eval MANIFEST_TAG := $(firstword $(subst -, , $(DOCKERFILE))))
 	$(eval DOCKERFILE := container/$(LANGUAGE)/$(DOCKERFILE:-$(ARCH)=).dockerfile)
-	$(eval IMAGE_NAME := $(DOCKER_REPO)/$(LANGUAGE))
+	$(eval IMAGE_REPO := $(DOCKER_REPO)/$(LANGUAGE))
 	$(eval IMAGE_TAG := $(MAKECMDGOALS:$(LANGUAGE)-%=%))
 
-	$(DOCKERBUILD) -f $(DOCKERFILE) --build-arg ARCH=$(ARCH) --build-arg DOCKER_ARCH=$($(ARCH)) -t $(IMAGE_NAME):$(IMAGE_TAG) .
-	$(DOCKERPUSH) $(IMAGE_NAME):$(IMAGE_TAG)
+	$(DOCKERBUILD) -f $(DOCKERFILE) --build-arg ARCH=$(ARCH) --build-arg DOCKER_ARCH=$($(ARCH)) -t $(IMAGE_REPO):$(IMAGE_TAG) .
+	$(DOCKERPUSH) $(IMAGE_REPO):$(IMAGE_TAG)
 
-	./scripts/manifest.sh create $(IMAGE_NAME) $(IMAGE_TAG) $(MANIFEST_TAG)
-	./scripts/manifest.sh annotate $(IMAGE_NAME) $(IMAGE_TAG) $(MANIFEST_TAG) $(ARCH)
-	./scripts/manifest.sh push $(IMAGE_NAME) $(MANIFEST_TAG)
+	./scripts/manifest.sh create $(IMAGE_REPO) $(IMAGE_TAG) $(MANIFEST_TAG)
+	./scripts/manifest.sh annotate $(IMAGE_REPO) $(IMAGE_TAG) $(MANIFEST_TAG) $(ARCH)
+	./scripts/manifest.sh push $(IMAGE_REPO) $(MANIFEST_TAG)

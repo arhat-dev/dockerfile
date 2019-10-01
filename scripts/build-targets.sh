@@ -32,23 +32,27 @@ container() {
   domake "$(echo "$ALL_TARGETS" | $GREP -P -e '^(?!(push|base|builder|images|Makefile|app))')"
 }
 
-app() {
-  local APPS="caddy v2ray"
-  local ARCH_SET="amd64 arm64 armv7 armv6"
+_build_app_image() {
+  local APP=${1}
+  local ARCH_SET=${2}
+  local IMAGE_REPO="${DOCKER_REPO}/${APP}"
 
-  for a in ${APPS}; do
-    local APP=${a#app-}
-    local IMAGE_NAME="${DOCKER_REPO}/${APP}"
+  for ARCH in ${ARCH_SET}; do
+    ./scripts/app/build-image.sh ${APP} ${ARCH}
 
-    for ARCH in ${ARCH_SET}; do
-      ./scripts/app.sh ${APP} ${ARCH}
-      
-      ./scripts/manifest.sh create ${IMAGE_NAME} ${ARCH} latest
-      ./scripts/manifest.sh annotate ${IMAGE_NAME} ${ARCH} latest ${ARCH}
-    done
+    docker push ${IMAGE_REPO}:${ARCH}
 
-    ./scripts/manifest.sh push ${IMAGE_NAME} latest
+    ./scripts/manifest.sh create ${IMAGE_REPO} ${ARCH} latest
+    ./scripts/manifest.sh annotate ${IMAGE_REPO} ${ARCH} latest ${ARCH}
   done
+
+  ./scripts/manifest.sh push ${IMAGE_REPO} latest
+}
+
+app() {
+  _build_app_image frp "amd64 arm64 armv7"
+  _build_app_image v2ray "amd64 arm64 armv7 armv6"
+  _build_app_image caddy "amd64 arm64 armv7 armv6"
 }
 
 "$@"

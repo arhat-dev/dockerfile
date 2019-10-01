@@ -8,8 +8,8 @@ amd64 := amd64
 
 include scripts/base.mk
 
-include scripts/go.mk
-include scripts/python.mk
+include scripts/go/go.mk
+include scripts/python/python.mk
 
 .PHONY: images-base
 images-base:

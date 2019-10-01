@@ -67,4 +67,21 @@ v2ray() {
   fi
 }
 
+frp() {
+  local ARCH=$1
+  local FRP_ARCH=${ARCH}
+  local VERSION="0.29.0"
+
+  case "" in
+    armv*)
+      FRP_ARCH=arm
+      ;;
+  esac
+
+  wget -O /frp.tar.gz \
+    https://github.com/fatedier/frp/releases/download/v${VERSION}/frp_${VERSION}_linux_${FRP_ARCH}.tar.gz
+  mkdir -p /frp
+  tar -xf /frp.tar.gz -C /frp
+}
+
 "$@"

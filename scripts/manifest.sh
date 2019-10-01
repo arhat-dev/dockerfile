@@ -3,16 +3,16 @@
 set -e
 
 create() {
-  local IMAGE_NAME=$1
+  local IMAGE_REPO=$1
   local IMAGE_TAG=$2
   local MANIFEST_TAG=$3
 
-  docker manifest create "${IMAGE_NAME}:${MANIFEST_TAG}" "${IMAGE_NAME}:${IMAGE_TAG}" || \
-    docker manifest create "${IMAGE_NAME}:${MANIFEST_TAG}" --amend "${IMAGE_NAME}:${IMAGE_TAG}"
+  docker manifest create "${IMAGE_REPO}:${MANIFEST_TAG}" "${IMAGE_REPO}:${IMAGE_TAG}" || \
+    docker manifest create "${IMAGE_REPO}:${MANIFEST_TAG}" --amend "${IMAGE_REPO}:${IMAGE_TAG}"
 }
 
 annotate() {
-  local IMAGE_NAME=$1
+  local IMAGE_REPO=$1
   local IMAGE_TAG=$2
   local MANIFEST_TAG=$3
   local ARCH=$4
@@ -31,14 +31,14 @@ annotate() {
     ARGS="${ARGS} --variant ${MANIFEST_ARCH_VARIANT}"
   fi
 
-  docker manifest annotate "${IMAGE_NAME}:${MANIFEST_TAG}" "${IMAGE_NAME}:${IMAGE_TAG}" ${ARGS}
+  docker manifest annotate "${IMAGE_REPO}:${MANIFEST_TAG}" "${IMAGE_REPO}:${IMAGE_TAG}" ${ARGS}
 }
 
 push() {
-  local IMAGE_NAME=$1
+  local IMAGE_REPO=$1
   local MANIFEST_TAG=$2
 
-  docker manifest push "${IMAGE_NAME}:${MANIFEST_TAG}"
+  docker manifest push "${IMAGE_REPO}:${MANIFEST_TAG}"
 }
 
 "$@"

@@ -8,8 +8,9 @@ Building blocks for [arhat-dev](https://github.com/arhat-dev), suitable for orga
 
 | Language | Toolchain | Built Binary           | App Path       | Entrypoint                                                    |
 | -------- | --------- | ---------------------- | -------------- | ------------------------------------------------------------- |
-| `Go`     | `make`    | `/app/build/${TARGET}` | `/${TARGET}`   | `/${APP}`                                                     |
+| `Go`     | `make`    | `/app/build/${TARGET}` | `/${APP}`      | `/${APP}`                                                     |
 | `Python` | `pipenv`  | `/app/*`               | `/app/main.py` | [`/usr/local/bin/entrypoint`](./scripts/python-entrypoint.sh) |
+| `Rust`   | `make`    | `/app/build/${TARGET}` | `/${APP}`      | `/${APP}`                                                     |
 
 __Note:__ Both `${TARGET}` and `${APP}` are docker build-args
 
