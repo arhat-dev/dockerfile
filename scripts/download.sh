@@ -72,7 +72,7 @@ frp() {
   local FRP_ARCH=${ARCH}
   local VERSION="0.29.0"
 
-  case "" in
+  case "${ARCH}" in
     armv*)
       FRP_ARCH=arm
       ;;
