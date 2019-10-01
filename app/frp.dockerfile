@@ -4,7 +4,6 @@ ARG ARCH=amd64
 
 COPY scripts/download.sh /download
 RUN set -ex ;\
-    apk add --no-cache unzip ;\
     /download frp ${ARCH} ;
 
 FROM scratch

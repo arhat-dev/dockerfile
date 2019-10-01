@@ -78,10 +78,13 @@ frp() {
       ;;
   esac
 
+  local FILE_NAME=frp_${VERSION}_linux_${FRP_ARCH}
+
   wget -O /frp.tar.gz \
-    https://github.com/fatedier/frp/releases/download/v${VERSION}/frp_${VERSION}_linux_${FRP_ARCH}.tar.gz
-  mkdir -p /frp
-  tar -xf /frp.tar.gz -C /frp
+    https://github.com/fatedier/frp/releases/download/v${VERSION}/${FILE_NAME}.tar.gz
+  
+  tar -xf /frp.tar.gz
+  mv /${FILE_NAME} /frp
 }
 
 "$@"

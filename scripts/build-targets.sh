@@ -38,7 +38,7 @@ _build_app_image() {
   local IMAGE_REPO="${DOCKER_REPO}/${APP}"
 
   for ARCH in ${ARCH_SET}; do
-    ./scripts/app/build-image.sh ${APP} ${ARCH}
+    ./scripts/app/image.sh ${APP} ${ARCH}
 
     docker push ${IMAGE_REPO}:${ARCH}
 
