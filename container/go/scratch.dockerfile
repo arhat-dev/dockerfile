@@ -4,4 +4,3 @@ FROM scratch
 ONBUILD ARG TARGET
 ONBUILD ARG APP=${TARGET}
 ONBUILD COPY --from=builder /app/build/${TARGET} /${APP}
-ONBUILD ENTRYPOINT [ "/${APP}" ]
