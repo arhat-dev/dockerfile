@@ -21,9 +21,9 @@ RUN set -e ;\
 
 # install dependencies
 RUN set -e ;\
-    apt-get update ;\
-    apt-get install -y apt-transport-https ;\
-    sed -i 's/http:/https:/g' /etc/apt/sources.list ;\
+    # apt-get update ;\
+    # apt-get install -y apt-transport-https ;\
+    # sed -i 's/http:/https:/g' /etc/apt/sources.list ;\
     apt-get update ;\
     apt-get upgrade -y ;\
     apt-get install -y --no-install-recommends \
