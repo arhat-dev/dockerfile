@@ -3,7 +3,8 @@
 
 rust: .build_dir
 	cargo build --release
-	mv target/release/rust build/rust
+	cp target/release/rust build/rust
+	strip build/rust
 
 build-image:
 	docker build -t sample-rust:latest .
