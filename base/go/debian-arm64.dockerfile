@@ -9,12 +9,12 @@ FROM arm64v8/golang:stretch
 # add qemu for cross build
 COPY --from=downloader /qemu* /usr/bin/
 
-ARG MIRROR_SITE=mirrors.ocf.berkeley.edu
+ARG MIRROR_SITE
 
 # use https to fetch packages
 # in consideration of https://security-tracker.debian.org/tracker/CVE-2019-3462
 RUN set -e ;\
-    if [ ! -z "${MIRROR_SITE}" ]; then \
+    if [ -n "${MIRROR_SITE}" ]; then \
       sed -i "s/deb.debian.org/${MIRROR_SITE}/g" /etc/apt/sources.list ;\
       sed -i "s|security.debian.org/debian-security|${MIRROR_SITE}/debian-security|g" /etc/apt/sources.list ;\
     fi ;

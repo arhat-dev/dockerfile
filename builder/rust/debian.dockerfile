@@ -6,6 +6,6 @@ WORKDIR /app
 ONBUILD COPY . /app
 ONBUILD ARG TARGET
 ONBUILD RUN \
-  if [ ! -z "${TARGET}" ]; then \
+  if [ -n "${TARGET}" ]; then \
     make ${TARGET} ;\
   fi

@@ -1,6 +1,6 @@
 FROM golang:stretch
 
-ARG MIRROR_SITE=mirrors.ocf.berkeley.edu
+ARG MIRROR_SITE
 
 # add multiarchs
 RUN set -e;\
@@ -11,7 +11,7 @@ RUN set -e;\
 # use https to fetch packages
 # in consideration of https://security-tracker.debian.org/tracker/CVE-2019-3462
 RUN set -e ;\
-    if [ ! -z "${MIRROR_SITE}" ]; then \
+    if [ -n "${MIRROR_SITE}" ]; then \
       sed -i "s/deb.debian.org/${MIRROR_SITE}/g" /etc/apt/sources.list ;\
       sed -i "s|security.debian.org/debian-security|${MIRROR_SITE}/debian-security|g" /etc/apt/sources.list ;\
     fi ;\
@@ -32,13 +32,4 @@ RUN apt-get update ;\
     gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf libc-dev-armhf-cross \
     gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libc-dev-arm64-cross \
     # tools
-    git make upx build-essential apparmor autoconf automake \
-    bison curl e2fslibs-dev gawk gettext go-md2man iptables \
-    btrfs-tools pkg-config protobuf-compiler protobuf-c-compiler \
-    netcat socat lsof xz-utils unzip python3-yaml libtool \
-    # source files
-    libdevmapper-dev libgpgme11-dev libc6-dev-i386 \
-    liblzma-dev libglib2.0-dev libapparmor-dev \
-    libaio-dev libcap-dev libfuse-dev libnet-dev \
-    libnl-3-dev libostree-dev libprotobuf-dev libprotobuf-c-dev \
-    libseccomp-dev libudev-dev ;
+    git make upx curl wget;

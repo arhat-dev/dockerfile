@@ -32,7 +32,7 @@ qemu() {
     ;;
   esac
 
-  if [ ! -z "${ARCH}" ]; then
+  if [ -n "${ARCH}" ]; then
     wget -O /qemu-${ARCH}-static \
       https://github.com/multiarch/qemu-user-static/releases/download/${VERSION}/qemu-${ARCH}-static
     chmod +x /qemu-${ARCH}-static
@@ -60,7 +60,7 @@ v2ray() {
   mkdir -p /v2ray
   unzip /v2ray.zip -d /v2ray
 
-  if [ ${ARCH} = armv7 ]; then
+  if [ "${ARCH}" = armv7 ]; then
     rm -f /v2ray/v2ray /v2ray/v2ctl
     mv /v2ray/v2ray_armv7 /v2ray/v2ray
     mv /v2ray/v2ctl_armv7 /v2ray/v2ctl

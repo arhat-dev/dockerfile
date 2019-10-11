@@ -27,7 +27,7 @@ annotate() {
   esac
 
   local ARGS="--arch ${MANIFEST_ARCH} --os linux"
-  if [ ! -z "${MANIFEST_ARCH_VARIANT}" ]; then
+  if [ -n "${MANIFEST_ARCH_VARIANT}" ]; then
     ARGS="${ARGS} --variant ${MANIFEST_ARCH_VARIANT}"
   fi
 
