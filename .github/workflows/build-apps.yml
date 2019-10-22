@@ -10,8 +10,8 @@ on:
     - master
     paths:
     - 'app/**'
-    - 'scritps/app/**'
-    - 'scritps/download.sh'
+    - 'scripts/app/**'
+    - 'scripts/download.sh'
 
 jobs:
   build-apps:

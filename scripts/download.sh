@@ -17,50 +17,50 @@
 set -e
 
 qemu() {
-  local ARCH=$1
-  local VERSION=v4.1.0-1
+  local arch=$1
+  local version="v4.1.0-1"
 
-  case "${ARCH}" in
+  case "${arch}" in
     amd64)
-      ARCH=""
+      arch=""
     ;;
     armv*)
-      ARCH=arm
+      arch=arm
     ;;
     arm64)
-      ARCH=aarch64
+      arch=aarch64
     ;;
   esac
 
-  if [ -n "${ARCH}" ]; then
-    wget -O /qemu-${ARCH}-static \
-      https://github.com/multiarch/qemu-user-static/releases/download/${VERSION}/qemu-${ARCH}-static
-    chmod +x /qemu-${ARCH}-static
+  if [ -n "${arch}" ]; then
+    wget -O /qemu-${arch}-static \
+      https://github.com/multiarch/qemu-user-static/releases/download/${version}/qemu-${arch}-static
+    chmod +x /qemu-${arch}-static
   else
     touch /qemu-none
   fi
 }
 
 v2ray() {
-  local ARCH=$1
-  local V2RAY_ARCH=$ARCH
-  local VERSION=v4.20.0
+  local arch="$1"
+  local v2ray_arch="$arch"
+  local version="v4.20.0"
 
-  case "${V2RAY_ARCH}" in
+  case "${v2ray_arch}" in
     amd64)
-      V2RAY_ARCH=64
+      v2ray_arch=64
     ;;
     armv*)
-      V2RAY_ARCH=arm
+      v2ray_arch=arm
     ;;
   esac
 
   wget -O /v2ray.zip \
-    https://github.com/v2ray/v2ray-core/releases/download/${VERSION}/v2ray-linux-${V2RAY_ARCH}.zip 
+    https://github.com/v2ray/v2ray-core/releases/download/${version}/v2ray-linux-${v2ray_arch}.zip 
   mkdir -p /v2ray
   unzip /v2ray.zip -d /v2ray
 
-  if [ "${ARCH}" = armv7 ]; then
+  if [ "${arch}" = armv7 ]; then
     rm -f /v2ray/v2ray /v2ray/v2ctl
     mv /v2ray/v2ray_armv7 /v2ray/v2ray
     mv /v2ray/v2ctl_armv7 /v2ray/v2ctl
@@ -68,23 +68,23 @@ v2ray() {
 }
 
 frp() {
-  local ARCH=$1
-  local FRP_ARCH=${ARCH}
-  local VERSION="0.29.0"
+  local arch="$1"
+  local frp_arch="${arch}"
+  local version="0.29.0"
 
-  case "${ARCH}" in
+  case "${arch}" in
     armv*)
-      FRP_ARCH=arm
+      frp_arch=arm
       ;;
   esac
 
-  local FILE_NAME=frp_${VERSION}_linux_${FRP_ARCH}
+  local file_name=frp_${version}_linux_${frp_arch}
 
   wget -O /frp.tar.gz \
-    https://github.com/fatedier/frp/releases/download/v${VERSION}/${FILE_NAME}.tar.gz
+    https://github.com/fatedier/frp/releases/download/v${version}/${file_name}.tar.gz
   
   tar -xf /frp.tar.gz
-  mv /${FILE_NAME} /frp
+  mv /${file_name} /frp
 }
 
 "$@"
