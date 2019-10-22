@@ -33,20 +33,28 @@ container() {
 }
 
 _build_app_image() {
-  local APP=${1}
-  local ARCH_SET="${2}"
-  local IMAGE_REPO="${DOCKER_REPO}/${APP}"
+  local app=${1}
+  local arch_set="${2}"
+  local image_names=""
 
-  for ARCH in ${ARCH_SET}; do
-    ./scripts/app/image.sh ${APP} ${ARCH}
-
-    docker push ${IMAGE_REPO}:${ARCH}
-
-    ./scripts/manifest.sh create ${IMAGE_REPO} ${ARCH} latest
-    ./scripts/manifest.sh annotate ${IMAGE_REPO} ${ARCH} latest ${ARCH}
+  for repo in ${IMAGE_REPOS}; do
+    image_names="${repo}/${app} ${image_names}"
   done
 
-  ./scripts/manifest.sh push ${IMAGE_REPO} latest
+  for arch in ${arch_set}; do
+    ./scripts/app/image.sh ${app} ${arch}
+
+    for name in ${image_names}; do
+      docker push ${name}:${arch}
+
+      ./scripts/manifest.sh create ${name} ${arch} latest
+      ./scripts/manifest.sh annotate ${name} ${arch} latest ${arch}
+    done
+  done
+
+  for name in ${image_names}; do
+    ./scripts/manifest.sh push ${name} latest
+  done
 }
 
 app() {

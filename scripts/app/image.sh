@@ -5,40 +5,40 @@ set -e
 . scripts/env.sh
 
 v2ray() {
-  local ARCH=$1
+  local arch="$1"
 
   docker build -f app/v2ray.dockerfile \
-    -t "${DOCKER_REPO}/v2ray:${ARCH}" \
-    --build-arg ARCH="${ARCH}" .
+    $(get_tag_args v2ray:${arch}) \
+    --build-arg ARCH="${arch}" .
 }
 
 caddy() {
-  local ARCH=$1
-  local GOARCH=$1
+  local arch="$1"
+  local GOARCH="$1"
   local GOARM=7
 
-  case "${ARCH}" in
+  case "${arch}" in
     armv*) 
       GOARCH=arm
-      GOARM=${ARCH#armv}
+      GOARM=${arch#armv}
       ;;
   esac
 
   docker build -f app/caddy.dockerfile \
-    -t "${DOCKER_REPO}/caddy:${ARCH}" \
-    --build-arg TARGET="caddy-linux-${ARCH}" \
+    $(get_tag_args caddy:${arch}) \
+    --build-arg TARGET="caddy-linux-${arch}" \
     --build-arg APP="caddy" \
-    --build-arg ARCH="${ARCH}" \
+    --build-arg ARCH="${arch}" \
     --build-arg GOARCH="${GOARCH}" \
     --build-arg GOARM="${GOARM}" .
 }
 
 frp() {
-  local ARCH=$1
+  local arch=$1
 
   docker build -f app/frp.dockerfile \
-    -t "${DOCKER_REPO}/frp:${ARCH}" \
-    --build-arg ARCH="${ARCH}" .
+    $(get_tag_args frp:${arch}) \
+    --build-arg ARCH="${arch}" .
 }
 
 "$@"
