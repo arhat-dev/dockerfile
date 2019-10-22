@@ -1,0 +1,35 @@
+name: build
+
+on:
+  check_run:
+    types:
+    - rerequested
+    - requested_action
+  push:
+    branches:
+    - master
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: install latest docker
+      run: sudo ./scripts/ci.sh install_docker
+
+    - name: build and push images
+      env:
+        DOCKER_CLI_EXPERIMENTAL: enabled
+        DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        GITHUB_DOCKER_USERNAME: ${{ secrets.GITHUB_DOCKER_USERNAME }}
+        GITHUB_DOCKER_PASSWORD: ${{ secrets.GITHUB_DOCKER_PASSWORD }}
+      run: |
+        docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
+        docker login docker.pkg.github.com -u="$GITHUB_DOCKER_USERNAME" -p="$GITHUB_DOCKER_PASSWORD"
+
+        make images-base
+        make images-builder
+        make images-container
+        docker images
