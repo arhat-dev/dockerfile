@@ -31,3 +31,12 @@ python3.7-alpine-armv6: .build-container-image
 python3.7-alpine-armv7: .build-container-image
 python3.7-alpine-arm64: .build-container-image
 python3.7-alpine-amd64: .build-container-image
+
+images-base-python:
+	./scripts/build-targets.sh base python
+
+images-builder-python:
+	./scripts/build-targets.sh builder python
+
+images-container-python:
+	./scripts/build-targets.sh container python

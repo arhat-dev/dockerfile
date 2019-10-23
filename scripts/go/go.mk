@@ -29,3 +29,12 @@ go-alpine-armv6: .build-container-image
 go-alpine-armv7: .build-container-image
 go-alpine-arm64: .build-container-image
 go-alpine-amd64: .build-container-image
+
+images-base-go:
+	./scripts/build-targets.sh base go
+
+images-builder-go:
+	./scripts/build-targets.sh builder go
+
+images-container-go:
+	./scripts/build-targets.sh container go

@@ -21,15 +21,15 @@ domake() {
 }
 
 base() {
-  domake "$(echo "$ALL_TARGETS" | $GREP -E -e '^base-')"
+  domake "$(echo "$ALL_TARGETS" | $GREP -E -e '^base' | $GREP -E -e $1)"
 }
 
 builder() {
-  domake "$(echo "$ALL_TARGETS" | $GREP -E -e '^builder-')"
+  domake "$(echo "$ALL_TARGETS" | $GREP -E -e '^builder' | $GREP -E -e $1)"
 }
 
 container() {
-  domake "$(echo "$ALL_TARGETS" | $GREP -P -e '^(?!(push|base|builder|images|Makefile|app))')"
+  domake "$(echo "$ALL_TARGETS" | $GREP -P -e '^(?!(push|base|builder|images|Makefile|app))' | $GREP -E -e $1)"
 }
 
 _build_app_image() {

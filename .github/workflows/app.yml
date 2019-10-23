@@ -1,10 +1,16 @@
-name: cron
+name: app
+
 on:
-  schedule:
-  - cron: "0 0 * * *"
+  check_run:
+    types:
+    - rerequested
+    - requested_action
+  push:
+    branches:
+    - master
 
 jobs:
-  build:
+  build-apps:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v1
@@ -12,7 +18,7 @@ jobs:
     - name: install latest docker
       run: sudo ./scripts/ci.sh install_docker
 
-    - name: build and push images
+    - name: build and push app images
       env:
         DOCKER_CLI_EXPERIMENTAL: enabled
         DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -23,7 +29,5 @@ jobs:
         docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
         docker login docker.pkg.github.com -u="$GITHUB_DOCKER_USERNAME" -p="$GITHUB_DOCKER_PASSWORD"
 
-        make images-base
-        make images-builder
-        make images-container
+        make -j$(nproc --all) images-app
         docker images

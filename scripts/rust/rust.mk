@@ -19,3 +19,11 @@ rust-alpine-armv7: .build-container-image
 rust-alpine-arm64: .build-container-image
 rust-alpine-amd64: .build-container-image
 
+images-base-rust:
+	./scripts/build-targets.sh base rust
+
+images-builder-rust:
+	./scripts/build-targets.sh builder rust
+
+images-container-rust:
+	./scripts/build-targets.sh container rust

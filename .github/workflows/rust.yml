@@ -1,4 +1,4 @@
-name: build-apps
+name: rust
 
 on:
   check_run:
@@ -10,7 +10,7 @@ on:
     - master
 
 jobs:
-  build-apps:
+  build:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v1
@@ -18,7 +18,7 @@ jobs:
     - name: install latest docker
       run: sudo ./scripts/ci.sh install_docker
 
-    - name: build and push app images
+    - name: build and push images
       env:
         DOCKER_CLI_EXPERIMENTAL: enabled
         DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -29,5 +29,7 @@ jobs:
         docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
         docker login docker.pkg.github.com -u="$GITHUB_DOCKER_USERNAME" -p="$GITHUB_DOCKER_PASSWORD"
 
-        make -j$(nproc --all) images-app
+        make -j$(nproc --all) images-base-rust
+        make -j$(nproc --all) images-builder-rust
+        make -j$(nproc --all) images-container-rust
         docker images

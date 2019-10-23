@@ -12,18 +12,9 @@ include scripts/go/go.mk
 include scripts/python/python.mk
 include scripts/rust/rust.mk
 
-.PHONY: images-base
-images-base:
-	./scripts/build-targets.sh base
+images-base: images-base-go images-base-rust images-base-python
+images-builder: images-builder-go images-builder-rust images-builder-python
+images-container: images-container-go images-container-rust images-container-python
 
-.PHONY: images-builder
-images-builder:
-	./scripts/build-targets.sh builder
-
-.PHONY: images-container
-images-container:
-	./scripts/build-targets.sh container
-
-.PHONY: images-app
 images-app:
 	./scripts/build-targets.sh app
