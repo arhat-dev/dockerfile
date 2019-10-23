@@ -1,6 +1,6 @@
 # Dockerfile
 
-[![build](https://github.com/arhat-dev/dockerfile/workflows/build/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=build) [![build-apps](https://github.com/arhat-dev/dockerfile/workflows/build-apps/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=build-apps) [![cron](https://github.com/arhat-dev/dockerfile/workflows/cron/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=cron)
+[![go](https://github.com/arhat-dev/dockerfile/workflows/go/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=go) [![rust](https://github.com/arhat-dev/dockerfile/workflows/rust/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=rust) [![python](https://github.com/arhat-dev/dockerfile/workflows/python/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=python) [![cron](https://github.com/arhat-dev/dockerfile/workflows/cron/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=cron)
 
 Building blocks for [arhat-dev](https://github.com/arhat-dev), suitable for organizations using same project structure.
 
