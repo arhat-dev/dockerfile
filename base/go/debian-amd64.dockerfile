@@ -1,4 +1,4 @@
-FROM golang:buster
+FROM golang:stretch
 
 ARG MIRROR_SITE
 

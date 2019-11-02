@@ -4,7 +4,7 @@ FROM alpine:latest as downloader
 COPY scripts/download.sh /download
 RUN set -ex; /download qemu armv7
 
-FROM arm32v7/rust:buster
+FROM arm32v7/rust:stretch
 
 # add qemu for cross build
 COPY --from=downloader /qemu* /usr/bin/
