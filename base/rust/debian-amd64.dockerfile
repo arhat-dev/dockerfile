@@ -1,4 +1,4 @@
-FROM rust:stretch
+FROM rust:buster
 
 ARG MIRROR_SITE
 
