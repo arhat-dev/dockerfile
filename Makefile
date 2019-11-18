@@ -8,6 +8,7 @@ amd64 := amd64
 
 include scripts/base.mk
 
+include scripts/app/app.mk
 include scripts/go/go.mk
 include scripts/python/python.mk
 include scripts/rust/rust.mk

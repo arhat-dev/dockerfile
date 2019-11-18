@@ -41,4 +41,14 @@ frp() {
     --build-arg ARCH="${arch}" .
 }
 
+hydroxide() {
+  local arch="$1"
+
+  docker build -f app/hydroxide.dockerfile \
+    $(get_tag_args hydroxide:${arch}) \
+    --build-arg ARCH="${arch}" \
+    --build-arg TARGET="hydroxide-linux-${arch}" \
+    --build-arg APP="hydroxide" .
+}
+
 "$@"
