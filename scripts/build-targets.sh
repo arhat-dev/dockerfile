@@ -38,7 +38,7 @@ _build_app_image() {
   local image_names=""
 
   for repo in ${IMAGE_REPOS}; do
-    image_names="${repo}/${app} ${image_names}"
+    image_names="${repo}/$(printf '%s' "${app}" | sed -e 's/\_/\-/g') ${image_names}"
   done
 
   for arch in ${arch_set}; do
@@ -58,6 +58,7 @@ _build_app_image() {
 }
 
 app() {
+  _build_app_image github_runner "amd64 arm64 armv7"
   _build_app_image hydroxide "amd64 arm64 armv7 armv6"
   _build_app_image frp "amd64 arm64 armv7"
   _build_app_image v2ray "amd64 arm64 armv7 armv6"

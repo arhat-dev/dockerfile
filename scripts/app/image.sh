@@ -51,4 +51,23 @@ hydroxide() {
     --build-arg APP="hydroxide" .
 }
 
+github_runner() {
+  local arch="$1"
+  local docker_arch="${arch}"
+
+  case "${arch}" in
+    armv*)
+      docker_arch="arm32v${arch#armv}"
+      ;;
+    arm64)
+      docker_arch="arm64v8"
+      ;;
+  esac
+
+  docker build -f app/github-runner.dockerfile \
+    $(get_tag_args github-runner:${arch}) \
+    --build-arg ARCH="${arch}" \
+    --build-arg DOCKER_ARCH="${docker_arch}" .
+}
+
 "$@"

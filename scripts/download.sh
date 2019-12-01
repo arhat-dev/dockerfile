@@ -87,4 +87,25 @@ frp() {
   mv /${file_name} /frp
 }
 
+github_runner() {
+  local arch="$1"
+  local runner_arch="${arch}"
+  local version="2.161.0"
+
+  case "${arch}" in
+    amd64)
+      runner_arch="x64"
+      ;;
+    armv7)
+      runner_arch="arm"
+      ;;
+  esac
+
+  wget -O /github-runner.tar.gz \
+    https://githubassets.azureedge.net/runners/${version}/actions-runner-linux-${runner_arch}-${version}.tar.gz
+
+  mkdir -p /github-runner
+  tar -xf /github-runner.tar.gz -C /github-runner
+}
+
 "$@"
