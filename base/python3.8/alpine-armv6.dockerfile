@@ -1,9 +1,10 @@
+# use native build to make sure qemu executable
 FROM alpine:latest as downloader
 
 COPY scripts/download.sh /download
-RUN set -ex; /download qemu arm64
+RUN set -ex; /download qemu armv6
 
-FROM arm64v8/python:3.6-alpine
+FROM arm32v6/python:3.8-alpine
 
 # add qemu for cross build
 COPY --from=downloader /qemu* /usr/bin/

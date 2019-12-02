@@ -29,6 +29,20 @@ jobs:
         docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
         docker login docker.pkg.github.com -u="$GITHUB_DOCKER_USERNAME" -p="$GITHUB_DOCKER_PASSWORD"
 
+        docker pull --platform linux/arm64/v8 arm64v8/python:3.6
+        docker pull --platform linux/arm64/v8 arm64v8/python:3.6-slim
+        docker pull --platform linux/arm64/v8 arm64v8/python:3.7
+        docker pull --platform linux/arm64/v8 arm64v8/python:3.7-slim
+        docker pull --platform linux/arm64/v8 arm64v8/python:3.8
+        docker pull --platform linux/arm64/v8 arm64v8/python:3.8-slim
+
+        docker pull --platform linux/arm/v7 arm32v7/python:3.6
+        docker pull --platform linux/arm/v7 arm32v7/python:3.6-slim
+        docker pull --platform linux/arm/v7 arm32v7/python:3.7
+        docker pull --platform linux/arm/v7 arm32v7/python:3.7-slim
+        docker pull --platform linux/arm/v7 arm32v7/python:3.8
+        docker pull --platform linux/arm/v7 arm32v7/python:3.8-slim
+
         make -j$(nproc --all) images-base-python
         make -j$(nproc --all) images-builder-python
         make -j$(nproc --all) images-container-python
