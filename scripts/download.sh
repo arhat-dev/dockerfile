@@ -17,7 +17,7 @@
 set -e
 
 qemu() {
-  local arch=$1
+  local arch="$1"
   local version="v4.1.0-1"
 
   case "${arch}" in
@@ -106,6 +106,42 @@ github_runner() {
 
   mkdir -p /github-runner
   tar -xf /github-runner.tar.gz -C /github-runner
+}
+
+kubectl() {
+  local arch="$1"
+  local kubectl_arch="${arch}"
+  local version="v1.16.3"
+
+  case "${arch}" in
+    armv7)
+      kubectl_arch="arm"
+  esac
+
+  wget -O "/kubectl-${arch}" \
+    "https://storage.googleapis.com/kubernetes-release/release/${version}/bin/linux/${kubectl_arch}/kubectl"
+
+  chmod +x "/kubectl-${arch}"
+  mkdir -p kubectl
+  mv "/kubectl-${arch}" /kubectl/kubectl
+}
+
+helm() {
+  local arch="$1"
+  local helm_arch="${arch}"
+  local version="v3.0.1"
+
+  case "${arch}" in
+    armv7)
+      helm_arch="arm"
+  esac
+
+  wget -O /helm.tar.gz \
+    "https://get.helm.sh/helm-${version}-linux-${helm_arch}.tar.gz"
+  
+  mkdir -p /helm
+  tar -xf /helm.tar.gz -C /helm
+  mv "/helm/linux-${helm_arch}/helm" /helm/helm
 }
 
 "$@"

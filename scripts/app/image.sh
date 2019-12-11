@@ -8,7 +8,7 @@ v2ray() {
   local arch="$1"
 
   docker build -f app/v2ray.dockerfile \
-    $(get_tag_args v2ray:${arch}) \
+    $(get_tag_args "v2ray:${arch}") \
     --build-arg ARCH="${arch}" .
 }
 
@@ -25,7 +25,7 @@ caddy() {
   esac
 
   docker build -f app/caddy.dockerfile \
-    $(get_tag_args caddy:${arch}) \
+    $(get_tag_args "caddy:${arch}") \
     --build-arg TARGET="caddy-linux-${arch}" \
     --build-arg APP="caddy" \
     --build-arg ARCH="${arch}" \
@@ -65,9 +65,39 @@ github_runner() {
   esac
 
   docker build -f app/github-runner.dockerfile \
-    $(get_tag_args github-runner:${arch}) \
+    $(get_tag_args "github-runner:${arch}") \
     --build-arg ARCH="${arch}" \
     --build-arg DOCKER_ARCH="${docker_arch}" .
+}
+
+kubeval() {
+  local arch="$1"
+
+  docker build -f app/kubeval.dockerfile \
+    $(get_tag_args "kubeval:${arch}") \
+    --build-arg ARCH="${arch}" \
+    --build-arg TARGET="kubeval-linux-${arch}" \
+    --build-arg APP="kubeval" .
+}
+
+conftest() {
+  local arch="$1"
+
+  docker build -f app/conftest.dockerfile \
+    $(get_tag_args "conftest:${arch}") \
+    --build-arg ARCH="${arch}" \
+    --build-arg TARGET="conftest-linux-${arch}" \
+    --build-arg APP="conftest" .
+}
+
+helm() {
+  local arch="$1"
+
+  docker build -f app/helm.dockerfile \
+    $(get_tag_args "helm:${arch}") \
+    --build-arg ARCH="${arch}" \
+    --build-arg TARGET="helm-linux-${arch}" \
+    --build-arg APP="helm" .
 }
 
 "$@"

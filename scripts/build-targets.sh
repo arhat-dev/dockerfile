@@ -58,6 +58,10 @@ _build_app_image() {
 }
 
 app() {
+  _build_app_image kubeval "amd64 arm64 armv7 armv6"
+  # _build_app_image conftest "amd64 arm64 armv7 armv6"
+  _build_app_image helm "amd64 arm64 armv7"
+
   _build_app_image github_runner "amd64 arm64 armv7"
   _build_app_image hydroxide "amd64 arm64 armv7 armv6"
   _build_app_image frp "amd64 arm64 armv7"
