@@ -21,9 +21,9 @@ COPY --from=kubeval /kubeval /usr/bin/kubeval
 COPY --from=builder /kubectl/kubectl /usr/bin/kubectl
 COPY --from=builder /qemu* /usr/bin/
 
-RUN apk add --no-cache git ;\
-    ln -s /helm /usr/bin/helm ;\
-    # helm plugin install https://github.com/instrumenta/helm-conftest ;\
-    helm plugin install https://github.com/instrumenta/helm-kubeval ;
+RUN apk add --no-cache git
+#     ln -s /helm /usr/bin/helm ;\
+#     # helm plugin install https://github.com/instrumenta/helm-conftest ;\
+#     helm plugin install https://github.com/instrumenta/helm-kubeval ;
 
 ENTRYPOINT [ "/helm" ]
