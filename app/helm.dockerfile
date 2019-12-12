@@ -30,7 +30,7 @@ ENV KUBEVAL_PLUGIN_DIR ${HELM_HOME}/plugins/helm-kubeval
 ENV CONFTEST_PLUGIN_DIR ${HELM_HOME}/plugins/helm-conftest
 
 RUN set -ex ;\
-    apk add --no-cache git bash ;\
+    apk add --no-cache git bash make ;\
     ln -s /helm /usr/bin/helm ;\
     mkdir -p ${S3_PLUGIN_DIR}/bin ${S3_PLUGIN_DIR}/scripts ;\
     wget -O - https://raw.githubusercontent.com/hypnoglow/helm-s3/master/plugin.yaml > ${S3_PLUGIN_DIR}/plugin.yaml ;\
