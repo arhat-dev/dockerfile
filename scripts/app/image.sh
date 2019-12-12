@@ -110,4 +110,12 @@ helms3() {
     --build-arg APP="helms3" .
 }
 
+yamllint() {
+  local arch="$1"
+
+  docker build -f app/yamllint.dockerfile \
+    $(get_tag_args "yamllint:${arch}") \
+    --build-arg ARCH="${arch}" scripts/app/yamllint
+}
+
 "$@"

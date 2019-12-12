@@ -58,6 +58,7 @@ _build_app_image() {
 }
 
 app() {
+  _build_app_image yamllint "arm64 armv7 armv6"
   _build_app_image helms3 "amd64 arm64 armv7 armv6"
   _build_app_image kubeval "amd64 arm64 armv7 armv6"
   # _build_app_image conftest "amd64 arm64 armv7 armv6"

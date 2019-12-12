@@ -1,0 +1,10 @@
+[[source]]
+url = 'https://pypi.python.org/simple'
+verify_ssl = true
+name = 'pypi'
+
+[requires]
+python_version = '3.7'
+
+[packages]
+yamllint = "==1.19.0"
