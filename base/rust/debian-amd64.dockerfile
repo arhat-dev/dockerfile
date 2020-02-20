@@ -19,7 +19,7 @@ RUN set -e ;\
 RUN set -e ;\
     apt-get update ;\
     apt-get install debian-ports-archive-keyring ;\
-    echo "deb [arch=ppc64,riscv64] http://ftp.ports.debian.org/debian-ports unstable main" >> /etc/apt/sources.list ;\
+    echo "deb [arch=ppc64,riscv64] http://ftp.ports.debian.org/debian-ports main" >> /etc/apt/sources.list ;\
     apt-get update ;\
     apt-get upgrade -y ;
 
