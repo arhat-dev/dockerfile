@@ -17,9 +17,10 @@ RUN set -e ;\
 
 # install dependencies
 RUN set -e ;\
-    apt-get update ;\
-    apt-get install debian-ports-archive-keyring ;\
-    echo "deb [arch=ppc64,riscv64] http://ftp.ports.debian.org/debian-ports main" >> /etc/apt/sources.list ;\
+    wget -qO- https://www.ports.debian.org/archive_2020.key | apt-key add - ;\
+    echo "deb [arch=ppc64,riscv64] http://ftp.ports.debian.org/debian-ports unstable main" >> /etc/apt/sources.list ;\
+    echo "deb [arch=ppc64,riscv64] http://ftp.ports.debian.org/debian-ports unreleased main" >> /etc/apt/sources.list ;\
+    echo "deb [arch=ppc64,riscv64] http://ftp.ports.debian.org/debian-ports experimental main" >> /etc/apt/sources.list ;\
     apt-get update ;\
     apt-get upgrade -y ;
 
