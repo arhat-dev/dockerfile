@@ -7,13 +7,13 @@ linker = "i686-linux-gnu-gcc"
 linker = "gcc"
 
 [target.aarch64-unknown-linux-gnu]
-linker = "aarch64-linux-gnu-gcc"
+linker = "aarch64-none-linux-gnu-gcc"
 
 [target.arm-unknown-linux-gnueabi]
-linker = "arm-linux-gnueabi-gcc"
+linker = "arm-none-linux-gnueabihf-gcc"
 
 [target.armv7-unknown-linux-gnueabihf]
-linker = "arm-linux-gnueabihf-gcc"
+linker = "arm-none-linux-gnueabihf-gcc"
 
 [target.mips-unknown-linux-gnu]
 linker = "mips-linux-gnu-gcc"

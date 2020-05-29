@@ -28,9 +28,6 @@ RUN apt-get update ;\
     apt-get install -y --no-install-recommends \
     # cross compilers
     build-essential \
-    gcc-arm-linux-gnueabi \
-    gcc-arm-linux-gnueabihf \
-    gcc-aarch64-linux-gnu \
     # gcc-mips-linux-gnu \
     # gcc-mipsel-linux-gnu \
     # gcc-mips64-linux-gnuabi64 \
@@ -42,7 +39,21 @@ RUN apt-get update ;\
     # gcc-riscv64-linux-gnu \
     # gcc-s390x-linux-gnu \
     # tools
-    git make upx curl wget musl-tools ;
+    git make upx curl wget musl-tools xz-utils ;
+
+RUN set -e ;\
+    # add arm 32bit cross compiler
+    curl -o arm-none-linux-gnueabihf.tar.xz -sSfL https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf.tar.xz ;\
+    tar xf arm-none-linux-gnueabihf.tar.xz ;\
+    mv gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf /opt/arm-none-linux-gnueabihf ;\
+    rm -rf arm-none-linux-gnueabihf.tar.xz ;\
+    # add arm aarch64 cross compiler
+    curl -o aarch64-none-linux-gnu.tar.xz -sSfL https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu.tar.xz ;\
+    tar xf aarch64-none-linux-gnu.tar.xz ;\
+    mv gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu /opt/aarch64-none-linux-gnu ;\
+    rm -rf aarch64-none-linux-gnu.tar.xz
+
+ENV PATH="${PATH}:/opt/arm-none-linux-gnueabihf/bin:/opt/aarch64-none-linux-gnu"
 
 # add cross compile targets
 RUN rustup target add arm-unknown-linux-gnueabi ;\
