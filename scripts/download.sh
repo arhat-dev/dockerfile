@@ -17,8 +17,8 @@
 set -e
 
 qemu() {
-  local arch="$1"
-  local version="v4.1.0-1"
+  arch="$1"
+  version="v5.0.0-2"
 
   case "${arch}" in
     amd64)
@@ -42,9 +42,9 @@ qemu() {
 }
 
 v2ray() {
-  local arch="$1"
-  local v2ray_arch="$arch"
-  local version="v4.20.0"
+  arch="$1"
+  v2ray_arch="$arch"
+  version="v4.25.1"
 
   case "${v2ray_arch}" in
     amd64)
@@ -68,9 +68,9 @@ v2ray() {
 }
 
 frp() {
-  local arch="$1"
-  local frp_arch="${arch}"
-  local version="0.29.0"
+  arch="$1"
+  frp_arch="${arch}"
+  version="0.33.0"
 
   case "${arch}" in
     armv*)
@@ -78,7 +78,7 @@ frp() {
       ;;
   esac
 
-  local file_name=frp_${version}_linux_${frp_arch}
+  file_name=frp_${version}_linux_${frp_arch}
 
   wget -O /frp.tar.gz \
     https://github.com/fatedier/frp/releases/download/v${version}/${file_name}.tar.gz
@@ -88,9 +88,9 @@ frp() {
 }
 
 github_runner() {
-  local arch="$1"
-  local runner_arch="${arch}"
-  local version="2.161.0"
+  arch="$1"
+  runner_arch="${arch}"
+  version="2.267.0"
 
   case "${arch}" in
     amd64)
@@ -102,16 +102,16 @@ github_runner() {
   esac
 
   wget -O /github-runner.tar.gz \
-    https://githubassets.azureedge.net/runners/${version}/actions-runner-linux-${runner_arch}-${version}.tar.gz
+    https://github.com/actions/runner/releases/download/v${version}/actions-runner-linux-${runner_arch}-${version}.tar.gz
 
   mkdir -p /github-runner
   tar -xf /github-runner.tar.gz -C /github-runner
 }
 
 kubectl() {
-  local arch="$1"
-  local kubectl_arch="${arch}"
-  local version="v1.16.3"
+  arch="$1"
+  kubectl_arch="${arch}"
+  version="v1.18.4"
 
   case "${arch}" in
     armv7)
@@ -127,9 +127,9 @@ kubectl() {
 }
 
 helm() {
-  local arch="$1"
-  local helm_arch="${arch}"
-  local version="v3.0.1"
+  arch="$1"
+  helm_arch="${arch}"
+  version="v3.2.4"
 
   case "${arch}" in
     armv7)
