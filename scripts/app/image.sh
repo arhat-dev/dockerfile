@@ -5,7 +5,7 @@ set -e
 . scripts/env.sh
 
 v2ray() {
-  local arch="$1"
+  arch="$1"
 
   docker build -f app/v2ray.dockerfile \
     $(get_tag_args "v2ray:${arch}") \
@@ -13,9 +13,9 @@ v2ray() {
 }
 
 caddy() {
-  local arch="$1"
-  local GOARCH="$1"
-  local GOARM=7
+  arch="$1"
+  GOARCH="$1"
+  GOARM=7
 
   case "${arch}" in
     armv*) 
@@ -34,7 +34,7 @@ caddy() {
 }
 
 frp() {
-  local arch=$1
+  arch=$1
 
   docker build -f app/frp.dockerfile \
     $(get_tag_args frp:${arch}) \
@@ -42,7 +42,7 @@ frp() {
 }
 
 hydroxide() {
-  local arch="$1"
+  arch="$1"
 
   docker build -f app/hydroxide.dockerfile \
     $(get_tag_args hydroxide:${arch}) \
@@ -52,8 +52,8 @@ hydroxide() {
 }
 
 github_runner() {
-  local arch="$1"
-  local docker_arch="${arch}"
+  arch="$1"
+  docker_arch="${arch}"
 
   case "${arch}" in
     armv*)
@@ -71,7 +71,7 @@ github_runner() {
 }
 
 kubeval() {
-  local arch="$1"
+  arch="$1"
 
   docker build -f app/kubeval.dockerfile \
     $(get_tag_args "kubeval:${arch}") \
@@ -81,7 +81,7 @@ kubeval() {
 }
 
 conftest() {
-  local arch="$1"
+  arch="$1"
 
   docker build -f app/conftest.dockerfile \
     $(get_tag_args "conftest:${arch}") \
@@ -91,7 +91,7 @@ conftest() {
 }
 
 helm() {
-  local arch="$1"
+  arch="$1"
 
   docker build -f app/helm.dockerfile \
     $(get_tag_args "helm:${arch}") \
@@ -101,7 +101,7 @@ helm() {
 }
 
 helms3() {
-  local arch="$1"
+  arch="$1"
 
   docker build -f app/helms3.dockerfile \
     $(get_tag_args "helms3:${arch}") \
@@ -111,7 +111,7 @@ helms3() {
 }
 
 yamllint() {
-  local arch="$1"
+  arch="$1"
 
   docker build -f app/yamllint.dockerfile \
     $(get_tag_args "yamllint:${arch}") \
