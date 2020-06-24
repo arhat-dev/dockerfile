@@ -1,4 +1,4 @@
-FROM golang:alpine
+FROM golang:alpine3.11
 
 # install dependencies
 RUN apk --no-cache add \
