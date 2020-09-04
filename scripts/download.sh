@@ -18,17 +18,29 @@ set -e
 
 qemu() {
   arch="$1"
-  version="v5.0.0-2"
+  version="v5.1.0-2"
 
   case "${arch}" in
-    amd64)
-      arch=""
+  amd64)
+    arch=""
     ;;
-    armv*)
-      arch=arm
+  armv*)
+    arch=arm
     ;;
-    arm64)
-      arch=aarch64
+  arm64)
+    arch=aarch64
+    ;;
+  ppc64le)
+    arch=ppc64le
+    ;;
+  s390x)
+    arch=s390x
+    ;;
+  x86)
+    arch=i386
+    ;;
+  mips64le)
+    arch=mips64el
     ;;
   esac
 
@@ -47,16 +59,16 @@ v2ray() {
   version="v4.25.1"
 
   case "${v2ray_arch}" in
-    amd64)
-      v2ray_arch=64
+  amd64)
+    v2ray_arch=64
     ;;
-    armv*)
-      v2ray_arch=arm
+  armv*)
+    v2ray_arch=arm
     ;;
   esac
 
   wget -O /v2ray.zip \
-    https://github.com/v2ray/v2ray-core/releases/download/${version}/v2ray-linux-${v2ray_arch}.zip 
+    https://github.com/v2ray/v2ray-core/releases/download/${version}/v2ray-linux-${v2ray_arch}.zip
   mkdir -p /v2ray
   unzip /v2ray.zip -d /v2ray
 
@@ -73,16 +85,16 @@ frp() {
   version="0.33.0"
 
   case "${arch}" in
-    armv*)
-      frp_arch=arm
-      ;;
+  armv*)
+    frp_arch=arm
+    ;;
   esac
 
   file_name=frp_${version}_linux_${frp_arch}
 
   wget -O /frp.tar.gz \
     https://github.com/fatedier/frp/releases/download/v${version}/${file_name}.tar.gz
-  
+
   tar -xf /frp.tar.gz
   mv /${file_name} /frp
 }
@@ -93,12 +105,12 @@ github_runner() {
   version="2.267.0"
 
   case "${arch}" in
-    amd64)
-      runner_arch="x64"
-      ;;
-    armv7)
-      runner_arch="arm"
-      ;;
+  amd64)
+    runner_arch="x64"
+    ;;
+  armv7)
+    runner_arch="arm"
+    ;;
   esac
 
   wget -O /github-runner.tar.gz \
@@ -114,8 +126,9 @@ kubectl() {
   version="v1.18.4"
 
   case "${arch}" in
-    armv7)
-      kubectl_arch="arm"
+  armv7)
+    kubectl_arch="arm"
+    ;;
   esac
 
   wget -O "/kubectl-${arch}" \
@@ -132,13 +145,14 @@ helm() {
   version="v3.2.4"
 
   case "${arch}" in
-    armv7)
-      helm_arch="arm"
+  armv7)
+    helm_arch="arm"
+    ;;
   esac
 
   wget -O /helm.tar.gz \
     "https://get.helm.sh/helm-${version}-linux-${helm_arch}.tar.gz"
-  
+
   mkdir -p /helm
   tar -xf /helm.tar.gz -C /helm
   mv "/helm/linux-${helm_arch}/helm" /helm/helm

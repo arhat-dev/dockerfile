@@ -2,9 +2,9 @@
 FROM alpine:latest as downloader
 
 COPY scripts/download.sh /download
-RUN set -ex; /download qemu armv7
+RUN set -ex; /download qemu x86
 
-FROM arm32v7/golang:1.14-buster
+FROM i386/golang:1.14-buster
 
 # add qemu for cross build
 COPY --from=downloader /qemu* /usr/bin/
