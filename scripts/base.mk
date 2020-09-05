@@ -2,7 +2,7 @@ DOCKERBUILD := docker build
 DOCKERPUSH := docker push
 
 DOCKERHUB_REPO := docker.io/arhatdev
-GITHUBPKG_REPO := docker.pkg.github.com/arhat-dev/dockerfile
+GITHUBPKG_REPO := ghcr.io/arhat-dev
 
 #
 # Base Images

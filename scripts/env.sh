@@ -1,10 +1,10 @@
 #!/bin/sh
 
-IMAGE_REPOS="docker.pkg.github.com/arhat-dev/dockerfile docker.io/arhatdev"
+IMAGE_REPOS="ghcr.io/arhat-dev docker.io/arhatdev"
 
 get_tag_args() {
-  local name="$1"
-  local result=""
+  name="$1"
+  result=""
   for repo in ${IMAGE_REPOS}; do
     result="-t ${repo}/${name} ${result}"
   done
