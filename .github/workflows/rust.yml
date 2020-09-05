@@ -13,6 +13,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - name: install latest docker
+      run: sudo bash scripts/ci.sh install_docker
     - uses: actions/checkout@v2
     - name: build and push images
       env:
