@@ -26,6 +26,7 @@ jobs:
       run: |
         docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
         docker login ghcr.io -u="$GITHUB_DOCKER_USERNAME" -p="$GITHUB_DOCKER_PASSWORD"
+        docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
         make -j$(nproc --all) images-base-rust
         make -j$(nproc --all) images-builder-rust
