@@ -13,9 +13,9 @@ jobs:
   build-apps:
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v2
     - name: install latest docker
       run: sudo bash scripts/ci.sh install_docker
-    - uses: actions/checkout@v2
     - name: build and push app images
       env:
         DOCKER_CLI_EXPERIMENTAL: enabled
