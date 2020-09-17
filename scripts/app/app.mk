@@ -5,7 +5,7 @@ GOPATH := $(shell go env GOPATH)
 .app-build-dir:
 	mkdir -p /app/build
 
-HYDROXIDE_PKG := github.com/emersion/hydroxide/cmd/hydroxide@v0.2.14
+HYDROXIDE_PKG := github.com/emersion/hydroxide/cmd/hydroxide@v0.2.15
 hydroxide-linux-amd64: .app-build-dir
 	$(GO_ARGS) GOARCH=amd64 go get $(HYDROXIDE_PKG)
 	find $(GOPATH)/bin -name 'hydroxide' -exec mv {} /app/build/$@ \;
@@ -41,7 +41,7 @@ kubeval-linux-arm64: .app-build-dir
 	find $(GOPATH)/bin -name 'kubeval' -exec mv {} /app/build/$@ \;
 
 
-CONFTEST_PKG := github.com/instrumenta/conftest@v0.19.0
+CONFTEST_PKG := github.com/instrumenta/conftest@v0.20.0
 conftest-linux-amd64: .app-build-dir
 	$(GO_ARGS) GOARCH=amd64 go get $(CONFTEST_PKG)
 	find $(GOPATH)/bin -name 'conftest' -exec mv {} /app/build/$@ \;

@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck disable=SC2046
 
 set -e
 
@@ -37,7 +38,7 @@ frp() {
   arch=$1
 
   docker build -f app/frp.dockerfile \
-    $(get_tag_args frp:${arch}) \
+    $(get_tag_args "frp:${arch}") \
     --build-arg ARCH="${arch}" .
 }
 
@@ -45,7 +46,7 @@ hydroxide() {
   arch="$1"
 
   docker build -f app/hydroxide.dockerfile \
-    $(get_tag_args hydroxide:${arch}) \
+    $(get_tag_args "hydroxide:${arch}") \
     --build-arg ARCH="${arch}" \
     --build-arg TARGET="hydroxide-linux-${arch}" \
     --build-arg APP="hydroxide" .

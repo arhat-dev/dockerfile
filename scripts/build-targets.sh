@@ -10,7 +10,7 @@ GREP=$(command -v ggrep || command -v grep)
 ALL_TARGETS=$(make -qp | awk -F':' '/^[a-zA-Z0-9][^$#\/\t=]*:([^=]|$)/ {split($1,A,/ /);for(i in A)print A[i]}' | sort -u)
 
 domake() {
-  local RECIPES="$1"
+  RECIPES="$1"
   echo "-----------------Targets-----------------"
   echo "${RECIPES}"
   echo "---------------Build-Start---------------"
@@ -33,9 +33,9 @@ container() {
 }
 
 _build_app_image() {
-  local app="${1}"
-  local arch_set="${2}"
-  local image_names=""
+  app="${1}"
+  arch_set="${2}"
+  image_names=""
 
   for repo in ${IMAGE_REPOS}; do
     image_names="${repo}/$(printf '%s' "${app}" | sed -e 's/\_/\-/g') ${image_names}"

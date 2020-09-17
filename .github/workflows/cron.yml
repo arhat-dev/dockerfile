@@ -4,7 +4,53 @@ on:
   - cron: "0 0 * * *"
 
 jobs:
-  build:
+  build-rust:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: install latest docker
+      run: sudo bash scripts/ci.sh install_docker
+    - name: build and push images
+      env:
+        DOCKER_CLI_EXPERIMENTAL: enabled
+        DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        GITHUB_DOCKER_USERNAME: ${{ github.actor }}
+        GITHUB_DOCKER_PASSWORD: ${{ secrets.GH_PACKAGES_TOKEN }}
+      run: |
+        docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
+        docker login ghcr.io -u="$GITHUB_DOCKER_USERNAME" -p="$GITHUB_DOCKER_PASSWORD"
+        docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+        make -j$(nproc --all) images-base-rust
+        make -j$(nproc --all) images-builder-rust
+        make -j$(nproc --all) images-container-rust
+        docker images
+
+  build-go:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: install latest docker
+      run: sudo bash scripts/ci.sh install_docker
+    - name: build and push images
+      env:
+        DOCKER_CLI_EXPERIMENTAL: enabled
+        DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        GITHUB_DOCKER_USERNAME: ${{ github.actor }}
+        GITHUB_DOCKER_PASSWORD: ${{ secrets.GH_PACKAGES_TOKEN }}
+      run: |
+        docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
+        docker login ghcr.io -u="$GITHUB_DOCKER_USERNAME" -p="$GITHUB_DOCKER_PASSWORD"
+        docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+        make -j$(nproc --all) images-base-go
+        make -j$(nproc --all) images-builder-go
+        make -j$(nproc --all) images-container-go
+        docker images
+
+  build-python:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -36,7 +82,28 @@ jobs:
         docker pull --platform linux/arm/v7 arm32v7/python:3.8
         docker pull --platform linux/arm/v7 arm32v7/python:3.8-slim
 
-        make images-base
-        make images-builder
-        make images-container
+        make -j$(nproc --all) images-base-python
+        make -j$(nproc --all) images-builder-python
+        make -j$(nproc --all) images-container-python
+        docker images
+
+  build-apps:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: install latest docker
+      run: sudo bash scripts/ci.sh install_docker
+    - name: build and push app images
+      env:
+        DOCKER_CLI_EXPERIMENTAL: enabled
+        DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        GITHUB_DOCKER_USERNAME: ${{ github.actor }}
+        GITHUB_DOCKER_PASSWORD: ${{ secrets.GH_PACKAGES_TOKEN }}
+      run: |
+        docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
+        docker login ghcr.io -u="$GITHUB_DOCKER_USERNAME" -p="$GITHUB_DOCKER_PASSWORD"
+        docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+        make -j$(nproc --all) images-app
         docker images

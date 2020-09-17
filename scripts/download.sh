@@ -16,9 +16,11 @@
 
 set -e
 
+. scripts/versions.sh
+
 qemu() {
   arch="$1"
-  version="v5.1.0-2"
+  version="${QEMU_VERSION}"
 
   case "${arch}" in
   amd64)
@@ -46,7 +48,7 @@ qemu() {
 
   if [ -n "${arch}" ]; then
     wget -O /qemu-${arch}-static \
-      https://github.com/multiarch/qemu-user-static/releases/download/${version}/qemu-${arch}-static
+      "https://github.com/multiarch/qemu-user-static/releases/download/${version}/qemu-${arch}-static"
     chmod +x /qemu-${arch}-static
   else
     touch /qemu-none
@@ -56,7 +58,7 @@ qemu() {
 v2ray() {
   arch="$1"
   v2ray_arch="$arch"
-  version="v4.25.1"
+  version="${V2RAY_VERSION}"
 
   case "${v2ray_arch}" in
   amd64)
@@ -68,7 +70,7 @@ v2ray() {
   esac
 
   wget -O /v2ray.zip \
-    https://github.com/v2ray/v2ray-core/releases/download/${version}/v2ray-linux-${v2ray_arch}.zip
+    "https://github.com/v2ray/v2ray-core/releases/download/${version}/v2ray-linux-${v2ray_arch}.zip"
   mkdir -p /v2ray
   unzip /v2ray.zip -d /v2ray
 
@@ -82,7 +84,7 @@ v2ray() {
 frp() {
   arch="$1"
   frp_arch="${arch}"
-  version="0.33.0"
+  version="${FRP_VERSION}"
 
   case "${arch}" in
   armv*)
@@ -93,16 +95,16 @@ frp() {
   file_name=frp_${version}_linux_${frp_arch}
 
   wget -O /frp.tar.gz \
-    https://github.com/fatedier/frp/releases/download/v${version}/${file_name}.tar.gz
+    "https://github.com/fatedier/frp/releases/download/v${version}/${file_name}.tar.gz"
 
   tar -xf /frp.tar.gz
-  mv /${file_name} /frp
+  mv "/${file_name}" /frp
 }
 
 github_runner() {
   arch="$1"
   runner_arch="${arch}"
-  version="2.267.0"
+  version="${GITHUB_RUNNER_VERSION}"
 
   case "${arch}" in
   amd64)
@@ -114,7 +116,7 @@ github_runner() {
   esac
 
   wget -O /github-runner.tar.gz \
-    https://github.com/actions/runner/releases/download/v${version}/actions-runner-linux-${runner_arch}-${version}.tar.gz
+    "https://github.com/actions/runner/releases/download/v${version}/actions-runner-linux-${runner_arch}-${version}.tar.gz"
 
   mkdir -p /github-runner
   tar -xf /github-runner.tar.gz -C /github-runner
@@ -123,7 +125,7 @@ github_runner() {
 kubectl() {
   arch="$1"
   kubectl_arch="${arch}"
-  version="v1.18.4"
+  version="${KUBECTL_VERSION}"
 
   case "${arch}" in
   armv7)
@@ -142,7 +144,7 @@ kubectl() {
 helm() {
   arch="$1"
   helm_arch="${arch}"
-  version="v3.2.4"
+  version="${HELM_VERSION}"
 
   case "${arch}" in
   armv7)
