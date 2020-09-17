@@ -6,7 +6,14 @@ ARG MIRROR_SITE
 RUN set -e;\
     dpkg --add-architecture armhf ;\
     dpkg --add-architecture armel ;\
-    dpkg --add-architecture arm64 ;
+    dpkg --add-architecture arm64 ;\
+    dpkg --add-architecture i386 ;\
+    dpkg --add-architecture mips ;\
+    dpkg --add-architecture mipsel ;\
+    dpkg --add-architecture mips64el ;\
+    dpkg --add-architecture ppc64el ;\
+    dpkg --add-architecture ppc64 ;\
+    dpkg --add-architecture riscv64 ;
 
 RUN set -e ;\
     sed -i 's/^deb\b/& [arch=amd64,i386,arm64,armhf,armel,mips,mipsel,mips64el,ppc64el,s390x]/g' /etc/apt/sources.list ;\
@@ -31,17 +38,17 @@ RUN apt-get update ;\
     gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf linux-libc-dev-armhf-cross \
     gcc-aarch64-linux-gnu g++-aarch64-linux-gnu linux-libc-dev-arm64-cross \
     # # mips cross compiler
-    # gcc-mips-linux-gnu g++-mips-linux-gnu linux-libc-dev-mips-cross \
-    # gcc-mipsel-linux-gnu g++-mipsel-linux-gnu linux-libc-dev-mipsel-cross \
-    # gcc-mips64-linux-gnuabi64 g++-mips64-linux-gnuabi64 linux-libc-dev-mips64-cross \
-    # gcc-mips64el-linux-gnuabi64 g++-mips64el-linux-gnuabi64 linux-libc-dev-mips64el-cross \
+    gcc-mips-linux-gnu g++-mips-linux-gnu linux-libc-dev-mips-cross \
+    gcc-mipsel-linux-gnu g++-mipsel-linux-gnu linux-libc-dev-mipsel-cross \
+    gcc-mips64-linux-gnuabi64 g++-mips64-linux-gnuabi64 linux-libc-dev-mips64-cross \
+    gcc-mips64el-linux-gnuabi64 g++-mips64el-linux-gnuabi64 linux-libc-dev-mips64el-cross \
     # # ppc64 cross compiler
-    # gcc-powerpc64-linux-gnu g++-powerpc64-linux-gnu linux-libc-dev-ppc64-cross \
-    # gcc-powerpc64le-linux-gnu g++-powerpc64le-linux-gnu linux-libc-dev-ppc64el-cross \
+    gcc-powerpc64-linux-gnu g++-powerpc64-linux-gnu linux-libc-dev-ppc64-cross \
+    gcc-powerpc64le-linux-gnu g++-powerpc64le-linux-gnu linux-libc-dev-ppc64el-cross \
     # # other
-    # gcc-i686-linux-gnu g++-i686-linux-gnu linux-libc-dev-i386-cross \
-    # gcc-riscv64-linux-gnu g++-riscv64-linux-gnu linux-libc-dev-riscv64-cross \
-    # gcc-s390x-linux-gnu g++-s390x-linux-gnu linux-libc-dev-s390x-cross \
+    gcc-i686-linux-gnu g++-i686-linux-gnu linux-libc-dev-i386-cross \
+    gcc-riscv64-linux-gnu g++-riscv64-linux-gnu linux-libc-dev-riscv64-cross \
+    gcc-s390x-linux-gnu g++-s390x-linux-gnu linux-libc-dev-s390x-cross \
     # tools
     git make upx curl wget;
 

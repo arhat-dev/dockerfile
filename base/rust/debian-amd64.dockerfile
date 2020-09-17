@@ -6,7 +6,14 @@ ARG MIRROR_SITE
 RUN set -e;\
     dpkg --add-architecture armhf ;\
     dpkg --add-architecture armel ;\
-    dpkg --add-architecture arm64 ;
+    dpkg --add-architecture arm64 ;\
+    dpkg --add-architecture i386 ;\
+    dpkg --add-architecture mips ;\
+    dpkg --add-architecture mipsel ;\
+    dpkg --add-architecture mips64el ;\
+    dpkg --add-architecture ppc64el ;\
+    dpkg --add-architecture ppc64 ;\
+    dpkg --add-architecture riscv64 ;
 
 RUN set -e ;\
     sed -i 's/^deb\b/& [arch=amd64,i386,arm64,armhf,armel,mips,mipsel,mips64el,ppc64el,s390x]/g' /etc/apt/sources.list ;\
