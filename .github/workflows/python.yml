@@ -10,7 +10,7 @@ on:
     - master
 
 jobs:
-  build-python3.6:
+  build-python3-6:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -54,7 +54,7 @@ jobs:
         make -j$(nproc --all) images-container-python3.6
         docker images
 
-  build-python3.7:
+  build-python3-7:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -97,7 +97,7 @@ jobs:
         make -j$(nproc --all) images-container-python3.7
         docker images
 
-  build-python3.8:
+  build-python3-8:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
