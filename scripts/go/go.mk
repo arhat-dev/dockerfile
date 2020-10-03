@@ -1,4 +1,5 @@
 # base images
+base-go-debian-armv5: .build-base-image
 base-go-debian-armv7: .build-base-image
 base-go-debian-arm64: .build-base-image
 base-go-debian-amd64: .build-base-image
@@ -16,6 +17,7 @@ base-go-alpine-ppc64le: .build-base-image
 base-go-alpine-s390x: .build-base-image
 
 # builder images
+builder-go-debian-armv5: .build-builder-image
 builder-go-debian-armv7: .build-builder-image
 builder-go-debian-arm64: .build-builder-image
 builder-go-debian-amd64: .build-builder-image
@@ -35,6 +37,7 @@ builder-go-alpine-s390x: .build-builder-image
 # container images
 go-scratch: .build-scratch-container-image
 
+go-debian-armv5: .build-container-image
 go-debian-armv7: .build-container-image
 go-debian-arm64: .build-container-image
 go-debian-amd64: .build-container-image

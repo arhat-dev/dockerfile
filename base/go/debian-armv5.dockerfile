@@ -2,9 +2,9 @@
 FROM alpine:latest as downloader
 
 COPY scripts/download.sh /download
-RUN set -ex; /download qemu s390x
+RUN set -ex; /download qemu armv5
 
-FROM s390x/golang:1.14-buster
+FROM arm32v5/golang:1.14-buster
 
 # add qemu for cross build
 COPY --from=downloader /qemu* /usr/bin/
