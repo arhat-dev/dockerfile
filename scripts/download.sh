@@ -19,7 +19,6 @@ set -e
 QEMU_VERSION="v5.1.0-2"           # https://github.com/multiarch/qemu-user-static/releases
 V2RAY_VERSION="v4.27.5"           # https://github.com/v2ray/v2ray-core/releases
 FRP_VERSION="0.33.0"              # https://github.com/fatedier/frp/releases
-GITHUB_RUNNER_VERSION="v2.273.0"  # https://github.com/actions/runner/releases
 KUBECTL_VERSION="v1.18.8"         # https://github.com/kubernetes/kubernetes/releases
 HELM_VERSION="v3.3.1"             # https://github.com/helm/helm/releases
 
@@ -104,27 +103,6 @@ frp() {
 
   tar -xf /frp.tar.gz
   mv "/${file_name}" /frp
-}
-
-github_runner() {
-  arch="$1"
-  runner_arch="${arch}"
-  version="${GITHUB_RUNNER_VERSION}"
-
-  case "${arch}" in
-  amd64)
-    runner_arch="x64"
-    ;;
-  armv7)
-    runner_arch="arm"
-    ;;
-  esac
-
-  wget -O /github-runner.tar.gz \
-    "https://github.com/actions/runner/releases/download/v${version}/actions-runner-linux-${runner_arch}-${version}.tar.gz"
-
-  mkdir -p /github-runner
-  tar -xf /github-runner.tar.gz -C /github-runner
 }
 
 kubectl() {
