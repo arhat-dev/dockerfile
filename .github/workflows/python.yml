@@ -14,6 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: install latest docker
+      run: sudo bash scripts/ci.sh install_docker
     - name: build and push images
       env:
         DOCKER_CLI_EXPERIMENTAL: enabled
@@ -58,6 +60,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: install latest docker
+      run: sudo bash scripts/ci.sh install_docker
     - name: build and push images
       env:
         DOCKER_CLI_EXPERIMENTAL: enabled
@@ -101,6 +105,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: install latest docker
+      run: sudo bash scripts/ci.sh install_docker
     - name: build and push images
       env:
         DOCKER_CLI_EXPERIMENTAL: enabled
