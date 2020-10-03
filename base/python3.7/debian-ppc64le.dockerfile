@@ -1,14 +1,14 @@
-# use native build to make sure qemu executable
 FROM alpine:latest as downloader
 
 COPY scripts/download.sh /download
-RUN set -ex; /download qemu arm64
+RUN set -ex; /download qemu ppc64le
 
-FROM arm64v8/python:3.7-alpine3.11
+FROM ppc64le/python:3.7-buster
 
 # add qemu for cross build
 COPY --from=downloader /qemu* /usr/bin/
 
 # install build tools
-RUN apk --no-cache add ca-certificates wget build-base curl ;\
+RUN apt-get update ;\
+    apt-get install -y wget build-essential curl ;\
     pip3 install pipenv ;

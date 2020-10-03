@@ -4,7 +4,7 @@ FROM alpine:latest as downloader
 COPY scripts/download.sh /download
 RUN set -ex; /download qemu armv6
 
-FROM arm32v6/python:3.7-alpine
+FROM arm32v6/python:3.7-alpine3.11
 
 # add qemu for cross build
 COPY --from=downloader /qemu* /usr/bin/

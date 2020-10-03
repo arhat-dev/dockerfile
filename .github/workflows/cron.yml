@@ -8,8 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: install latest docker
-      run: sudo bash scripts/ci.sh install_docker
     - name: build and push images
       env:
         DOCKER_CLI_EXPERIMENTAL: enabled
@@ -31,8 +29,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: install latest docker
-      run: sudo bash scripts/ci.sh install_docker
     - name: build and push images
       env:
         DOCKER_CLI_EXPERIMENTAL: enabled
@@ -50,12 +46,10 @@ jobs:
         make -j$(nproc --all) images-container-go
         docker images
 
-  build-python:
+  build-python3.6:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: install latest docker
-      run: sudo bash scripts/ci.sh install_docker
     - name: build and push images
       env:
         DOCKER_CLI_EXPERIMENTAL: enabled
@@ -68,31 +62,124 @@ jobs:
         docker login ghcr.io -u="$GITHUB_DOCKER_USERNAME" -p="$GITHUB_DOCKER_PASSWORD"
         docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
-        docker pull --platform linux/arm64/v8 arm64v8/python:3.6
-        docker pull --platform linux/arm64/v8 arm64v8/python:3.6-slim
-        docker pull --platform linux/arm64/v8 arm64v8/python:3.7
-        docker pull --platform linux/arm64/v8 arm64v8/python:3.7-slim
-        docker pull --platform linux/arm64/v8 arm64v8/python:3.8
-        docker pull --platform linux/arm64/v8 arm64v8/python:3.8-slim
+        
+        docker pull --platform linux/arm64/v8 arm64v8/python:3.6-buster
+        docker pull --platform linux/arm64/v8 arm64v8/python:3.6-alpine3.11
 
-        docker pull --platform linux/arm/v7 arm32v7/python:3.6
-        docker pull --platform linux/arm/v7 arm32v7/python:3.6-slim
-        docker pull --platform linux/arm/v7 arm32v7/python:3.7
-        docker pull --platform linux/arm/v7 arm32v7/python:3.7-slim
-        docker pull --platform linux/arm/v7 arm32v7/python:3.8
-        docker pull --platform linux/arm/v7 arm32v7/python:3.8-slim
+        docker pull --platform linux/arm/v5 arm32v5/python:3.6-buster
 
-        make -j$(nproc --all) images-base-python
-        make -j$(nproc --all) images-builder-python
-        make -j$(nproc --all) images-container-python
+        docker pull --platform linux/arm/v6 arm32v6/python:3.6-alpine3.11
+
+        docker pull --platform linux/arm/v7 arm32v7/python:3.6-buster
+        docker pull --platform linux/arm/v7 arm32v7/python:3.6-alpine3.11
+
+        docker pull --platform linux/mips64le mips64le/python:3.6-buster
+        docker pull --platform linux/mips64le mips64le/python:3.6-alpine3.11
+
+        docker pull --platform linux/ppc64le ppc64le/python:3.6-buster
+        docker pull --platform linux/ppc64le ppc64le/python:3.6-alpine3.11
+
+        docker pull --platform linux/s390x s390x/python:3.6-buster
+        docker pull --platform linux/s390x s390x/python:3.6-alpine3.11
+
+        docker pull --platform linux/386 386/python:3.6-buster
+        docker pull --platform linux/386 386/python:3.6-alpine3.11
+
+        make -j$(nproc --all) images-base-python3.6
+        make -j$(nproc --all) images-builder-python3.6
+        make -j$(nproc --all) images-container-python3.6
+        docker images
+
+  build-python3.7:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: build and push images
+      env:
+        DOCKER_CLI_EXPERIMENTAL: enabled
+        DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        GITHUB_DOCKER_USERNAME: ${{ github.actor }}
+        GITHUB_DOCKER_PASSWORD: ${{ secrets.GH_PACKAGES_TOKEN }}
+      run: |
+        docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
+        docker login ghcr.io -u="$GITHUB_DOCKER_USERNAME" -p="$GITHUB_DOCKER_PASSWORD"
+        docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+        docker pull --platform linux/arm64/v8 arm64v8/python:3.7-buster
+        docker pull --platform linux/arm64/v8 arm64v8/python:3.7-alpine3.11
+
+        docker pull --platform linux/arm/v5 arm32v5/python:3.7-buster
+
+        docker pull --platform linux/arm/v6 arm32v6/python:3.7-alpine3.11
+
+        docker pull --platform linux/arm/v7 arm32v7/python:3.7-buster
+        docker pull --platform linux/arm/v7 arm32v7/python:3.7-alpine3.11
+
+        docker pull --platform linux/mips64le mips64le/python:3.7-buster
+        docker pull --platform linux/mips64le mips64le/python:3.7-alpine3.11
+
+        docker pull --platform linux/ppc64le ppc64le/python:3.7-buster
+        docker pull --platform linux/ppc64le ppc64le/python:3.7-alpine3.11
+
+        docker pull --platform linux/s390x s390x/python:3.7-buster
+        docker pull --platform linux/s390x s390x/python:3.7-alpine3.11
+
+        docker pull --platform linux/386 386/python:3.7-buster
+        docker pull --platform linux/386 386/python:3.7-alpine3.11
+
+        make -j$(nproc --all) images-base-python3.7
+        make -j$(nproc --all) images-builder-python3.7
+        make -j$(nproc --all) images-container-python3.7
+        docker images
+
+  build-python3.8:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: build and push images
+      env:
+        DOCKER_CLI_EXPERIMENTAL: enabled
+        DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        GITHUB_DOCKER_USERNAME: ${{ github.actor }}
+        GITHUB_DOCKER_PASSWORD: ${{ secrets.GH_PACKAGES_TOKEN }}
+      run: |
+        docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
+        docker login ghcr.io -u="$GITHUB_DOCKER_USERNAME" -p="$GITHUB_DOCKER_PASSWORD"
+        docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+        docker pull --platform linux/arm64/v8 arm64v8/python:3.8-buster
+        docker pull --platform linux/arm64/v8 arm64v8/python:3.8-alpine3.11
+
+        docker pull --platform linux/arm/v5 arm32v5/python:3.8-buster
+
+        docker pull --platform linux/arm/v6 arm32v6/python:3.8-alpine3.11
+
+        docker pull --platform linux/arm/v7 arm32v7/python:3.8-buster
+        docker pull --platform linux/arm/v7 arm32v7/python:3.8-alpine3.11
+
+        docker pull --platform linux/mips64le mips64le/python:3.8-buster
+        docker pull --platform linux/mips64le mips64le/python:3.8-alpine3.11
+
+        docker pull --platform linux/ppc64le ppc64le/python:3.8-buster
+        docker pull --platform linux/ppc64le ppc64le/python:3.8-alpine3.11
+
+        docker pull --platform linux/s390x s390x/python:3.8-buster
+        docker pull --platform linux/s390x s390x/python:3.8-alpine3.11
+
+        docker pull --platform linux/386 386/python:3.8-buster
+        docker pull --platform linux/386 386/python:3.8-alpine3.11
+
+        make -j$(nproc --all) images-base-python3.8
+        make -j$(nproc --all) images-builder-python3.8
+        make -j$(nproc --all) images-container-python3.8
         docker images
 
   build-apps:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: install latest docker
-      run: sudo bash scripts/ci.sh install_docker
     - name: build and push app images
       env:
         DOCKER_CLI_EXPERIMENTAL: enabled

@@ -2,9 +2,9 @@
 FROM alpine:latest as downloader
 
 COPY scripts/download.sh /download
-RUN set -ex; /download qemu arm64
+RUN set -ex; /download qemu x86
 
-FROM arm64v8/python:3.7-alpine3.11
+FROM i386/python:3.7-alpine3.11
 
 # add qemu for cross build
 COPY --from=downloader /qemu* /usr/bin/
