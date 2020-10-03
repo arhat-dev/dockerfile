@@ -40,7 +40,6 @@ jobs:
         docker pull --platform linux/arm/v7 arm32v7/python:3.6-alpine3.11
 
         docker pull --platform linux/mips64le mips64le/python:3.6-buster
-        docker pull --platform linux/mips64le mips64le/python:3.6-alpine3.11
 
         docker pull --platform linux/ppc64le ppc64le/python:3.6-buster
         docker pull --platform linux/ppc64le ppc64le/python:3.6-alpine3.11
@@ -85,7 +84,6 @@ jobs:
         docker pull --platform linux/arm/v7 arm32v7/python:3.7-alpine3.11
 
         docker pull --platform linux/mips64le mips64le/python:3.7-buster
-        docker pull --platform linux/mips64le mips64le/python:3.7-alpine3.11
 
         docker pull --platform linux/ppc64le ppc64le/python:3.7-buster
         docker pull --platform linux/ppc64le ppc64le/python:3.7-alpine3.11
@@ -130,7 +128,6 @@ jobs:
         docker pull --platform linux/arm/v7 arm32v7/python:3.8-alpine3.11
 
         docker pull --platform linux/mips64le mips64le/python:3.8-buster
-        docker pull --platform linux/mips64le mips64le/python:3.8-alpine3.11
 
         docker pull --platform linux/ppc64le ppc64le/python:3.8-buster
         docker pull --platform linux/ppc64le ppc64le/python:3.8-alpine3.11
