@@ -4,6 +4,7 @@ MAKECMDGOALS ?= base-go
 arm64 := arm64v8
 armv7 := arm32v7
 armv6 := arm32v6
+armv5 := arm32v5
 amd64 := amd64
 ppc64le := ppc64le
 s390x := s390x
