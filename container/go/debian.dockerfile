@@ -5,7 +5,7 @@ ARG DOCKER_ARCH=amd64
 # to make sure application is linked against glibc when cgo was used, only
 # debian based builder is valid here
 FROM arhatdev/builder-go:debian as builder
-FROM ${DOCKER_ARCH}/debian:stable-slim
+FROM ${DOCKER_ARCH}/debian:buster-slim
 
 ONBUILD ARG TARGET
 ONBUILD ARG APP=${TARGET}

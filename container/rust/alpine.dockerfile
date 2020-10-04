@@ -3,7 +3,7 @@ ARG ARCH=amd64
 ARG DOCKER_ARCH=amd64
 
 FROM arhatdev/builder-rust:debian as builder
-FROM ${DOCKER_ARCH}/alpine:latest
+FROM ${DOCKER_ARCH}/alpine:3.11
 
 ONBUILD ARG TARGET
 ONBUILD ARG APP=${TARGET}

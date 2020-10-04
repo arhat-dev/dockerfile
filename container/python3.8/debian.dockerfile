@@ -3,7 +3,7 @@ ARG ARCH=amd64
 ARG DOCKER_ARCH=amd64
 
 FROM arhatdev/builder-python3.8:debian as builder
-FROM ${DOCKER_ARCH}/python:3.8-slim
+FROM ${DOCKER_ARCH}/python:3.8-slim-buster
 
 ONBUILD COPY --from=builder /app /app
 
