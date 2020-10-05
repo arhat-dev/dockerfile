@@ -66,8 +66,8 @@ app() {
 
   # _build_app_image hydroxide "amd64 arm64 armv7 armv6"
   _build_app_image frp "amd64 arm64 armv7"
-  _build_app_image v2ray "amd64 arm64 armv7 armv6"
-  _build_app_image caddy "amd64 arm64 armv7 armv6"
+  # _build_app_image v2ray "amd64 arm64 armv7 armv6"
+  # _build_app_image caddy "amd64 arm64 armv7 armv6"
 }
 
 "$@"
