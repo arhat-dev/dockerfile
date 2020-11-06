@@ -1,5 +1,5 @@
 ARG ARCH=amd64
-FROM arhatdev/base-rust:debian-${ARCH}
+FROM ghcr.io/arhat-dev/base-rust:debian-${ARCH}
 
 WORKDIR /app
 

@@ -1,5 +1,5 @@
 ARG TARGET=yamllint
 ARG ARCH=amd64
 
-FROM arhatdev/builder-python3.7:alpine-${ARCH} as builder
-FROM arhatdev/python3.7:alpine-${ARCH}
+FROM ghcr.io/arhat-dev/builder-python3.7:alpine-${ARCH} as builder
+FROM ghcr.io/arhat-dev/python3.7:alpine-${ARCH}

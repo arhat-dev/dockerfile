@@ -1,4 +1,4 @@
-FROM arhatdev/builder-rust:debian as builder
+FROM ghcr.io/arhat-dev/builder-rust:debian as builder
 FROM scratch
 
 ONBUILD ARG TARGET

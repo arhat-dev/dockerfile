@@ -2,7 +2,7 @@ ARG ARCH=amd64
 # docker flavored arch name
 ARG DOCKER_ARCH=amd64
 
-FROM arhatdev/builder-rust:debian as builder
+FROM ghcr.io/arhat-dev/builder-rust:debian as builder
 FROM ${DOCKER_ARCH}/debian:buster-slim
 
 ONBUILD ARG TARGET

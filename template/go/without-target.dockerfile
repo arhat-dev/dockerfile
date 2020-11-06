@@ -1,5 +1,5 @@
 # set `--build-arg TARGET` to the binary target name
 
-FROM arhatdev/builder-go:debian as builder
-FROM arhatdev/go:scratch
+FROM ghcr.io/arhat-dev/builder-go:debian as builder
+FROM ghcr.io/arhat-dev/go:scratch
 ENTRYPOINT [ "/my-app" ]

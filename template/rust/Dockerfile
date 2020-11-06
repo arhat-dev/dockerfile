@@ -1,5 +1,5 @@
 ARG TARGET=rust
 
-FROM arhatdev/builder-rust:debian as builder
-FROM arhatdev/rust:scratch
+FROM ghcr.io/arhat-dev/builder-rust:debian as builder
+FROM ghcr.io/arhat-dev/rust:scratch
 ENTRYPOINT [ "/rust" ]

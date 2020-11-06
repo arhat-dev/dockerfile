@@ -54,11 +54,11 @@ __NOTE:__ To use multi-arch build, you may need to run `docker run --rm --privil
 
 ### Image Types
 
-- Base images (`arhatdev/base-{language}:{rootfs}`)
+- Base images (`ghcr.io/arhat-dev/base-{language}:{rootfs}`)
   - contians necessary build tools and environment for cross platform build
-- Builder images (`arhatdev/builder-{language}:{rootfs}`)
-  - based on base images (`arhatdev/base-{language}:{rootfs}`) but with build triggers to build project automatically
-- Contianer images `arhatdev/{language}:{rootfs}`
+- Builder images (`ghcr.io/arhat-dev/builder-{language}:{rootfs}`)
+  - based on base images (`ghcr.io/arhat-dev/base-{language}:{rootfs}`) but with build triggers to build project automatically
+- Contianer images `ghcr.io/{language}:{rootfs}`
   - copy built application from builders and setup environment for contianer running
 
 ### Makefile Targets

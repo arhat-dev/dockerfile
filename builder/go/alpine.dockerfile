@@ -1,5 +1,5 @@
 ARG ARCH=amd64
-FROM arhatdev/base-go:alpine-${ARCH}
+FROM ghcr.io/arhat-dev/base-go:alpine-${ARCH}
 
 WORKDIR /app
 

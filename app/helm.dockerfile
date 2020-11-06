@@ -1,9 +1,9 @@
 ARG ARCH=amd64
 
 # we cannot build conftest yet, so it's not supported
-# FROM arhatdev/conftest:${ARCH} AS conftest
-FROM arhatdev/kubeval:${ARCH} AS kubeval
-FROM arhatdev/helms3:${ARCH} AS helms3
+# FROM ghcr.io/arhat-dev/conftest:${ARCH} AS conftest
+FROM ghcr.io/arhat-dev/kubeval:${ARCH} AS kubeval
+FROM ghcr.io/arhat-dev/helms3:${ARCH} AS helms3
 
 FROM alpine:latest AS builder
 
@@ -16,7 +16,7 @@ RUN set -ex ;\
     mkdir -p /app/build/ ;\
     mv /helm/helm /app/build/helm-linux-${ARCH}
 
-FROM arhatdev/go:alpine-${ARCH}
+FROM ghcr.io/arhat-dev/go:alpine-${ARCH}
 
 # COPY --from=conftest /conftest /usr/bin/conftest
 COPY --from=kubeval /kubeval /usr/bin/kubeval
