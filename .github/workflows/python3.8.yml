@@ -12,9 +12,13 @@ on:
   schedule:
   - cron: "0 0 * * *"
   paths:
-  - base/python3.8
-  - builder/python3.8
-  - container/python3.8
+  - base/python3.8/**
+  - builder/python3.8/**
+  - container/python3.8/**
+  - scripts/python/python3.8.mk
+  - scripts/python/*.sh
+  - scripts/*.mk
+  - scripts/*.sh
 
 jobs:
   build-python3-8:

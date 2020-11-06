@@ -10,6 +10,13 @@ on:
     - master
   schedule:
   - cron: "0 0 * * *"
+  paths:
+  - base/rust/**
+  - builder/rust/**
+  - container/rust/**
+  - scripts/rust/**
+  - scripts/*.mk
+  - scripts/*.sh
 
 jobs:
   build:

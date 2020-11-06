@@ -1,6 +1,6 @@
 # Dockerfile
 
-[![go](https://github.com/arhat-dev/dockerfile/workflows/go/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=go) [![rust](https://github.com/arhat-dev/dockerfile/workflows/rust/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=rust) [![python](https://github.com/arhat-dev/dockerfile/workflows/python/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=python) [![app](https://github.com/arhat-dev/dockerfile/workflows/app/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=app) [![cron](https://github.com/arhat-dev/dockerfile/workflows/cron/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=cron)
+[![go](https://github.com/arhat-dev/dockerfile/workflows/go/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=go) [![rust](https://github.com/arhat-dev/dockerfile/workflows/rust/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=rust) [![python](https://github.com/arhat-dev/dockerfile/workflows/python/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=python) [![app](https://github.com/arhat-dev/dockerfile/workflows/app/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=app)
 
 Building blocks for [arhat-dev](https://github.com/arhat-dev), suitable for organizations using same project structure.
 
