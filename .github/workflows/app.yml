@@ -1,5 +1,6 @@
 name: app
 
+# yamllint disable-line rule:truthy
 on:
   check_run:
     types:

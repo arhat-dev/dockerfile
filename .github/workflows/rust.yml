@@ -1,5 +1,6 @@
 name: rust
 
+# yamllint disable-line rule:truthy
 on:
   check_run:
     types:
@@ -8,15 +9,15 @@ on:
   push:
     branches:
     - master
+    paths:
+    - base/rust/**
+    - builder/rust/**
+    - container/rust/**
+    - scripts/rust/**
+    - scripts/*.mk
+    - scripts/*.sh
   schedule:
   - cron: "0 0 * * *"
-  paths:
-  - base/rust/**
-  - builder/rust/**
-  - container/rust/**
-  - scripts/rust/**
-  - scripts/*.mk
-  - scripts/*.sh
 
 jobs:
   build:

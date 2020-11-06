@@ -1,5 +1,6 @@
 name: go
 
+# yamllint disable-line rule:truthy
 on:
   check_run:
     types:
@@ -8,15 +9,15 @@ on:
   push:
     branches:
     - master
+    paths:
+    - base/go/**
+    - builder/go/**
+    - container/go/**
+    - scripts/go/**
+    - scripts/*.mk
+    - scripts/*.sh
   schedule:
   - cron: "0 0 * * *"
-  paths:
-  - base/go/**
-  - builder/go/**
-  - container/go/**
-  - scripts/go/**
-  - scripts/*.mk
-  - scripts/*.sh
 
 jobs:
   build:
