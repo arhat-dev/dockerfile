@@ -1,0 +1,62 @@
+name: python3.7
+
+# yamllint disable-line rule:truthy
+on:
+  check_run:
+    types:
+    - rerequested
+    - requested_action
+  push:
+    branches:
+    - master
+  schedule:
+  - cron: "0 0 * * *"
+  paths:
+  - base/python3.7
+  - builder/python3.7
+  - container/python3.7
+
+jobs:
+  build-python3-7:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: install latest docker
+      run: sudo bash scripts/ci.sh install_docker
+    - name: build and push images
+      env:
+        DOCKER_CLI_EXPERIMENTAL: enabled
+        DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        GITHUB_DOCKER_USERNAME: ${{ github.actor }}
+        GITHUB_DOCKER_PASSWORD: ${{ secrets.GH_PACKAGES_TOKEN }}
+      run: |
+        docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
+        docker login ghcr.io -u="$GITHUB_DOCKER_USERNAME" -p="$GITHUB_DOCKER_PASSWORD"
+        docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+        docker pull --platform linux/arm64/v8 arm64v8/python:3.7-buster
+        docker pull --platform linux/arm64/v8 arm64v8/python:3.7-alpine3.12
+
+        docker pull --platform linux/arm/v5 arm32v5/python:3.7-buster
+
+        docker pull --platform linux/arm/v6 arm32v6/python:3.7-alpine3.12
+
+        docker pull --platform linux/arm/v7 arm32v7/python:3.7-buster
+        docker pull --platform linux/arm/v7 arm32v7/python:3.7-alpine3.12
+
+        docker pull --platform linux/mips64le mips64le/python:3.7-buster
+
+        docker pull --platform linux/ppc64le ppc64le/python:3.7-buster
+        docker pull --platform linux/ppc64le ppc64le/python:3.7-alpine3.12
+
+        docker pull --platform linux/s390x s390x/python:3.7-buster
+        docker pull --platform linux/s390x s390x/python:3.7-alpine3.12
+
+        docker pull --platform linux/386 i386/python:3.7-buster
+        docker pull --platform linux/386 i386/python:3.7-alpine3.12
+
+        make -j$(nproc --all) images-base-python3.7
+        make -j$(nproc --all) images-builder-python3.7
+        make -j$(nproc --all) images-container-python3.7
+        docker images

@@ -82,16 +82,6 @@ helm() {
     --build-arg APP="helm" .
 }
 
-helms3() {
-  arch="$1"
-
-  docker build -f app/helms3.dockerfile \
-    $(get_tag_args "helms3:${arch}") \
-    --build-arg ARCH="${arch}" \
-    --build-arg TARGET="helms3-linux-${arch}" \
-    --build-arg APP="helms3" .
-}
-
 yamllint() {
   arch="$1"
 
