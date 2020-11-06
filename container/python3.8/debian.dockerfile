@@ -2,7 +2,7 @@ ARG ARCH=amd64
 # docker flavored arch name
 ARG DOCKER_ARCH=amd64
 
-FROM arhatdev/builder-python3.8:debian as builder
+FROM arhatdev/builder-python3.9:debian as builder
 FROM ${DOCKER_ARCH}/python:3.8-slim-buster
 
 ONBUILD COPY --from=builder /app /app

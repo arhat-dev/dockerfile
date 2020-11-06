@@ -20,6 +20,7 @@ include scripts/go/go.mk
 include scripts/python/python3.6.mk
 include scripts/python/python3.7.mk
 include scripts/python/python3.8.mk
+include scripts/python/python3.9.mk
 
 include scripts/rust/rust.mk
 
