@@ -4,7 +4,7 @@ FROM alpine:latest as downloader
 COPY scripts/download.sh /download
 RUN set -ex; /download qemu ppc64le
 
-FROM ppc64le/golang:1.14-buster
+FROM ppc64le/golang:1.15-buster
 
 # add qemu for cross build
 COPY --from=downloader /qemu* /usr/bin/
