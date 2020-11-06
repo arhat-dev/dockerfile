@@ -66,25 +66,25 @@ jobs:
 
         
         docker pull --platform linux/arm64/v8 arm64v8/python:3.6-buster
-        docker pull --platform linux/arm64/v8 arm64v8/python:3.6-alpine3.11
+        docker pull --platform linux/arm64/v8 arm64v8/python:3.6-alpine3.12
 
         docker pull --platform linux/arm/v5 arm32v5/python:3.6-buster
 
-        docker pull --platform linux/arm/v6 arm32v6/python:3.6-alpine3.11
+        docker pull --platform linux/arm/v6 arm32v6/python:3.6-alpine3.12
 
         docker pull --platform linux/arm/v7 arm32v7/python:3.6-buster
-        docker pull --platform linux/arm/v7 arm32v7/python:3.6-alpine3.11
+        docker pull --platform linux/arm/v7 arm32v7/python:3.6-alpine3.12
 
         docker pull --platform linux/mips64le mips64le/python:3.6-buster
 
         docker pull --platform linux/ppc64le ppc64le/python:3.6-buster
-        docker pull --platform linux/ppc64le ppc64le/python:3.6-alpine3.11
+        docker pull --platform linux/ppc64le ppc64le/python:3.6-alpine3.12
 
         docker pull --platform linux/s390x s390x/python:3.6-buster
-        docker pull --platform linux/s390x s390x/python:3.6-alpine3.11
+        docker pull --platform linux/s390x s390x/python:3.6-alpine3.12
 
         docker pull --platform linux/386 i386/python:3.6-buster
-        docker pull --platform linux/386 i386/python:3.6-alpine3.11
+        docker pull --platform linux/386 i386/python:3.6-alpine3.12
 
         make -j$(nproc --all) images-base-python3.6
         make -j$(nproc --all) images-builder-python3.6
@@ -110,25 +110,25 @@ jobs:
         docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
         docker pull --platform linux/arm64/v8 arm64v8/python:3.7-buster
-        docker pull --platform linux/arm64/v8 arm64v8/python:3.7-alpine3.11
+        docker pull --platform linux/arm64/v8 arm64v8/python:3.7-alpine3.12
 
         docker pull --platform linux/arm/v5 arm32v5/python:3.7-buster
 
-        docker pull --platform linux/arm/v6 arm32v6/python:3.7-alpine3.11
+        docker pull --platform linux/arm/v6 arm32v6/python:3.7-alpine3.12
 
         docker pull --platform linux/arm/v7 arm32v7/python:3.7-buster
-        docker pull --platform linux/arm/v7 arm32v7/python:3.7-alpine3.11
+        docker pull --platform linux/arm/v7 arm32v7/python:3.7-alpine3.12
 
         docker pull --platform linux/mips64le mips64le/python:3.7-buster
 
         docker pull --platform linux/ppc64le ppc64le/python:3.7-buster
-        docker pull --platform linux/ppc64le ppc64le/python:3.7-alpine3.11
+        docker pull --platform linux/ppc64le ppc64le/python:3.7-alpine3.12
 
         docker pull --platform linux/s390x s390x/python:3.7-buster
-        docker pull --platform linux/s390x s390x/python:3.7-alpine3.11
+        docker pull --platform linux/s390x s390x/python:3.7-alpine3.12
 
         docker pull --platform linux/386 i386/python:3.7-buster
-        docker pull --platform linux/386 i386/python:3.7-alpine3.11
+        docker pull --platform linux/386 i386/python:3.7-alpine3.12
 
         make -j$(nproc --all) images-base-python3.7
         make -j$(nproc --all) images-builder-python3.7
@@ -154,25 +154,25 @@ jobs:
         docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
         docker pull --platform linux/arm64/v8 arm64v8/python:3.8-buster
-        docker pull --platform linux/arm64/v8 arm64v8/python:3.8-alpine3.11
+        docker pull --platform linux/arm64/v8 arm64v8/python:3.8-alpine3.12
 
         docker pull --platform linux/arm/v5 arm32v5/python:3.8-buster
 
-        docker pull --platform linux/arm/v6 arm32v6/python:3.8-alpine3.11
+        docker pull --platform linux/arm/v6 arm32v6/python:3.8-alpine3.12
 
         docker pull --platform linux/arm/v7 arm32v7/python:3.8-buster
-        docker pull --platform linux/arm/v7 arm32v7/python:3.8-alpine3.11
+        docker pull --platform linux/arm/v7 arm32v7/python:3.8-alpine3.12
 
         docker pull --platform linux/mips64le mips64le/python:3.8-buster
 
         docker pull --platform linux/ppc64le ppc64le/python:3.8-buster
-        docker pull --platform linux/ppc64le ppc64le/python:3.8-alpine3.11
+        docker pull --platform linux/ppc64le ppc64le/python:3.8-alpine3.12
 
         docker pull --platform linux/s390x s390x/python:3.8-buster
-        docker pull --platform linux/s390x s390x/python:3.8-alpine3.11
+        docker pull --platform linux/s390x s390x/python:3.8-alpine3.12
 
         docker pull --platform linux/386 i386/python:3.8-buster
-        docker pull --platform linux/386 i386/python:3.8-alpine3.11
+        docker pull --platform linux/386 i386/python:3.8-alpine3.12
 
         make -j$(nproc --all) images-base-python3.8
         make -j$(nproc --all) images-builder-python3.8

@@ -4,7 +4,7 @@ FROM alpine:latest as downloader
 COPY scripts/download.sh /download
 RUN set -ex; /download qemu ppc64le
 
-FROM ppc64le/python:3.9-alpine3.11
+FROM ppc64le/python:3.9-alpine3.12
 
 # add qemu for cross build
 COPY --from=downloader /qemu* /usr/bin/

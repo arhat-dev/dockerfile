@@ -3,7 +3,7 @@ ARG ARCH=amd64
 ARG DOCKER_ARCH=amd64
 
 FROM arhatdev/builder-python3.6:alpine as builder
-FROM ${DOCKER_ARCH}/python:3.6-alpine3.11
+FROM ${DOCKER_ARCH}/python:3.6-alpine3.12
 
 ONBUILD COPY --from=builder /app /app
 

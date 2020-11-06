@@ -1,4 +1,4 @@
-FROM python:3.6-alpine3.11
+FROM python:3.6-alpine3.12
 
 # install build tools
 RUN apk --no-cache add ca-certificates wget build-base curl ;\
