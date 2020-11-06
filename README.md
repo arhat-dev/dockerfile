@@ -1,6 +1,12 @@
 # Dockerfile
 
-[![go](https://github.com/arhat-dev/dockerfile/workflows/go/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=go) [![rust](https://github.com/arhat-dev/dockerfile/workflows/rust/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=rust) [![python](https://github.com/arhat-dev/dockerfile/workflows/python/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=python) [![app](https://github.com/arhat-dev/dockerfile/workflows/app/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=app)
+[![go](https://github.com/arhat-dev/dockerfile/workflows/go/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=go)
+[![rust](https://github.com/arhat-dev/dockerfile/workflows/rust/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=rust)
+[![python3.6](https://github.com/arhat-dev/dockerfile/workflows/python3.6/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=python3.6)
+[![python3.7](https://github.com/arhat-dev/dockerfile/workflows/python3.7/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=python3.7)
+[![python3.8](https://github.com/arhat-dev/dockerfile/workflows/python3.8/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=python3.8)
+[![python3.9](https://github.com/arhat-dev/dockerfile/workflows/python3.9/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=python3.9)
+[![app](https://github.com/arhat-dev/dockerfile/workflows/app/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=app)
 
 Building blocks for [arhat-dev](https://github.com/arhat-dev), suitable for organizations using same project structure.
 
