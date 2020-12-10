@@ -26,6 +26,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Reinstall docker with platform support
+      run: sudo bash scripts/ci.sh install_docker
+
     - name: Build and Push Images
       env:
         DOCKER_CLI_EXPERIMENTAL: enabled
