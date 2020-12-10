@@ -34,10 +34,6 @@ jobs:
         repository: kubernetes-sigs/kind
         ref: 92f548951e8d798ef127737283c03e0374f45d4c
 
-    - name: Fetch History
-      run: |
-        git fetch --prune --unshallow
-
     - name: Restore cache
       uses: actions/cache@v2
       with:
@@ -84,10 +80,6 @@ jobs:
         repository: kubernetes/kubernetes
         ref: release-${{ matrix.kube }}
         path: kube
-
-    - name: Fetch History
-      run: |
-        git -C kube fetch --prune --unshallow
 
     - name: Download KinD
       uses: actions/download-artifact@v2
