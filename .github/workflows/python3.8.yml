@@ -10,6 +10,7 @@ on:
     branches:
     - master
     paths:
+    - .github/workflows/python3.8.yaml
     - base/python3.8/**
     - builder/python3.8/**
     - container/python3.8/**

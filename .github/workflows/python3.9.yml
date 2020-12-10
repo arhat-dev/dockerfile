@@ -10,6 +10,7 @@ on:
     branches:
     - master
     paths:
+    - .github/workflows/python3.9.yaml
     - base/python3.9/**
     - builder/python3.9/**
     - container/python3.9/**
