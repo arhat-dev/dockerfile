@@ -19,7 +19,7 @@ caddy() {
   GOARM=7
 
   case "${arch}" in
-    armv*) 
+    armv*)
       GOARCH=arm
       GOARM=${arch#armv}
       ;;
