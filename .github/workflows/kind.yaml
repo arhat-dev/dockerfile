@@ -1,0 +1,136 @@
+name: kind
+
+# yamllint disable-line rule:truthy
+on:
+  check_run:
+    types:
+    - rerequested
+    - requested_action
+  push:
+    branches:
+    - master
+    paths:
+    - .github/workflows/kind.yaml
+    - scripts/*.mk
+    - scripts/*.sh
+  schedule:
+  - cron: "0 0 * * *"
+
+env:
+  GO111MODULE: "on"
+
+jobs:
+  build-kind:
+    steps:
+    - uses: actions/setup-go@v2
+      with:
+        # required by kind explicitly
+        go-version: "1.15.5"
+
+    - name: Download Source of KinD
+      uses: actions/checkout@v2
+      with:
+        repository: https://github.com/kubernetes-sigs/kind.git
+        ref: 92f548951e8d798ef127737283c03e0374f45d4c
+        path: kind
+
+    - name: Fetch History
+      run: |
+        git -C kind fetch --prune --unshallow
+
+    - name: Restore cache
+      uses: actions/cache@v2
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Build KinD
+      run: |
+        CGO_ENABLED=0 make build KIND_BINARY_NAME=kind-linux-amd64
+
+    - name: Upload KinD Binary
+      uses: actions/upload-artifact@v2
+      with:
+        name: kind
+        path: bin/kind-linux-amd64
+
+  build:
+    runs-on: ubuntu-latest
+    needs:
+    - build-kind
+    strategy:
+      fail-fast: false
+      matrix:
+        kube:
+        - "1.13"
+        - "1.14"
+        - "1.15"
+        - "1.16"
+        - "1.17"
+        - "1.18"
+        - "1.19"
+        - "1.20"
+    steps:
+    - uses: actions/setup-go@v2
+      with:
+        # required by kind explicitly
+        go-version: "1.15.5"
+
+    - name: Download Source of Kubernetes
+      uses: actions/checkout@v2
+      with:
+        repository: https://github.com/kubernetes/kubernetes.git
+        ref: release-${{ matrix.kube }}
+        path: kube
+
+    - name: Fetch History
+      run: |
+        git -C kube fetch --prune --unshallow
+
+    - name: Download KinD
+      uses: actions/download-artifact@v2
+      with:
+        name: kind
+        path: "${HOME}/bin/kind"
+
+    - name: Install KinD
+      run: |
+        chmod +x "${HOME}/bin/kind"
+        echo "${HOME}/bin" >> $GITHUB_PATH
+
+    - name: Restore cache
+      uses: actions/cache@v2
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Build and Push Images
+      env:
+        DOCKER_CLI_EXPERIMENTAL: enabled
+        DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        GITHUB_DOCKER_USERNAME: ${{ github.actor }}
+        GITHUB_DOCKER_PASSWORD: ${{ secrets.GH_PACKAGES_TOKEN }}
+      run: |
+        docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
+        docker login ghcr.io -u="$GITHUB_DOCKER_USERNAME" -p="$GITHUB_DOCKER_PASSWORD"
+        docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+        kind build node-image \
+          --base-image docker.io/kindest/base:v20201204-49cad832 \
+          --type docker \
+          --kube-root ${WORKSPACE_ROOT}/kube \
+          --image ghcr.io/arhat-dev/kind-node:${{ matrix.kube }}
+
+        docker tag \
+          ghcr.io/arhat-dev/kind-node:${{ matrix.kube }} \
+          docker.io/arhatdev/kind-node:${{ matrix.kube }}
+
+        docker images
+
+        docker push ghcr.io/arhat-dev/kind-node:${{ matrix.kube }}
+        docker push docker.io/arhatdev/kind-node:${{ matrix.kube }}
