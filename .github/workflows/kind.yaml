@@ -31,7 +31,7 @@ jobs:
     - name: Download Source of KinD
       uses: actions/checkout@v2
       with:
-        repository: https://github.com/kubernetes-sigs/kind.git
+        repository: kubernetes-sigs/kind
         ref: 92f548951e8d798ef127737283c03e0374f45d4c
         path: kind
 
@@ -82,7 +82,7 @@ jobs:
     - name: Download Source of Kubernetes
       uses: actions/checkout@v2
       with:
-        repository: https://github.com/kubernetes/kubernetes.git
+        repository: kubernetes/kubernetes
         ref: release-${{ matrix.kube }}
         path: kube
 
