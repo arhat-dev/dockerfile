@@ -81,6 +81,10 @@ jobs:
         ref: release-${{ matrix.kube }}
         path: kube
 
+    - name: Fetch History
+      run: |
+        git -C kube fetch --prune --unshallow
+
     - name: Download KinD
       uses: actions/download-artifact@v2
       with:
@@ -117,7 +121,7 @@ jobs:
         kind build node-image \
           --base-image docker.io/kindest/base:v20201204-49cad832 \
           --type docker \
-          --kube-root kube \
+          --kube-root "${GITHUB_WORKSPACE}/kube" \
           --image ghcr.io/arhat-dev/kind-node:${{ matrix.kube }}
 
         docker tag \
