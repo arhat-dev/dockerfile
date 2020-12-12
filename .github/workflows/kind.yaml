@@ -20,42 +20,8 @@ env:
   GO111MODULE: "on"
 
 jobs:
-  build-kind:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/setup-go@v2
-      with:
-        # required by kind explicitly
-        go-version: "1.15.5"
-
-    - name: Download Source of KinD
-      uses: actions/checkout@v2
-      with:
-        repository: kubernetes-sigs/kind
-        ref: 92f548951e8d798ef127737283c03e0374f45d4c
-
-    - name: Restore cache
-      uses: actions/cache@v2
-      with:
-        path: ~/go/pkg/mod
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-        restore-keys: |
-          ${{ runner.os }}-go-
-
-    - name: Build KinD
-      run: |
-        CGO_ENABLED=0 make build KIND_BINARY_NAME=kind-linux-amd64
-
-    - name: Upload KinD Binary
-      uses: actions/upload-artifact@v2
-      with:
-        name: kind
-        path: bin/kind-linux-amd64
-
   build:
     runs-on: ubuntu-latest
-    needs:
-    - build-kind
     strategy:
       fail-fast: false
       matrix:
@@ -71,8 +37,7 @@ jobs:
     steps:
     - uses: actions/setup-go@v2
       with:
-        # required by kind explicitly
-        go-version: "1.15.5"
+        go-version: 1.15.x
 
     - name: Download Source of Kubernetes
       uses: actions/checkout@v2
@@ -85,17 +50,21 @@ jobs:
       run: |
         git -C kube fetch --prune --unshallow
 
-    - name: Download KinD
-      uses: actions/download-artifact@v2
-      with:
-        name: kind
-        path: kind
-
     - name: Install KinD
+      env:
+        # TODO: kind v0.9.0 currently not able to handle kubernetes v1.13 node join due to kubeadm error
+        #       https://github.com/kubernetes-sigs/kind/issues/1853#issuecomment-692938702
+        # NOTE: once updated version of kind, need to update all e2e tests
+        #       require kind with the same version
+        KIND_VERSION: v0.9.0
       run: |
-        chmod +x kind
+        if [ ${{ matrix.kube }} = '1.13' ]; then
+          KIND_VERSION=v0.8.1
+        fi
+
         mkdir -p "${HOME}/bin"
-        mv kind "${HOME}/bin/kind"
+        curl -Lo "${HOME}/bin/kind" https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-amd64
+        chmod +x "${HOME}/bin/kind"
         echo "${HOME}/bin" >> $GITHUB_PATH
 
     - name: Restore cache
