@@ -14,6 +14,7 @@
 
 [![python3.9](https://github.com/arhat-dev/dockerfile/workflows/python3.9/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=python3.9)
 
+[![kind](https://github.com/arhat-dev/dockerfile/workflows/kind/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=kind)
 
 Building blocks for [arhat-dev](https://github.com/arhat-dev), suitable for organizations using same project structure.
 
