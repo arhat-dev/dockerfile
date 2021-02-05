@@ -64,4 +64,13 @@ yamllint() {
     --build-arg ARCH="${arch}" scripts/app/yamllint
 }
 
+athens() {
+  arch="$1"
+  
+  git clone https://github.com/athensresearch/athens.git app/athens
+  docker build -f app/athens/Dockerfile \
+    $(get_tag_args "athens:${arch}") \
+    app/athens
+}
+
 "$@"
