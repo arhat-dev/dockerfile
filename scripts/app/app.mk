@@ -39,21 +39,3 @@ kubeval-linux-armv7: .app-build-dir
 kubeval-linux-arm64: .app-build-dir
 	$(GO_ARGS) GOARCH=arm64 go get $(KUBEVAL_PKG)
 	find $(GOPATH)/bin -name 'kubeval' -exec mv {} /app/build/$@ \;
-
-
-CONFTEST_PKG := github.com/instrumenta/conftest@v0.20.0
-conftest-linux-amd64: .app-build-dir
-	$(GO_ARGS) GOARCH=amd64 go get $(CONFTEST_PKG)
-	find $(GOPATH)/bin -name 'conftest' -exec mv {} /app/build/$@ \;
-
-conftest-linux-armv6: .app-build-dir
-	$(GO_ARGS) GOARCH=arm GOARM=6 go get $(CONFTEST_PKG)
-	find $(GOPATH)/bin -name 'conftest' -exec mv {} /app/build/$@ \;
-
-conftest-linux-armv7: .app-build-dir
-	$(GO_ARGS) GOARCH=arm GOARM=7 go get $(CONFTEST_PKG)
-	find $(GOPATH)/bin -name 'conftest' -exec mv {} /app/build/$@ \;
-
-conftest-linux-arm64: .app-build-dir
-	$(GO_ARGS) GOARCH=arm64 go get $(CONFTEST_PKG)
-	find $(GOPATH)/bin -name 'conftest' -exec mv {} /app/build/$@ \;

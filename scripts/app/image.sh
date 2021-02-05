@@ -5,14 +5,6 @@ set -e
 
 . scripts/env.sh
 
-v2ray() {
-  arch="$1"
-
-  docker build -f app/v2ray.dockerfile \
-    $(get_tag_args "v2ray:${arch}") \
-    --build-arg ARCH="${arch}" .
-}
-
 caddy() {
   arch="$1"
   GOARCH="$1"
@@ -34,14 +26,6 @@ caddy() {
     --build-arg GOARM="${GOARM}" .
 }
 
-frp() {
-  arch=$1
-
-  docker build -f app/frp.dockerfile \
-    $(get_tag_args "frp:${arch}") \
-    --build-arg ARCH="${arch}" .
-}
-
 hydroxide() {
   arch="$1"
 
@@ -60,16 +44,6 @@ kubeval() {
     --build-arg ARCH="${arch}" \
     --build-arg TARGET="kubeval-linux-${arch}" \
     --build-arg APP="kubeval" .
-}
-
-conftest() {
-  arch="$1"
-
-  docker build -f app/conftest.dockerfile \
-    $(get_tag_args "conftest:${arch}") \
-    --build-arg ARCH="${arch}" \
-    --build-arg TARGET="conftest-linux-${arch}" \
-    --build-arg APP="conftest" .
 }
 
 helm() {
