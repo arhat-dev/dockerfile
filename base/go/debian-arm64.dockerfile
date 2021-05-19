@@ -4,7 +4,7 @@ FROM alpine:latest as downloader
 COPY scripts/download.sh /download
 RUN set -ex; /download qemu arm64
 
-FROM arm64v8/golang:1.15-buster
+FROM arm64v8/golang:1.16-buster
 
 # add qemu for cross build
 COPY --from=downloader /qemu* /usr/bin/
