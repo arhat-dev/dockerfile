@@ -7,4 +7,4 @@ name = 'pypi'
 python_version = '3.7'
 
 [packages]
-yamllint = "==1.26.0"
+yamllint = "==1.26.1"
