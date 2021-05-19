@@ -50,4 +50,4 @@ RUN apt-get update ;\
     gcc-riscv64-linux-gnu g++-riscv64-linux-gnu linux-libc-dev-riscv64-cross \
     gcc-s390x-linux-gnu g++-s390x-linux-gnu linux-libc-dev-s390x-cross \
     # tools
-    git make upx curl wget;
+    git make curl wget;

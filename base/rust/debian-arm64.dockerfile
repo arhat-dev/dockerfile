@@ -27,7 +27,7 @@ RUN set -e ;\
     apt-get update ;\
     apt-get upgrade -y ;\
     apt-get install -y --no-install-recommends \
-      git make upx curl build-essential wget musl-tools ;
+      git make curl build-essential wget musl-tools ;
 
 # add musl target
 RUN rustup target add aarch64-unknown-linux-musl

@@ -46,7 +46,7 @@ RUN apt-get update ;\
     # gcc-riscv64-linux-gnu \
     # gcc-s390x-linux-gnu \
     # tools
-    git make upx curl wget musl-tools xz-utils ;
+    git make curl wget musl-tools xz-utils ;
 
 RUN set -e ;\
     # add arm 32bit cross compiler

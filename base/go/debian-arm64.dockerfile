@@ -27,4 +27,4 @@ RUN set -e ;\
     apt-get update ;\
     apt-get upgrade -y ;\
     apt-get install -y --no-install-recommends \
-      git make upx curl build-essential wget ;
+      git make curl build-essential wget ;

@@ -11,4 +11,4 @@ COPY --from=downloader /qemu* /usr/bin/
 
 # install dependencies
 RUN apk --no-cache add \
-      ca-certificates wget build-base curl git make upx ;
+      ca-certificates wget build-base curl git make ;
