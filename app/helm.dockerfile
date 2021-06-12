@@ -17,6 +17,8 @@ RUN set -ex ;\
 
 FROM ghcr.io/arhat-dev/go:alpine-${ARCH}
 
+LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
+
 # COPY --from=conftest /conftest /usr/bin/conftest
 COPY --from=kubeval /kubeval /usr/bin/kubeval
 COPY --from=builder /kubectl/kubectl /usr/bin/kubectl

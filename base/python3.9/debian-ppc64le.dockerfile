@@ -5,6 +5,8 @@ RUN set -ex; /download qemu ppc64le
 
 FROM ppc64le/python:3.9-buster
 
+LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
+
 # add qemu for cross build
 COPY --from=downloader /qemu* /usr/bin/
 

@@ -1,5 +1,7 @@
 FROM rust:buster
 
+LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
+
 ARG MIRROR_SITE
 
 # add multiarchs

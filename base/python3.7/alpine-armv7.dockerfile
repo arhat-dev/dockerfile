@@ -6,6 +6,8 @@ RUN set -ex; /download qemu armv7
 
 FROM arm32v7/python:3.7-alpine3.12
 
+LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
+
 # add qemu for cross build
 COPY --from=downloader /qemu* /usr/bin/
 

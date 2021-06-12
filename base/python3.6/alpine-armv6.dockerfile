@@ -6,6 +6,8 @@ RUN set -ex; /download qemu armv6
 
 FROM arm32v6/python:3.6-alpine3.12
 
+LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
+
 # add qemu for cross build
 COPY --from=downloader /qemu* /usr/bin/
 

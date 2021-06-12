@@ -1,6 +1,8 @@
 ARG ARCH=amd64
 FROM ghcr.io/arhat-dev/base-python3.7:debian-${ARCH}
 
+LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
+
 # ensure pipenv will create vitrualenv in /app/.venv
 ENV PIPENV_VENV_IN_PROJECT 1
 

@@ -5,6 +5,8 @@ RUN set -ex; /download qemu armv5
 
 FROM arm32v5/python:3.8-buster
 
+LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
+
 # add qemu for cross build
 COPY --from=downloader /qemu* /usr/bin/
 

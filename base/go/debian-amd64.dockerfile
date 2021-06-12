@@ -1,5 +1,7 @@
 FROM golang:1.16-buster
 
+LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
+
 ARG MIRROR_SITE
 
 # add multiarchs

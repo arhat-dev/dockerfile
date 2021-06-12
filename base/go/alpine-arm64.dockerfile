@@ -6,6 +6,8 @@ RUN set -ex; /download qemu arm64
 
 FROM arm64v8/golang:1.16-alpine3.12
 
+LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
+
 # add qemu for cross build
 COPY --from=downloader /qemu* /usr/bin/
 

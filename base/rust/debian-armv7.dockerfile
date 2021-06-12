@@ -6,6 +6,8 @@ RUN set -ex; /download qemu armv7
 
 FROM arm32v7/rust:buster
 
+LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
+
 # add qemu for cross build
 COPY --from=downloader /qemu* /usr/bin/
 

@@ -11,4 +11,6 @@ RUN caddy-builder \
 
 FROM caddy:2
 
+LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
+
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy

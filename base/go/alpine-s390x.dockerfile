@@ -6,6 +6,8 @@ RUN set -ex; /download qemu s390x
 
 FROM s390x/golang:1.16-alpine3.12
 
+LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
+
 # add qemu for cross build
 COPY --from=downloader /qemu* /usr/bin/
 

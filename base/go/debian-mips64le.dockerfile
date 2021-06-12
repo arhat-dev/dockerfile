@@ -6,6 +6,8 @@ RUN set -ex; /download qemu mips64le
 
 FROM mips64le/golang:1.16-buster
 
+LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
+
 # add qemu for cross build
 COPY --from=downloader /qemu* /usr/bin/
 
