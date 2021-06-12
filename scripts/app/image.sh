@@ -64,13 +64,22 @@ yamllint() {
     --build-arg ARCH="${arch}" scripts/app/yamllint
 }
 
-athens() {
+spilo() {
   arch="$1"
-  
-  git clone https://github.com/athensresearch/athens.git app/athens
-  docker build -f app/athens/Dockerfile \
-    $(get_tag_args "athens:${arch}") \
-    app/athens
+
+  mkdir -p .build
+  rm -rf .build/spilo
+
+  git clone --depth=1 --branch=2.0-p7 https://github.com/zalando/spilo.git .build/spilo
+
+  docker build -f .build/spilo/postgres-appliance/Dockerfile \
+    $(get_tag_args "spilo:${arch}") \
+    --build-arg ARCH="${arch}" \
+    --build-arg PGVERSION="13" \
+    --build-arg PGOLDVERSIONS="9.5 9.6 10 11 12" \
+    --build-arg DEMO=false \
+    --build-arg TIMESCALEDB_APACHE_ONLY=false \
+    .build/spilo/postgres-appliance
 }
 
 "$@"
