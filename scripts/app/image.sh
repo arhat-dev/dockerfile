@@ -74,6 +74,7 @@ spilo() {
 
   docker build -f .build/spilo/postgres-appliance/Dockerfile \
     -t spilo:latest \
+    --build-arg TIMESCALEDB=2.3.0 \
     --build-arg ARCH="${arch}" \
     --build-arg BASE_IMAGE="registry.opensource.zalan.do/library/ubuntu-18.04" \
     --build-arg PGVERSION="13" \
