@@ -27,7 +27,6 @@ jobs:
       fail-fast: false
       matrix:
         kube:
-        - "1.13"
         - "1.14"
         - "1.15"
         - "1.16"
@@ -58,10 +57,6 @@ jobs:
         #       require kind with the same version
         KIND_VERSION: v0.11.1
       run: |
-        if [ ${{ matrix.kube }} = '1.13' ]; then
-          KIND_VERSION=v0.8.1
-        fi
-
         mkdir -p "${HOME}/bin"
         curl -Lo "${HOME}/bin/kind" https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-amd64
         chmod +x "${HOME}/bin/kind"
