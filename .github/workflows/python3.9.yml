@@ -21,6 +21,9 @@ on:
   schedule:
   - cron: "0 0 * * *"
 
+env:
+  DOCKER_BUILDKIT: "0"
+
 jobs:
   build-python3-9:
     runs-on: ubuntu-latest

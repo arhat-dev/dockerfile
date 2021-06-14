@@ -12,6 +12,9 @@ on:
   schedule:
   - cron: "0 0 * * *"
 
+env:
+  DOCKER_BUILDKIT: "0"
+
 jobs:
   apps:
     runs-on: ubuntu-latest
