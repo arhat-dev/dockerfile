@@ -40,6 +40,8 @@ jobs:
         docker login ghcr.io -u="$GITHUB_DOCKER_USERNAME" -p="$GITHUB_DOCKER_PASSWORD"
         docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
+        sh scripts/go/generate-base-dockerfiles.sh
+
         make -j$(nproc --all) images-base-go
         make -j$(nproc --all) images-builder-go
         make -j$(nproc --all) images-container-go
