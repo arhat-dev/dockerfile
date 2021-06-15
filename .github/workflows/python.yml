@@ -25,7 +25,7 @@ env:
   DOCKER_BUILDKIT: "0"
 
 jobs:
-  build-python3-6:
+  build:
     strategy:
       matrix:
         py_ver:
