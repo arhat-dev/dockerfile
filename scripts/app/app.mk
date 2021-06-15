@@ -23,7 +23,7 @@ hydroxide-linux-arm64: .app-build-dir
 	find $(GOPATH)/bin -name 'hydroxide' -exec mv {} /app/build/$@ \;
 
 
-KUBEVAL_PKG := github.com/instrumenta/kubeval@0.16.3
+KUBEVAL_PKG := github.com/instrumenta/kubeval@v0.16.3
 kubeval-linux-amd64: .app-build-dir
 	$(GO_ARGS) GOARCH=amd64 go get $(KUBEVAL_PKG)
 	find $(GOPATH)/bin -name 'kubeval' -exec mv {} /app/build/$@ \;
