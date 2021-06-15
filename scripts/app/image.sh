@@ -91,10 +91,11 @@ spilo() {
 proton_bridge() {
   arch="$1"
 
-  docker build -f app/proton-bridge.dockerfile \
+  docker build -f app/proton-bridge.dockerfile --no-cache \
     $(get_tag_args "proton-bridge:${arch}") \
     --build-arg ARCH="${arch}" \
-    scripts/app/proton-bridge
+    --build-arg TARGET="proton-bridge-linux-${arch}" \
+    --build-arg APP="proton-bridge" .
 }
 
 "$@"

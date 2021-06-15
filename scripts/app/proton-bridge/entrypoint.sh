@@ -4,8 +4,8 @@
 set -e
 
 _trust_keys() {
-  for fpr in $(gpg --list-keys --with-colons  | awk -F: '/fpr:/ {print $10}' | sort -u); do
-    printf "5\ny\n" |  gpg --command-fd 0 --expert --edit-key "${fpr}" trust
+  for fpr in $(gpg --list-keys --with-colons | awk -F: '/fpr:/ {print $10}' | sort -u); do
+    printf "5\ny\n" | gpg --command-fd 0 --expert --edit-key "${fpr}" trust
   done
 }
 
@@ -24,10 +24,19 @@ _import_or_generate_keys() {
     _trust_keys
   else
     # no key pair provided, generate and export
-    gpg --generate-key --batch /opt/gpgparams
+    cat <<EOF | gpg --generate-key --batch -
+%no-protection
+%echo Generating a basic OpenPGP key
+Key-Type: RSA
+Key-Length: 2048
+Name-Real: ${KEY_ID:-"pass-key"}
+Expire-Date: 0
+%commit
+%echo done
+EOF
 
-    gpg --armor -a --export | base64 -w 0 > /data/pub.gpg
-    gpg --armor -a --export-secret-key | base64 -w 0 > /data/secret.gpg
+    gpg --armor -a --export | base64 -w 0 >"/data/pub.gpg"
+    gpg --armor -a --export-secret-key | base64 -w 0 >"/data/secret.gpg"
   fi
 }
 
@@ -45,7 +54,7 @@ _import_proton_bridge_credentials() {
     # import credentials from file
     mkdir -p "${credentials_dir}/$(cat "/data/cred_dirname.txt")"
     cat "/data/cred.gpg" \
-      > "${credentials_dir}/$(cat "/data/cred_dirname.txt")/$(cat "/data/cred_filename.txt")"
+      >"${credentials_dir}/$(cat "/data/cred_dirname.txt")/$(cat "/data/cred_filename.txt")"
   fi
 }
 
@@ -56,7 +65,6 @@ _start() {
 
   _import_proton_bridge_credentials
 
-  # Login
   do_login="proton-bridge --cli"
   if [ "${PROTONMAIL_USERNAME}" != "" ]; then
     # automated login if both username is set (implies password also set)
@@ -68,23 +76,20 @@ _start() {
   # save credential info to data dir
   if [ "${CRED_DIR_NAME}" = "" ] || [ "${CRED_FILE_NAME}" = "" ]; then
     cred_dirname="$(ls ${credentials_dir})"
-    printf "%s" "${cred_dirname}" > "/data/cred_dirname.txt"
+    printf "%s" "${cred_dirname}" >"/data/cred_dirname.txt"
 
     cred_filename="$(ls "${credentials_dir}/${cred_dirname}")"
-    printf "%s" "${cred_filename}" > "/data/cred_filename.txt"
+    printf "%s" "${cred_filename}" >"/data/cred_filename.txt"
 
     base64 -w 0 \
       "${credentials_dir}/${cred_dirname}/${cred_filename}" \
-      > /data/cred.gpg
+      >/data/cred.gpg
   fi
 
-  # socat will make the conn appear to come from 127.0.0.1
-  # ProtonMail Bridge currently expects that.
-  # It also allows us to bind to the real ports :)
+  # proton-bridge only listens on 127.0.0.1
   socat TCP-LISTEN:9587,fork TCP:127.0.0.1:1025 &
   socat TCP-LISTEN:9143,fork TCP:127.0.0.1:1143 &
 
-  # Start protonmail
   # Fake a terminal, so it does not quit because of EOF...
   fake_tty="$(mktemp -u)"
   mkfifo "${fake_tty}"
