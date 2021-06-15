@@ -1,4 +1,4 @@
-name: python3.6
+name: python
 
 # yamllint disable-line rule:truthy
 on:
