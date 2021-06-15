@@ -58,9 +58,14 @@ _build_app_image() {
 }
 
 app() {
-  _build_app_image proton_bridge "amd64"
+  # proton-bridge doesn't have 32bit support
+  #
+  #   /go/pkg/mod/github.com/!proton!mail/go-rfc5322@v0.8.0/parser/rfc5322_parser.go:2756: constant 4230534781 overflows int
+  _build_app_image proton_bridge "amd64 arm64"
 
+  # HA postgres
   _build_app_image spilo "amd64"
+
   _build_app_image yamllint "amd64 arm64 armv7 armv6"
   _build_app_image kubeval "amd64 arm64 armv7 armv6"
   _build_app_image helm "amd64 arm64 armv7"
