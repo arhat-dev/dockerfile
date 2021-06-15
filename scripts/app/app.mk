@@ -30,13 +30,14 @@ kubeval-linux-arm64: .app-build-dir
 		$(GO_GET) $(KUBEVAL_CMD_PKG)
 	find $(GOPATH)/bin -name 'kubeval' -exec mv {} /app/build/$@ \;
 
-PROTON_BRIDGE_VERSION := v1.8.3
+PROTON_BRIDGE_VERSION := v1.8.5
 .download-proton-bridge-src:
 	git clone --branch "${PROTON_BRIDGE_VERSION}" \
 		https://github.com/ProtonMail/proton-bridge.git
-	apt update && apt install -y libsecret-1-dev
+	sed -i '/github.com\/docker\/docker-credential-helpers\/secretservice/d' proton-bridge/pkg/keychain/helper_linux.go 
+	sed -i 's/return \&secretservice\.Secretservice.*, nil/return nil, nil/g' proton-bridge/pkg/keychain/helper_linux.go
 
-MK_PROTON_BRIDGE := CGO_ENABELD=1 GOOS=linux BUILD_TAGS='netgo' make -C proton-bridge build-nogui
+MK_PROTON_BRIDGE := CGO_ENABELD=0 GOOS=linux BUILD_TAGS='netgo' make -C proton-bridge build-nogui
 proton-bridge-linux-amd64: .app-build-dir .download-proton-bridge-src
 	GOARCH=amd64 \
 		$(MK_PROTON_BRIDGE)

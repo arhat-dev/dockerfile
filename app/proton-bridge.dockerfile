@@ -1,7 +1,7 @@
 ARG ARCH=amd64
 
-FROM ghcr.io/arhat-dev/builder-go:debian-${ARCH} AS builder
-FROM ghcr.io/arhat-dev/go:debian-${ARCH}
+FROM ghcr.io/arhat-dev/builder-go:alpine AS builder
+FROM ghcr.io/arhat-dev/go:alpine-${ARCH}
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
@@ -10,8 +10,7 @@ RUN addgroup -g 1000 proton-bridge ;\
     mkdir -p /data ;\
     chown -R proton-bridge:proton-bridge /data
 
-RUN apt install -y --no-install-recommends \
-      expect socat pass libsecret-1 ca-certificates
+RUN apk add expect socat pass ca-certificates coreutils libnotify
 
 COPY entrypoint.sh login.exp /usr/local/bin/
 
