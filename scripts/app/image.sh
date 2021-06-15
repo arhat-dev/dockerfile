@@ -88,4 +88,13 @@ spilo() {
     --build-arg BASE_IMAGE="spilo:latest" .
 }
 
+proton_bridge() {
+  arch="$1"
+
+  docker build -f app/proton-bridge.dockerfile \
+    $(get_tag_args "proton-bridge:${arch}") \
+    --build-arg ARCH="${arch}" \
+    scripts/app/proton-bridge
+}
+
 "$@"

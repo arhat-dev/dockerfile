@@ -58,7 +58,8 @@ _build_app_image() {
 }
 
 app() {
-  _build_app_image hydroxide "amd64 arm64 armv7 armv6"
+  _build_app_image proton_bridge "amd64"
+
   _build_app_image spilo "amd64"
   _build_app_image yamllint "amd64 arm64 armv7 armv6"
   _build_app_image kubeval "amd64 arm64 armv7 armv6"
