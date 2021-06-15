@@ -1,4 +1,4 @@
-FROM golang:1.16-alpine3.12
+FROM golang:1.16-alpine3.13
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
