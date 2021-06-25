@@ -11,7 +11,7 @@ docker:buildkit:build:
     - shell: |-
         rm "builder/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile"
   dockerfile@template: |-
-    builder/{{ .Env.MATRIX_LANGUAGE }}/{{ .Env.MATRIX_ROOTFS }}.dockerfile
+    builder/{{ .Env.MATRIX_LANGUAGE }}/{{ .Env.MATRIX_ROOTFS }}-{{ .Env.MATRIX_ARCH }}.dockerfile
   image_names@template: |-
     {{- $suffix := printf "%s:%s-%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
     {{- $manifest_suffix := printf "%s:%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS -}}
