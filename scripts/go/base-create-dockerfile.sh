@@ -18,11 +18,12 @@ alpine)
 esac
 
 base_image="docker.io/library/golang:${go_version}-${suffix}"
+dockerfile="base/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile"
 
 if [ "${MATRIX_ARCH}" = "amd64" ]; then
   case "${MATRIX_ROOTFS}" in
-    debian)
-      cat <<EOF
+  debian)
+    cat <<EOF >"${dockerfile}"
 FROM --platform=linux/amd64 ${base_image}
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
@@ -80,10 +81,10 @@ RUN apt-get update ;\
     git make curl wget;
 
 EOF
-      exit 0
+    exit 0
     ;;
-    alpine)
-      cat <<EOF
+  alpine)
+    cat <<EOF >"${dockerfile}"
 FROM --platform=linux/amd64 ${base_image}
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
@@ -91,12 +92,12 @@ LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 COPY scripts/${MATRIX_LANGUAGE}/base-setup-alpine.sh /setup.sh
 RUN sh /setup.sh && rm /setup.sh
 EOF
-      exit 0
+    exit 0
     ;;
   esac
 fi
 
-cat <<EOF >"base/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile"
+cat <<EOF >"${dockerfile}"
 FROM alpine:latest as downloader
 
 COPY scripts/download.sh /download
