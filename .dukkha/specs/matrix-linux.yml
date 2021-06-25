@@ -7,6 +7,7 @@ exclude:
   - mips64le
   # ERROR: patch-2.7.6-r6: package mentioned in index not found (try 'apk update')
   - ppc64le
+
 - rootfs:
   - debian
   arch:
@@ -28,8 +29,11 @@ arch:
 - arm64
 - armv7
 - armv6
-- armv5
 - ppc64le
 - s390x
 - x86
-- mips64le # NOTE: MUST NOT set --platform in extraArgs for this image build
+
+# NOTE: MUST NOT set --platform in extraArgs for following image build
+#       when building golang image
+- mips64le
+- armv5

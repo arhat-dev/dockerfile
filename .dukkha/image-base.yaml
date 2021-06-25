@@ -18,8 +18,8 @@ docker:buildkit:build:
     - image: ghcr.io/arhat-dev/base-{{ $suffix }}
 
   extraArgs@template: |-
-    {{- $platform_arch := getDockerArch .Env.MATRIX_ARCH -}}
-    {{- if ne .Env.MATRIX_ARCH "mips64le" }}
+    {{- $platform_arch := getDockerPlatformArch .Env.MATRIX_ARCH -}}
+    {{- if or (.Env.MATRIX_LANGUAGE | hasPrefix "go") (not (eq .Env.MATRIX_ARCH "mips64le" "armv5")) }}
     - --platform="linux/{{ $platform_arch }}"
     {{- end }}
     - --pull
