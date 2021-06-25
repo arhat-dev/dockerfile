@@ -13,6 +13,7 @@ on:
     - base/**
     - scripts/**
     - .dukkha/**
+    - .github/workflows/build.yaml
   schedule:
   - cron: "0 0 * * *"
 
@@ -35,8 +36,8 @@ jobs:
         mkdir -p "${HOME}/bin"
         echo "${HOME}/bin" >> $GITHUB_PATH
 
-        docker pull ghcr.io/arhat-dev/dukkha:amd64-latest
-        ctr_id=$(docker create ghcr.io/arhat-dev/dukkha:amd64-latest : 2>/dev/null)
+        docker pull ghcr.io/arhat-dev/dukkha:dev-amd64
+        ctr_id=$(docker create ghcr.io/arhat-dev/dukkha:dev-amd64 : 2>/dev/null)
         docker cp ${ctr_id}:/dukkha "${HOME}/bin/dukkha"
 
         chmod +x "${HOME}/bin/dukkha"
