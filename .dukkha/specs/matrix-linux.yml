@@ -1,0 +1,35 @@
+exclude:
+- rootfs:
+  - alpine
+  arch:
+  # alpine has no armv5 and mips64le support
+  - armv5
+  - mips64le
+  # ERROR: patch-2.7.6-r6: package mentioned in index not found (try 'apk update')
+  - ppc64le
+- rootfs:
+  - debian
+  arch:
+  - armv6
+
+rootfs:
+- alpine
+- debian
+kernel:
+- linux
+language:
+- go
+- python3.6
+- python3.7
+- python3.8
+- python3.9
+arch:
+- amd64
+- arm64
+- armv7
+- armv6
+- armv5
+- ppc64le
+- s390x
+- x86
+- mips64le # NOTE: MUST NOT set --platform in extraArgs for this image build

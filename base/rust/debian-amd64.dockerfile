@@ -1,4 +1,4 @@
-FROM rust:buster
+FROM --platform=linux/amd64 rust:buster
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 

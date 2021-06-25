@@ -1,0 +1,68 @@
+name: build
+
+# yamllint disable-line rule:truthy
+on:
+  check_run:
+    types:
+    - rerequested
+    - requested_action
+  push:
+    branches:
+    - master
+    paths:
+    - base/**
+    - scripts/**
+    - .dukkha/**
+  schedule:
+  - cron: "0 0 * * *"
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        language:
+        - go
+        - python3.6
+        - python3.7
+        - python3.8
+        - python3.9
+      fail-fast: false
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dukkha
+      run: |-
+        mkdir -p "${HOME}/bin"
+        echo "${HOME}/bin" >> $GITHUB_PATH
+
+        docker pull ghcr.io/arhat-dev/dukkha:amd64-latest
+        ctr_id=$(docker create ghcr.io/arhat-dev/dukkha:amd64-latest : 2>/dev/null)
+        docker cp ${ctr_id}:/dukkha "${HOME}/bin/dukkha"
+
+        chmod +x "${HOME}/bin/dukkha"
+
+    - name: Build and Push Images
+      env:
+        DOCKER_CLI_EXPERIMENTAL: enabled
+        DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        GITHUB_DOCKER_USERNAME: ${{ github.actor }}
+        GITHUB_DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
+        docker login ghcr.io -u="$GITHUB_DOCKER_USERNAME" -p="$GITHUB_DOCKER_PASSWORD"
+        docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+        actions="build push"
+        for act in ${actions}; do
+          dukkha -j $(nproc --all) docker ${act} linux/base \
+            -m language=${{ matrix.language }}
+
+          dukkha -j $(nproc --all) docker ${act} linux/builder \
+            -m language=${{ matrix.language }}
+
+          dukkha -j $(nproc --all) docker ${act} linux/container \
+            -m language=${{ matrix.language }}
+        done
+
+        docker images

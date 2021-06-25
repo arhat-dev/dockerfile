@@ -12,21 +12,8 @@ x86 := i386
 mips64le := mips64le
 
 include scripts/base.mk
-
 include scripts/app/app.mk
-
-include scripts/go/go.mk
-
-include scripts/python/python3.6.mk
-include scripts/python/python3.7.mk
-include scripts/python/python3.8.mk
-include scripts/python/python3.9.mk
-
 include scripts/rust/rust.mk
-
-images-base: images-base-go images-base-rust images-base-python
-images-builder: images-builder-go images-builder-rust images-builder-python
-images-container: images-container-go images-container-rust images-container-python
 
 images-app:
 	./scripts/build-targets.sh app

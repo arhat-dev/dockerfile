@@ -4,7 +4,7 @@ FROM alpine:latest as downloader
 COPY scripts/download.sh /download
 RUN set -ex; /download qemu arm64
 
-FROM arm64v8/rust:buster
+FROM --platform=linux/arm64/v8 rust:buster
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 

@@ -1,4 +1,4 @@
-FROM golang:1.16-buster
+FROM --platform=linux/amd64 golang:1.16-buster
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 

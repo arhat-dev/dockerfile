@@ -1,0 +1,35 @@
+docker:buildkit:build:
+- name: linux/container
+  matrix@file: .dukkha/specs/matrix-linux.yml
+  hooks:
+    before@template: |-
+      - shell: |-
+          sh scripts/${MATRIX_LANGUAGE}/container-create-dockerfile.sh \
+            {{ getDockerPlatformArch (.Env.MATRIX_ARCH | default "amd64") }}
+        per_matrix_run: true
+    after:success:
+    - shell: |-
+        rm "container/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile"
+  dockerfile@template: |-
+    container/{{ .Env.MATRIX_LANGUAGE }}/{{ .Env.MATRIX_ROOTFS }}-{{ .Env.MATRIX_ARCH }}.dockerfile
+  image_names@template: |-
+    {{- $suffix := printf "%s:%s-%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
+    {{- $manifest_suffix := printf "%s:%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS -}}
+    - image: docker.io/arhatdev/{{ $suffix }}
+      manifest: docker.io/arhatdev/{{ $manifest_suffix }}
+    - image: ghcr.io/arhat-dev/{{ $suffix }}
+      manifest: ghcr.io/arhat-dev/{{ $manifest_suffix }}
+  extraArgs@template: |-
+    {{- $platform_arch := getDockerPlatformArch .Env.MATRIX_ARCH -}}
+    - --platform="linux/{{ $platform_arch }}"
+
+docker:buildkit:push:
+- name: linux/container
+  matrix@file: .dukkha/specs/matrix-linux.yml
+  image_names@template: |-
+    {{- $suffix := printf "%s:%s-%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
+    {{- $manifest_suffix := printf "%s:%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS -}}
+    - image: docker.io/arhatdev/{{ $suffix }}
+      manifest: docker.io/arhatdev/{{ $manifest_suffix }}
+    - image: ghcr.io/arhat-dev/{{ $suffix }}
+      manifest: ghcr.io/arhat-dev/{{ $manifest_suffix }}

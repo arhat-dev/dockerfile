@@ -1,0 +1,41 @@
+docker:buildkit:build:
+- name: linux/base
+  matrix@file: .dukkha/specs/matrix-linux.yml
+  dockerfile@template: |-
+    base/{{ .Env.MATRIX_LANGUAGE }}/{{ .Env.MATRIX_ROOTFS }}-{{ .Env.MATRIX_ARCH }}.dockerfile
+  hooks:
+    before@template: |-
+      - shell: |-
+          if [ "${MATRIX_ARCH}" == "amd64" ]; then
+            exit 0
+          fi
+
+          sh scripts/${MATRIX_LANGUAGE}/base-create-dockerfile.sh \
+            {{ getDockerPlatformArch (.Env.MATRIX_ARCH | default "amd64") }}
+        per_matrix_run: true
+    after:success:
+    - shell: |-
+        if [ "${MATRIX_ARCH}" != "amd64" ]; then
+          rm "base/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile"
+        fi
+
+  image_names@template: |-
+    {{- $suffix := printf "%s:%s-%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
+    - image: docker.io/arhatdev/base-{{ $suffix }}
+    - image: ghcr.io/arhat-dev/base-{{ $suffix }}
+
+  extraArgs@template: |-
+    {{- $platform_arch := getDockerArch .Env.MATRIX_ARCH -}}
+    {{- if ne .Env.MATRIX_ARCH "mips64le" }}
+    - --platform="linux/{{ $platform_arch }}"
+    {{- end }}
+    - --pull
+    - --no-cache
+
+docker:buildkit:push:
+- name: linux/base
+  matrix@file: .dukkha/specs/matrix-linux.yml
+  image_names@template: |-
+    {{- $suffix := printf "%s:%s-%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
+    - image: docker.io/arhatdev/base-{{ $suffix }}
+    - image: ghcr.io/arhat-dev/base-{{ $suffix }}

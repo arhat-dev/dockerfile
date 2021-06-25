@@ -1,4 +1,4 @@
-FROM python:3.6
+FROM --platform=linux/amd64 python:3.6
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 

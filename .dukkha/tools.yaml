@@ -1,0 +1,18 @@
+bootstrap: {}
+
+tools:
+  docker:
+  # - name: buildah
+  #   cmd: [buildah]
+  - name: buildkit
+    env:
+    - DOCKER_BUILDKIT=1
+    cmd: [docker]
+
+shells:
+- name: sh
+  env:
+  - DEBIAN_VERSION=buster
+  - ALPINE_VERSION=3.13
+  - GO_VERSION=1.16
+  cmd: [sh]
