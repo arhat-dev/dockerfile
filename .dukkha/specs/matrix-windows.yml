@@ -1,0 +1,19 @@
+exclude:
+- language:
+  - python3.8
+  - python3.9
+  rootfs:
+  # official python image hase no nanoserver image
+  - nanoserver-1809
+
+kernel:
+- windows
+rootfs:
+- nanoserver-1809
+- windowsservercore-ltsc2016
+language:
+- go
+- python3.8
+- python3.9
+arch:
+- amd64
