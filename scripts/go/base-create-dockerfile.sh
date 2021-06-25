@@ -1,7 +1,6 @@
 #!/bin/sh
 
 docker_platform_arch="${1}"
-go_version="${MATRIX_LANGUAGE#go}"
 suffix=""
 
 case "${MATRIX_ROOTFS}" in
@@ -17,7 +16,7 @@ alpine)
   ;;
 esac
 
-base_image="docker.io/library/golang:${go_version}-${suffix}"
+base_image="docker.io/library/golang:${GO_VERSION}-${suffix}"
 dockerfile="base/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile"
 
 if [ "${MATRIX_ARCH}" = "amd64" ]; then
