@@ -32,8 +32,5 @@ arch:
 - ppc64le
 - s390x
 - x86
-
-# NOTE: MUST NOT set --platform in extraArgs for following image build
-#       when building golang image
 - mips64le
 - armv5
