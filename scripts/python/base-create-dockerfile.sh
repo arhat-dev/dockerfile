@@ -1,6 +1,6 @@
 #!/bin/sh
 
-docker_platform_arch="${1}"
+dockerhub_arch="${1}"
 
 py_ver="${MATRIX_LANGUAGE#python}"
 suffix=""
@@ -17,12 +17,12 @@ alpine)
   ;;
 esac
 
-base_image="docker.io/library/python:${py_ver}-${suffix}"
+base_image="docker.io/${dockerhub_arch}/python:${py_ver}-${suffix}"
 dockerfile="base/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile"
 
 if [ "${MATRIX_ARCH}" = "amd64" ]; then
   cat <<EOF >"${dockerfile}"
-FROM --platform=linux/${docker_platform_arch} ${base_image}
+FROM ${base_image}
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
@@ -38,7 +38,7 @@ FROM alpine:latest as downloader
 COPY scripts/download.sh /download
 RUN set -ex; /download qemu "${MATRIX_ARCH}"
 
-FROM --platform=linux/${docker_platform_arch} ${base_image}
+FROM ${base_image}
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-docker_platform_arch="${1}"
+dockerhub_arch="${1}"
 suffix=""
 
 case "${MATRIX_ROOTFS}" in
@@ -16,14 +16,14 @@ alpine)
   ;;
 esac
 
-base_image="docker.io/library/golang:${GO_VERSION}-${suffix}"
+base_image="docker.io/${dockerhub_arch}/golang:${GO_VERSION}-${suffix}"
 dockerfile="base/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile"
 
 if [ "${MATRIX_ARCH}" = "amd64" ]; then
   case "${MATRIX_ROOTFS}" in
   debian)
     cat <<EOF >"${dockerfile}"
-FROM --platform=linux/amd64 ${base_image}
+FROM ${base_image}
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
@@ -36,7 +36,7 @@ EOF
     ;;
   alpine)
     cat <<EOF >"${dockerfile}"
-FROM --platform=linux/amd64 ${base_image}
+FROM ${base_image}
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
@@ -54,7 +54,7 @@ FROM alpine:latest as downloader
 COPY scripts/download.sh /download
 RUN set -ex; /download qemu "${MATRIX_ARCH}"
 
-FROM --platform=linux/${docker_platform_arch} ${base_image}
+FROM ${base_image}
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 

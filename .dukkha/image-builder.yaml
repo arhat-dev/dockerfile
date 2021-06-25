@@ -1,11 +1,11 @@
-docker:buildkit:build:
+docker:build:
 - name: linux/builder
   matrix@file: .dukkha/specs/matrix-linux.yml
   hooks:
     before@template: |-
       - shell: |-
           sh scripts/${MATRIX_LANGUAGE}/builder-create-dockerfile.sh \
-            {{ getDockerPlatformArch (.Env.MATRIX_ARCH | default "amd64") }}
+            {{ getDockerHubArch (.Env.MATRIX_ARCH | default "amd64") }}
         per_matrix_run: true
     after:success:
     - shell: |-
@@ -19,11 +19,8 @@ docker:buildkit:build:
       manifest: docker.io/arhatdev/builder-{{ $manifest_suffix }}
     - image: ghcr.io/arhat-dev/builder-{{ $suffix }}
       manifest: ghcr.io/arhat-dev/builder-{{ $manifest_suffix }}
-  extraArgs@template: |-
-    {{- $platform_arch := getDockerPlatformArch .Env.MATRIX_ARCH -}}
-    - --platform="linux/{{ $platform_arch }}"
 
-docker:buildkit:push:
+docker:push:
 - name: linux/builder
   matrix@file: .dukkha/specs/matrix-linux.yml
   image_names@template: |-

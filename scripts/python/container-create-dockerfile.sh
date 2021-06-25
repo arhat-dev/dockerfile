@@ -1,6 +1,6 @@
 #!/bin/sh
 
-docker_platform_arch="${1}"
+dockerhub_arch="${1}"
 
 py_ver="${MATRIX_LANGUAGE#python}"
 suffix=""
@@ -18,8 +18,8 @@ alpine)
 esac
 
 cat <<EOF > "container/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile"
-FROM --platform=linux/${docker_platform_arch} ghcr.io/arhat-dev/builder-${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}-${MATRIX_ARCH} as builder
-FROM --platform=linux/${docker_platform_arch} docker.io/library/python:${py_ver}-${suffix}
+FROM ghcr.io/arhat-dev/builder-${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}-${MATRIX_ARCH} as builder
+FROM docker.io/${dockerhub_arch}/python:${py_ver}-${suffix}
 
 ONBUILD COPY --from=builder /app /app
 

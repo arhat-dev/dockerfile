@@ -1,4 +1,4 @@
-docker:buildkit:build:
+docker:build:
 - name: linux/base
   matrix@file: .dukkha/specs/matrix-linux.yml
   dockerfile@template: |-
@@ -7,7 +7,7 @@ docker:buildkit:build:
     before@template: |-
       - shell: |-
           sh scripts/${MATRIX_LANGUAGE}/base-create-dockerfile.sh \
-            {{ getDockerPlatformArch (.Env.MATRIX_ARCH | default "amd64") }}
+            {{ getDockerHubArch (.Env.MATRIX_ARCH | default "amd64") }}
         per_matrix_run: true
     after:success:
     - shell: rm "base/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile"
@@ -18,14 +18,10 @@ docker:buildkit:build:
     - image: ghcr.io/arhat-dev/base-{{ $suffix }}
 
   extraArgs@template: |-
-    {{- $platform_arch := getDockerPlatformArch .Env.MATRIX_ARCH -}}
-    {{- if or (.Env.MATRIX_LANGUAGE | hasPrefix "go") (not (eq .Env.MATRIX_ARCH "mips64le" "armv5")) }}
-    - --platform="linux/{{ $platform_arch }}"
-    {{- end }}
     - --pull
     - --no-cache
 
-docker:buildkit:push:
+docker:push:
 - name: linux/base
   matrix@file: .dukkha/specs/matrix-linux.yml
   image_names@template: |-

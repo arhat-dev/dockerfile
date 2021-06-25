@@ -44,7 +44,7 @@ get_docker_arch() {
   esac
 }
 
-get_docker_platform_arch() {
+get_dockerhub_arch() {
   case "$1" in
   arm64)
     printf "arm64/v8"
