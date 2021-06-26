@@ -1,5 +1,6 @@
 docker:build:
-- name: linux/container
+- &linux_container_build
+  name: linux/container
   matrix@file: .dukkha/specs/matrix-linux.yml
 
   hooks:
@@ -25,7 +26,8 @@ docker:build:
       manifest: ghcr.io/arhat-dev/{{ $manifest_suffix }}
 
 docker:push:
-- name: linux/container
+- &linux_container_push
+  name: linux/container
   matrix@file: .dukkha/specs/matrix-linux.yml
   image_names@template: |-
     {{- $suffix := printf "%s:%s-%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
@@ -34,3 +36,9 @@ docker:push:
       manifest: docker.io/arhatdev/{{ $manifest_suffix }}
     - image: ghcr.io/arhat-dev/{{ $suffix }}
       manifest: ghcr.io/arhat-dev/{{ $manifest_suffix }}
+
+docker:buildah:build:
+- *linux_container_build
+
+docker:buildah:push:
+- *linux_container_push

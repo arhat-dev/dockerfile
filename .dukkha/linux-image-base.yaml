@@ -1,5 +1,6 @@
 docker:build:
-- name: linux/base
+- &linux_base_build
+  name: linux/base
   matrix@file: .dukkha/specs/matrix-linux.yml
   dockerfile@template: |-
     base/{{ .Env.MATRIX_LANGUAGE }}/{{ .Env.MATRIX_ROOTFS }}-{{ .Env.MATRIX_ARCH }}.dockerfile
@@ -23,9 +24,16 @@ docker:build:
     - --no-cache
 
 docker:push:
-- name: linux/base
+- &linux_base_push
+  name: linux/base
   matrix@file: .dukkha/specs/matrix-linux.yml
   image_names@template: |-
     {{- $suffix := printf "%s:%s-%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
     - image: docker.io/arhatdev/base-{{ $suffix }}
     - image: ghcr.io/arhat-dev/base-{{ $suffix }}
+
+docker:buildah:build:
+- *linux_base_build
+
+docker:buildah:push:
+- *linux_base_push

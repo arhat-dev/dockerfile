@@ -2,12 +2,14 @@ bootstrap: {}
 
 tools:
   docker:
-  # - name: buildah
-  #   cmd: [buildah]
   - name: buildkit
     env:
     - DOCKER_BUILDKIT=1
     cmd: [docker]
+
+  - name: buildah
+    cmd: [buildah]
+    buildCmd: [bud]
 
 shells:
 - name: sh
