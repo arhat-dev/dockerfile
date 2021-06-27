@@ -10,3 +10,5 @@ debian-*.dockerfile
 !debian-amd64.dockerfile
 
 !/base/rust/*.dockerfile
+
+/build

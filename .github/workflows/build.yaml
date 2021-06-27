@@ -56,13 +56,13 @@ jobs:
 
         actions="build push"
         for act in ${actions}; do
-          dukkha -j $(nproc --all) docker buildah ${act} linux/base \
+          dukkha -j $(nproc --all) buildah ${act} linux/base \
             -m language=${{ matrix.language }}
 
-          dukkha -j $(nproc --all) docker buildah ${act} linux/builder \
+          dukkha -j $(nproc --all) buildah ${act} linux/builder \
             -m language=${{ matrix.language }}
 
-          dukkha -j $(nproc --all) docker buildah ${act} linux/container \
+          dukkha -j $(nproc --all) buildah ${act} linux/container \
             -m language=${{ matrix.language }}
         done
 
