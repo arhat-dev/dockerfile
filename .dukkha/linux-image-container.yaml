@@ -42,3 +42,9 @@ buildah:bud:
 
 buildah:push:
 - *linux_container_push
+
+buildah:in-docker:bud:
+- *linux_container_build
+
+buildah:in-docker:push:
+- *linux_container_push

@@ -2,14 +2,29 @@ bootstrap: {}
 
 tools:
   docker:
-  - name: buildkit
+  - name: local-buildkit
     env:
     - DOCKER_BUILDKIT=1
     cmd: [docker]
 
   buildah:
-  - name: buildah
+  - name: local
     cmd: [buildah]
+  - name: in-docker
+    # create a docker volume for buildah
+    #
+    # $ docker volume create buildah-dockerfile
+    cmd:
+    - |-
+      docker run -it --rm \
+        --workdir $(pwd) \
+        -v $(pwd):$(pwd) \
+        --security-opt label=disable \
+        --security-opt seccomp=unconfined \
+        -v buildah-dockerfile:/var/lib/containers \
+        --device /dev/fuse:rw \
+        quay.io/buildah/stable \
+        buildah
 
 shells:
 - name: sh
