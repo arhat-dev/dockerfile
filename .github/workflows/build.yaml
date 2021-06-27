@@ -56,13 +56,13 @@ jobs:
 
         actions="bud push"
         for act in ${actions}; do
-          dukkha -j $(nproc --all) buildah ${act} linux/base \
+          dukkha buildah ${act} linux/base \
             -m language=${{ matrix.language }}
 
-          dukkha -j $(nproc --all) buildah ${act} linux/builder \
+          dukkha buildah ${act} linux/builder \
             -m language=${{ matrix.language }}
 
-          dukkha -j $(nproc --all) buildah ${act} linux/container \
+          dukkha buildah ${act} linux/container \
             -m language=${{ matrix.language }}
         done
 

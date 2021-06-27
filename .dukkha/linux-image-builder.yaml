@@ -32,8 +32,8 @@ docker:push:
   image_names@template: |-
     {{- $suffix := printf "%s:%s-%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
     {{- $manifest_suffix := printf "%s:%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS -}}
-    # - image: docker.io/arhatdev/builder-{{ $suffix }}
-    #   manifest: docker.io/arhatdev/builder-{{ $manifest_suffix }}
+    - image: docker.io/arhatdev/builder-{{ $suffix }}
+      manifest: docker.io/arhatdev/builder-{{ $manifest_suffix }}
     - image: ghcr.io/arhat-dev/builder-{{ $suffix }}
       manifest: ghcr.io/arhat-dev/builder-{{ $manifest_suffix }}
 
