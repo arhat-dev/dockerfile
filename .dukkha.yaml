@@ -18,5 +18,5 @@ shells:
   - ALPINE_VERSION=3.13
   - GO_VERSION=1.16
   # https://github.com/multiarch/qemu-user-static/releases
-  - QEMU_VERSION=v5.2.0-2
+  - QEMU_VERSION=5.2.0-2
   cmd: [sh]
