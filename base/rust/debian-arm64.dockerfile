@@ -1,15 +1,9 @@
-# use native build to make sure qemu executable
-FROM alpine:latest as downloader
-
-COPY scripts/download.sh /download
-RUN set -ex; /download qemu arm64
-
+FROM docker.io/multiarch/qemu-user-static:x86_64-aarch64-5.2.0-2 as qemu
 FROM docker.io/arm64v8/rust:buster
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
-# add qemu for cross build
-COPY --from=downloader /qemu* /usr/bin/
+COPY --from=qemu /usr/bin/qemu* /usr/bin/
 
 ARG MIRROR_SITE
 

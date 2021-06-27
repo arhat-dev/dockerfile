@@ -1,6 +1,7 @@
 #!/bin/sh
 
 dockerhub_arch="${1}"
+qemu_arch="${2}"
 
 py_ver="${MATRIX_LANGUAGE#python}"
 suffix=""
@@ -33,16 +34,12 @@ EOF
 fi
 
 cat <<EOF >"${dockerfile}"
-FROM alpine:latest as downloader
-
-COPY scripts/download.sh /download
-RUN set -ex; /download qemu "${MATRIX_ARCH}"
-
+FROM docker.io/multiarch/qemu-user-static:x86_64-${qemu_arch}-${QEMU_VERSION} as qemu
 FROM ${base_image}
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
-COPY --from=downloader /qemu* /usr/bin/
+COPY --from=qemu /usr/bin/qemu* /usr/bin/
 
 COPY scripts/${MATRIX_LANGUAGE}/base-setup-${MATRIX_ROOTFS}.sh /setup.sh
 RUN sh /setup.sh && rm /setup.sh

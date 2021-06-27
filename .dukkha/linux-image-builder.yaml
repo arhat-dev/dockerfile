@@ -37,8 +37,8 @@ docker:push:
     - image: ghcr.io/arhat-dev/builder-{{ $suffix }}
       manifest: ghcr.io/arhat-dev/builder-{{ $manifest_suffix }}
 
-docker:buildah:build:
+buildah:bud:
 - *linux_builder_build
 
-docker:buildah:push:
+buildah:push:
 - *linux_builder_push
