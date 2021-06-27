@@ -16,11 +16,9 @@
 
 set -e
 
-QEMU_VERSION="v5.1.0-2"           # https://github.com/multiarch/qemu-user-static/releases
-V2RAY_VERSION="v4.27.5"           # https://github.com/v2ray/v2ray-core/releases
-FRP_VERSION="0.33.0"              # https://github.com/fatedier/frp/releases
-KUBECTL_VERSION="v1.18.8"         # https://github.com/kubernetes/kubernetes/releases
-HELM_VERSION="v3.3.1"             # https://github.com/helm/helm/releases
+QEMU_VERSION="v5.2.0-2"           # https://github.com/multiarch/qemu-user-static/releases
+KUBECTL_VERSION="v1.21.2"         # https://github.com/kubernetes/kubernetes/releases
+HELM_VERSION="v3.6.1"             # https://github.com/helm/helm/releases
 
 qemu() {
   arch="$1"
@@ -57,52 +55,6 @@ qemu() {
   else
     touch /qemu-none
   fi
-}
-
-v2ray() {
-  arch="$1"
-  v2ray_arch="$arch"
-  version="${V2RAY_VERSION}"
-
-  case "${v2ray_arch}" in
-  amd64)
-    v2ray_arch=64
-    ;;
-  armv*)
-    v2ray_arch=arm
-    ;;
-  esac
-
-  wget -O /v2ray.zip \
-    "https://github.com/v2ray/v2ray-core/releases/download/${version}/v2ray-linux-${v2ray_arch}.zip"
-  mkdir -p /v2ray
-  unzip /v2ray.zip -d /v2ray
-
-  if [ "${arch}" = armv7 ]; then
-    rm -f /v2ray/v2ray /v2ray/v2ctl
-    mv /v2ray/v2ray_armv7 /v2ray/v2ray
-    mv /v2ray/v2ctl_armv7 /v2ray/v2ctl
-  fi
-}
-
-frp() {
-  arch="$1"
-  frp_arch="${arch}"
-  version="${FRP_VERSION}"
-
-  case "${arch}" in
-  armv*)
-    frp_arch=arm
-    ;;
-  esac
-
-  file_name=frp_${version}_linux_${frp_arch}
-
-  wget -O /frp.tar.gz \
-    "https://github.com/fatedier/frp/releases/download/v${version}/${file_name}.tar.gz"
-
-  tar -xf /frp.tar.gz
-  mv "/${file_name}" /frp
 }
 
 kubectl() {

@@ -69,9 +69,6 @@ app() {
   _build_app_image yamllint "amd64 arm64 armv7 armv6"
   _build_app_image kubeval "amd64 arm64 armv7 armv6"
   _build_app_image helm "amd64 arm64 armv7"
-
-  # _build_app_image frp "amd64 arm64 armv7"
-  # _build_app_image caddy "amd64 arm64 armv7 armv6"
 }
 
 "$@"
