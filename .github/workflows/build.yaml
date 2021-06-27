@@ -66,4 +66,4 @@ jobs:
             -m language=${{ matrix.language }}
         done
 
-        docker images
+        buildah images
