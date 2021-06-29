@@ -14,7 +14,7 @@ docker:build:
     after:matrix:success:
     - shell: rm "base/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile"
 
-  image_names@template: |-
+  image_names@template: &base_image_names |-
     {{- $suffix := printf "%s:%s-%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
     - image: docker.io/arhatdev/base-{{ $suffix }}
     - image: ghcr.io/arhat-dev/base-{{ $suffix }}
@@ -27,10 +27,7 @@ docker:push:
 - &linux_base_push
   name: linux/base
   matrix@file: .dukkha/specs/matrix-linux.yml
-  image_names@template: |-
-    {{- $suffix := printf "%s:%s-%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
-    - image: docker.io/arhatdev/base-{{ $suffix }}
-    - image: ghcr.io/arhat-dev/base-{{ $suffix }}
+  image_names@template: *base_image_names
 
 buildah:bud:
 - *linux_base_build

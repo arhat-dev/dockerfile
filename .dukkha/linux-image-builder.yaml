@@ -16,7 +16,7 @@ docker:build:
   dockerfile@template: |-
     builder/{{ .Env.MATRIX_LANGUAGE }}/{{ .Env.MATRIX_ROOTFS }}-{{ .Env.MATRIX_ARCH }}.dockerfile
 
-  image_names@template: |-
+  image_names@template: &builder_image_names |-
     {{- $suffix := printf "%s:%s-%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
     {{- $manifest_suffix := printf "%s:%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS -}}
     - image: docker.io/arhatdev/builder-{{ $suffix }}
@@ -29,13 +29,7 @@ docker:push:
 - &linux_builder_push
   name: linux/builder
   matrix@file: .dukkha/specs/matrix-linux.yml
-  image_names@template: |-
-    {{- $suffix := printf "%s:%s-%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
-    {{- $manifest_suffix := printf "%s:%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS -}}
-    - image: docker.io/arhatdev/builder-{{ $suffix }}
-      manifest: docker.io/arhatdev/builder-{{ $manifest_suffix }}
-    - image: ghcr.io/arhat-dev/builder-{{ $suffix }}
-      manifest: ghcr.io/arhat-dev/builder-{{ $manifest_suffix }}
+  image_names@template: *builder_image_names
 
 buildah:bud:
 - *linux_builder_build
