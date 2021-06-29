@@ -4,13 +4,12 @@ docker:build:
   matrix@file: .dukkha/specs/matrix-linux.yml
 
   hooks:
-    before@template: |-
+    before:matrix@template: |-
       - shell: |-
           sh scripts/${MATRIX_LANGUAGE}/builder-create-dockerfile.sh \
             {{ getDockerHubArch (.Env.MATRIX_ARCH | default "amd64") }}
-        per_matrix_run: true
 
-    after:success:
+    after:matrix:success:
     - shell: |-
         rm "builder/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile"
 
@@ -20,7 +19,8 @@ docker:build:
   image_names@template: |-
     {{- $suffix := printf "%s:%s-%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
     {{- $manifest_suffix := printf "%s:%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS -}}
-    # - image: docker.io/arhatdev/builder-{{ $suffix }}
+    - image: docker.io/arhatdev/builder-{{ $suffix }}
+    # docker registry has no oci manifest support
     #   manifest: docker.io/arhatdev/builder-{{ $manifest_suffix }}
     - image: ghcr.io/arhat-dev/builder-{{ $suffix }}
       manifest: ghcr.io/arhat-dev/builder-{{ $manifest_suffix }}
@@ -41,10 +41,4 @@ buildah:bud:
 - *linux_builder_build
 
 buildah:push:
-- *linux_builder_push
-
-buildah:in-docker:bud:
-- *linux_builder_build
-
-buildah:in-docker:push:
 - *linux_builder_push
