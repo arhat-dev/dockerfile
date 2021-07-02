@@ -1,0 +1,80 @@
+# this build instruction is used in container
+golang:build:
+- name: helm
+  matrix: &helm_matrix
+    include:
+    - kernel:
+      - linux
+      rootfs:
+      - debian
+      arch:
+      - mips64le
+      - armv5
+      - ppc64le
+    kernel:
+    - linux
+    rootfs:
+    - alpine
+    arch:
+    - amd64
+    - x86
+    - arm64
+    - armv7
+    - armv6
+    - s390x
+  chdir: /app/build/helm
+  path: ./cmd/helm
+  outputs:
+  - /app/build/helm.${MATRIX_KERNEL}.${MATRIX_ARCH}
+  cgo:
+    enabled: false
+  ldflags@shell: |-
+    cd /app/build/helm
+
+    cat <<EOF
+    - -s -w
+    - -X helm.sh/helm/v3/internal/version.version="$(git describe --tags)"
+    - -X helm.sh/helm/v3/internal/version.metadata=""
+    - -X helm.sh/helm/v3/internal/version.gitCommit="$(git rev-parse HEAD)"
+    - -X helm.sh/helm/v3/internal/version.gitTreeState=$(test -n "`git status --porcelain`" && printf "dirty" || printf "clean")
+    # Update according to client-go dependency
+    #  https://github.com/helm/helm/blob/main/go.mod#L44
+    - -X helm.sh/helm/v3/pkg/lint/rules.k8sVersionMajor=1
+    - -X helm.sh/helm/v3/pkg/lint/rules.k8sVersionMinor=21
+    - -X helm.sh/helm/v3/pkg/chartutil.k8sVersionMajor=1
+    - -X helm.sh/helm/v3/pkg/chartutil.k8sVersionMinor=21
+    EOF
+  tags:
+  - netgo
+  extraArgs:
+  - -trimpath
+  - -mod=readonly
+
+buildah:bud:
+- name: helm
+  matrix: *helm_matrix
+  hooks:
+    before:
+    - shell: |-
+        if [ -d build/helm ]; then
+          exit 0
+        fi
+
+        git clone --branch v3.6.2 \
+          https://github.com/helm/helm.git build/helm
+  dockerfile: app/golang-app.dockerfile
+  context: "."
+  image_names: &helm_image_names
+  - image: ghcr.io/arhat-dev/helm:latest-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/helm:latest
+  - image: ghcr.io/arhat-dev/helm:v3.6.2-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/helm:v3.6.2
+  extraArgs:
+  - --build-arg="APP=helm"
+  - --build-arg="MATRIX_ROOTFS=${MATRIX_ROOTFS}"
+  - --build-arg="MATRIX_ARCH=${MATRIX_ARCH}"
+
+buildah:push:
+- name: helm
+  matrix: *helm_matrix
+  image_names: *helm_image_names

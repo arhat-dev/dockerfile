@@ -35,10 +35,15 @@ golang:build:
         ./credits.sh importexport
   cgo:
     enabled: false
-  ldflags@template: |-
-    - -X github.com/ProtonMail/proton-bridge/internal/constants.Version=v1.8.7+git
-    - -X github.com/ProtonMail/proton-bridge/internal/constants.Revision={{ .Env.GIT_COMMIT | substr 0 10 }}
-    - -X github.com/ProtonMail/proton-bridge/internal/constants.BuildTime={{ now | date "2006-01-02T15:04:05Z07:00" }}
+  ldflags@shell: |-
+    cd /app/build/proton-bridge
+    cat <<EOF
+    - -s -w
+    - -X github.com/ProtonMail/proton-bridge/internal/constants.Version=$(git describe --tags)+git
+    # https://github.com/ProtonMail/proton-bridge/blob/master/Makefile#L33
+    - -X github.com/ProtonMail/proton-bridge/internal/constants.Revision=$(git rev-parse --short=10 HEAD)
+    - -X github.com/ProtonMail/proton-bridge/internal/constants.BuildTime=$(date +%FT%T%z)
+    EOF
   tags:
   - netgo
   extraArgs:

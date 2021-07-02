@@ -30,6 +30,8 @@ golang:build:
     enabled: false
   tags:
   - netgo
+  ldflags:
+  - -s -w
   extraArgs:
   - -trimpath
   - -mod=readonly
@@ -46,7 +48,7 @@ buildah:bud:
 
         git clone --branch v0.16.1 \
           https://github.com/instrumenta/kubeval.git build/kubeval
-  dockerfile: app/kubeval.dockerfile
+  dockerfile: app/golang-app.dockerfile
   context: "."
   image_names: &kubeval_image_names
   - image: ghcr.io/arhat-dev/kubeval:latest-${MATRIX_ARCH}
@@ -54,6 +56,7 @@ buildah:bud:
   - image: ghcr.io/arhat-dev/kubeval:v0.16.1-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/kubeval:v0.16.1
   extraArgs:
+  - --build-arg="APP=kubeval"
   - --build-arg="MATRIX_ROOTFS=${MATRIX_ROOTFS}"
   - --build-arg="MATRIX_ARCH=${MATRIX_ARCH}"
 
