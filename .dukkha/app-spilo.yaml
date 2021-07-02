@@ -23,7 +23,7 @@ buildah:bud:
   - --build-arg="ARCH=${MATRIX_ARCH}"
   - --build-arg="BASE_IMAGE=registry.opensource.zalan.do/library/ubuntu-18.04"
   - --build-arg="PGVERSION=13"
-  - --build-arg="PGOLDVERSIONS='9.5 9.6 10 11 12'"
+  - --build-arg="PGOLDVERSIONS='9.6 10 11 12'"
   - --build-arg="DEMO=false"
   - --build-arg="TIMESCALEDB_APACHE_ONLY=false"
 
