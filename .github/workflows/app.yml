@@ -16,6 +16,42 @@ env:
   DOCKER_BUILDKIT: "0"
 
 jobs:
+  build:
+    strategy:
+      matrix:
+        app:
+        - proton-bridge
+      fail-fast: false
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dukkha
+      run: |-
+        mkdir -p "${HOME}/bin"
+        echo "${HOME}/bin" >> $GITHUB_PATH
+
+        docker pull ghcr.io/arhat-dev/dukkha:latest
+        ctr_id=$(docker create ghcr.io/arhat-dev/dukkha:latest : 2>/dev/null)
+        docker cp ${ctr_id}:/dukkha "${HOME}/bin/dukkha"
+
+        chmod +x "${HOME}/bin/dukkha"
+
+    - name: build and push ${{ matrix.app }}
+      env:
+        DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        GITHUB_DOCKER_USERNAME: ${{ github.actor }}
+        GITHUB_DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      run: |-
+        buildah login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD" docker.io
+        buildah login -u="$GITHUB_DOCKER_USERNAME" -p="$GITHUB_DOCKER_PASSWORD" ghcr.io
+        sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+        dukkha buildah local bud ${{ matrix.app }}
+        dukkha buildah local push ${{ matrix.app }}
+
+        buildah images
+
   apps:
     runs-on: ubuntu-latest
     steps:

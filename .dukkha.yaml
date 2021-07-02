@@ -26,6 +26,9 @@ tools:
         quay.io/buildah/stable \
         buildah
 
+  golang:
+  - name: local
+
 shells:
 - name: sh
   env:

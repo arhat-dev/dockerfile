@@ -1,0 +1,63 @@
+buildah:bud:
+- name: proton-bridge
+  matrix: &proton_bridge_build_matrix
+    kernel:
+    - linux
+    arch:
+    # proton-bridge doesn't have 32bit support
+    #
+    #   /go/pkg/mod/github.com/!proton!mail/go-rfc5322@v0.8.0/parser/rfc5322_parser.go:2756: constant 4230534781 overflows int
+    - amd64
+    - arm64
+  dockerfile: app/proton-bridge.dockerfile
+  image_names@template: &proton_bridge_image_names |-
+    - image: ghcr.io/arhat-dev/proto-bridge:latest-{{ .Env.MATRIX_ARCH }}
+      manifest: ghcr.io/arhat-dev/proto-bridge:latest
+    - image: ghcr.io/arhat-dev/proto-bridge:v1.8.7-{{ .Env.MATRIX_ARCH }}
+      manifest: ghcr.io/arhat-dev/proto-bridge:v1.8.7
+  extraArgs:
+  - --build-arg="MATRIX_ARCH=${MATRIX_ARCH}"
+
+buildah:push:
+- name: proton-bridge
+  matrix: *proton_bridge_build_matrix
+  image_names@template: *proton_bridge_image_names
+
+# this build instruction is used in container
+golang:build:
+- name: proton-bridge
+  matrix: *proton_bridge_build_matrix
+  chdir: /app/build/proton-bridge
+  path: ./cmd/Desktop-Bridge/
+  outputs@template: |-
+    - /app/build/proton-bridge.{{ .Env.MATRIX_KERNEL }}.{{ .Env.MATRIX_ARCH }}
+  hooks:
+    before:
+    - shell: |-
+        src_dir="build/proton-bridge"
+        if [ ! -d "${src_dir}" ]; then
+          git clone --branch "v1.8.7" \
+            https://github.com/ProtonMail/proton-bridge.git \
+            "${src_dir}"
+        fi
+
+        sed -i 's/github.com\/docker\/docker-credential-helpers\/secretservice/fmt/g' \
+          "${src_dir}/pkg/keychain/helper_linux.go"
+
+        sed -i 's/return \&secretservice\.Secretservice.*, nil/return nil, fmt\.Errorf\("not supported"\)/g' \
+          "${src_dir}/pkg/keychain/helper_linux.go"
+
+        cd "${src_dir}/utils/"
+        ./credits.sh bridge
+        ./credits.sh importexport
+  cgo:
+    enabled: false
+  ldflags@template: |-
+    - -X github.com/ProtonMail/proton-bridge/internal/constants.Version=v1.8.7+git
+    - -X github.com/ProtonMail/proton-bridge/internal/constants.Revision={{ .Env.GIT_COMMIT | substr 0 10 }}
+    - -X github.com/ProtonMail/proton-bridge/internal/constants.BuildTime={{ now | date "2006-01-02T15:04:05Z07:00" }}
+  tags:
+  - netgo
+  extraArgs:
+  - -trimpath
+  - -mod=readonly
