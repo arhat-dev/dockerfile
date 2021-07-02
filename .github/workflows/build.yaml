@@ -44,7 +44,6 @@ jobs:
 
     - name: Build and Push Images
       env:
-        DOCKER_CLI_EXPERIMENTAL: enabled
         DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
         DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
         GITHUB_DOCKER_USERNAME: ${{ github.actor }}
@@ -55,15 +54,12 @@ jobs:
         sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
         actions="bud push"
+        targets="base builder container"
         for act in ${actions}; do
-          dukkha buildah ${act} linux/base \
-            -m language=${{ matrix.language }}
-
-          dukkha buildah ${act} linux/builder \
-            -m language=${{ matrix.language }}
-
-          dukkha buildah ${act} linux/container \
-            -m language=${{ matrix.language }}
+          for t in ${targets}; do
+            dukkha buildah local ${act} "linux/${t}" \
+              -m language=${{ matrix.language }}
+          done
         done
 
         buildah images
