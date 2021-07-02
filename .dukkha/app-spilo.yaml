@@ -26,6 +26,7 @@ buildah:bud:
   - --build-arg="PGOLDVERSIONS='9.6 10 11 12'"
   - --build-arg="DEMO=false"
   - --build-arg="TIMESCALEDB_APACHE_ONLY=false"
+  - --layers=true
 
 - name: spilo
   matrix: *spilo_matrix
