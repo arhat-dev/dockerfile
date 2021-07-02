@@ -32,33 +32,4 @@ container() {
   domake "$(echo "$ALL_TARGETS" | $GREP -P -e '^(?!(push|base|builder|images|Makefile|app))' | $GREP -E -e "$1")"
 }
 
-_build_app_image() {
-  app="${1}"
-  arch_set="${2}"
-  image_names=""
-
-  for repo in ${IMAGE_REPOS}; do
-    image_names="${repo}/$(printf '%s' "${app}" | sed -e 's/\_/\-/g') ${image_names}"
-  done
-
-  for arch in ${arch_set}; do
-    ./scripts/app/image.sh "${app}" "${arch}"
-
-    for name in ${image_names}; do
-      docker push "${name}:${arch}"
-
-      ./scripts/manifest.sh create "${name}" "${arch}" latest
-      ./scripts/manifest.sh annotate "${name}" "${arch}" latest "${arch}"
-    done
-  done
-
-  for name in ${image_names}; do
-    ./scripts/manifest.sh push "${name}" latest
-  done
-}
-
-app() {
-  _build_app_image helm "amd64 arm64 armv7"
-}
-
 "$@"
