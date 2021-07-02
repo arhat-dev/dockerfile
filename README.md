@@ -1,12 +1,8 @@
 # Dockerfile
 
-[![app](https://github.com/arhat-dev/dockerfile/workflows/app/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=app)
-
-[![go](https://github.com/arhat-dev/dockerfile/workflows/go/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=go)
+[![build](https://github.com/arhat-dev/dockerfile/actions/workflows/build.yaml/badge.svg)](https://github.com/arhat-dev/dockerfile/actions/workflows/build.yaml)
 
 [![rust](https://github.com/arhat-dev/dockerfile/workflows/rust/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=rust)
-
-[![python](https://github.com/arhat-dev/dockerfile/workflows/python/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=python)
 
 [![kind](https://github.com/arhat-dev/dockerfile/workflows/kind/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=kind)
 
