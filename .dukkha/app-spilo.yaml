@@ -17,7 +17,7 @@ buildah:bud:
   dockerfile: build/spilo/postgres-appliance/Dockerfile
   context: build/spilo/postgres-appliance
   image_names:
-  - image: spilo:${MATRIX_ARCH}
+  - image: spilo-base:${MATRIX_ARCH}
   extraArgs:
   - --build-arg="TIMESCALEDB=2.3.0"
   - --build-arg="ARCH=${MATRIX_ARCH}"
@@ -39,7 +39,7 @@ buildah:bud:
   - image: ghcr.io/arhat-dev/spilo:2.0-p7-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/spilo:2.0-p7
   extraArgs:
-  - --build-arg="BASE_IMAGE=spilo:${MATRIX_ARCH}"
+  - --build-arg="BASE_IMAGE=spilo-base:${MATRIX_ARCH}"
 
 buildah:push:
 - name: spilo
