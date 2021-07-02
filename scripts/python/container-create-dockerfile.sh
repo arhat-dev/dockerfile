@@ -6,7 +6,7 @@ py_ver="${MATRIX_LANGUAGE#python}"
 suffix=""
 case "${MATRIX_ROOTFS}" in
 debian)
-  suffix="${DEBIAN_VERSION}"
+  suffix="slim-${DEBIAN_VERSION}"
   ;;
 alpine)
   suffix="alpine${ALPINE_VERSION}"

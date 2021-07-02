@@ -5,7 +5,7 @@ suffix=""
 
 case "${MATRIX_ROOTFS}" in
 debian)
-  suffix="${DEBIAN_VERSION}"
+  suffix="${DEBIAN_VERSION}-slim"
   ;;
 alpine)
   suffix="${ALPINE_VERSION}"
