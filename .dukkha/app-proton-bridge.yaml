@@ -11,10 +11,10 @@ buildah:bud:
     - arm64
   dockerfile: app/proton-bridge.dockerfile
   image_names@template: &proton_bridge_image_names |-
-    - image: ghcr.io/arhat-dev/proto-bridge:latest-{{ .Env.MATRIX_ARCH }}
-      manifest: ghcr.io/arhat-dev/proto-bridge:latest
-    - image: ghcr.io/arhat-dev/proto-bridge:v1.8.7-{{ .Env.MATRIX_ARCH }}
-      manifest: ghcr.io/arhat-dev/proto-bridge:v1.8.7
+    - image: ghcr.io/arhat-dev/proton-bridge:latest-{{ .Env.MATRIX_ARCH }}
+      manifest: ghcr.io/arhat-dev/proton-bridge:latest
+    - image: ghcr.io/arhat-dev/proton-bridge:v1.8.7-{{ .Env.MATRIX_ARCH }}
+      manifest: ghcr.io/arhat-dev/proton-bridge:v1.8.7
   extraArgs:
   - --build-arg="MATRIX_ARCH=${MATRIX_ARCH}"
 
