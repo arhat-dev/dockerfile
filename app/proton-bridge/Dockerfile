@@ -21,7 +21,7 @@ RUN addgroup -g 1000 proton-bridge ;\
 
 RUN apk add --no-cache expect socat pass ca-certificates coreutils libnotify
 
-COPY scripts/app/proton-bridge/entrypoint.sh scripts/app/proton-bridge/login.exp /usr/local/bin/
+COPY app/proton-bridge/entrypoint.sh app/proton-bridge/login.exp /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/login.exp /usr/local/bin/entrypoint.sh
 

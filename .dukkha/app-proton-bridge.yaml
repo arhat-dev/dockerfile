@@ -53,7 +53,7 @@ golang:build:
 buildah:bud:
 - name: proton-bridge
   matrix: *proton_bridge_matrix
-  dockerfile: app/proton-bridge.dockerfile
+  dockerfile: app/proton-bridge/Dockerfile
   image_names: &proton_bridge_image_names
   - image: ghcr.io/arhat-dev/proton-bridge:latest-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/proton-bridge:latest
