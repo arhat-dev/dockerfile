@@ -1,10 +1,12 @@
-ARG ARCH=amd64
+ARG MATRIX_PYTHON
+ARG MATRIX_ROOTFS
+ARG MATRIX_ARCH
 
-FROM ghcr.io/arhat-dev/builder-python3.7:alpine-${ARCH} as builder
+FROM ghcr.io/arhat-dev/builder-${MATRIX_PYTHON}:${MATRIX_ROOTFS}-${MATRIX_ARCH} as builder
 COPY . /app
 RUN sh /build.sh
 
-FROM ghcr.io/arhat-dev/python3.7:alpine-${ARCH}
+FROM ghcr.io/arhat-dev/${MATRIX_PYTHON}:${MATRIX_ROOTFS}-${MATRIX_ARCH}
 COPY --from=builder /app /app
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile

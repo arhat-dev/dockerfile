@@ -21,6 +21,8 @@ jobs:
       matrix:
         app:
         - proton-bridge
+        - spilo
+        - yamllint
       fail-fast: false
     runs-on: ubuntu-20.04
     steps:

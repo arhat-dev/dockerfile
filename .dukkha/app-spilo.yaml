@@ -1,0 +1,47 @@
+buildah:bud:
+- name: spilo-base
+  matrix: &spilo_matrix
+    kernel:
+    - linux
+    arch:
+    - amd64
+  hooks:
+    before:
+    - shell: |-
+        if [ -d build/spilo ]; then
+          exit 0
+        fi
+
+        git clone --depth=1 --branch=2.0-p7 \
+          https://github.com/zalando/spilo.git build/spilo
+  dockerfile: build/spilo/postgres-appliance/Dockerfile
+  context: build/spilo/postgres-appliance
+  image_names:
+  - image: spilo:${MATRIX_ARCH}
+  extraArgs:
+  - --build-arg="TIMESCALEDB=2.3.0"
+  - --build-arg="ARCH=${MATRIX_ARCH}"
+  - --build-arg="BASE_IMAGE=registry.opensource.zalan.do/library/ubuntu-18.04"
+  - --build-arg="PGVERSION=13"
+  - --build-arg="PGOLDVERSIONS='9.5 9.6 10 11 12'"
+  - --build-arg="DEMO=false"
+  - --build-arg="TIMESCALEDB_APACHE_ONLY=false"
+
+- name: spilo
+  matrix: *spilo_matrix
+  hooks:
+    before:
+    - task: buildah:bud:spilo-base
+  dockerfile: app/spilo.dockerfile
+  image_names: &spilo_image_names
+  - image: ghcr.io/arhat-dev/spilo:latest-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/spilo:latest-${MATRIX_ARCH}
+  - image: ghcr.io/arhat-dev/spilo:2.0-p7-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/spilo:2.0-p7
+  extraArgs:
+  - --build-arg="BASE_IMAGE=spilo:${MATRIX_ARCH}"
+
+buildah:push:
+- name: spilo
+  matrix: *spilo_matrix
+  image_names: *spilo_image_names

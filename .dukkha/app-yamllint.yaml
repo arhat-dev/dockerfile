@@ -1,0 +1,56 @@
+buildah:bud:
+- name: yamllint
+  hooks:
+    before:
+    - shell: |-
+        mkdir -p build/yamllint
+        cat <<EOF > build/yamllint/Pipfile
+        [[source]]
+        url = 'https://pypi.python.org/simple'
+        verify_ssl = true
+        name = 'pypi'
+
+        [requires]
+        python_version = '3.8'
+
+        [packages]
+        yamllint = "==1.26.1"
+        EOF
+
+  matrix: &yamllint_matrix
+    include:
+    - kernel:
+      - linux
+      rootfs:
+      - debian
+      arch:
+      - mips64le
+      - armv5
+      - ppc64le
+    kernel:
+    - linux
+    rootfs:
+    - alpine
+    arch:
+    - amd64
+    - x86
+    - arm64
+    - armv7
+    - armv6
+    - s390x
+  dockerfile: app/yamllint.dockerfile
+  context: build/yamllint
+  image_names: &yamllint_image_names
+  - image: ghcr.io/arhat-dev/yamllint:latest-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/yamllint:latest
+  - image: ghcr.io/arhat-dev/yamllint:1.26.1-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/yamllint:1.26.1
+  extraArgs:
+  - --build-arg="MATRIX_PYTHON=python3.8"
+  - --build-arg="MATRIX_ROOTFS=${MATRIX_ROOTFS}"
+  - --build-arg="MATRIX_ARCH=${MATRIX_ARCH}"
+
+buildah:push:
+- name: yamllint
+  matrix: *yamllint_matrix
+  image_names: *yamllint_image_names
