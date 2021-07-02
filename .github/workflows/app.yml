@@ -23,6 +23,7 @@ jobs:
         - proton-bridge
         - spilo
         - yamllint
+        - kubeval
       fail-fast: false
     runs-on: ubuntu-20.04
     steps:

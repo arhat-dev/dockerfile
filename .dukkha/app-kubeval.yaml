@@ -1,0 +1,63 @@
+# this build instruction is used in container
+golang:build:
+- name: kubeval
+  matrix: &kubeval_matrix
+    include:
+    - kernel:
+      - linux
+      rootfs:
+      - debian
+      arch:
+      - mips64le
+      - armv5
+      - ppc64le
+    kernel:
+    - linux
+    rootfs:
+    - alpine
+    arch:
+    - amd64
+    - x86
+    - arm64
+    - armv7
+    - armv6
+    - s390x
+  chdir: /app/build/kubeval
+  path: ./
+  outputs:
+  - /app/build/kubeval.${MATRIX_KERNEL}.${MATRIX_ARCH}
+  cgo:
+    enabled: false
+  tags:
+  - netgo
+  extraArgs:
+  - -trimpath
+  - -mod=readonly
+
+buildah:bud:
+- name: kubeval
+  matrix: *kubeval_matrix
+  hooks:
+    before:
+    - shell: |-
+        if [ -d build/kubeval ]; then
+          exit 0
+        fi
+
+        git clone --branch v0.16.1 \
+          https://github.com/instrumenta/kubeval.git build/kubeval
+  dockerfile: app/kubeval.dockerfile
+  context: "."
+  image_names: &kubeval_image_names
+  - image: ghcr.io/arhat-dev/kubeval:latest-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/kubeval:latest
+  - image: ghcr.io/arhat-dev/kubeval:v0.16.1-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/kubeval:v0.16.1
+  extraArgs:
+  - --build-arg="MATRIX_ROOTFS=${MATRIX_ROOTFS}"
+  - --build-arg="MATRIX_ARCH=${MATRIX_ARCH}"
+
+buildah:push:
+- name: kubeval
+  matrix: *kubeval_matrix
+  image_names: *kubeval_image_names

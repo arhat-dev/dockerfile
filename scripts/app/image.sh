@@ -26,16 +26,6 @@ caddy() {
     --build-arg GOARM="${GOARM}" .
 }
 
-kubeval() {
-  arch="$1"
-
-  docker build -f app/kubeval.dockerfile \
-    $(get_tag_args "kubeval:${arch}") \
-    --build-arg ARCH="${arch}" \
-    --build-arg TARGET="kubeval-linux-${arch}" \
-    --build-arg APP="kubeval" .
-}
-
 helm() {
   arch="$1"
 

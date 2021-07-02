@@ -12,8 +12,4 @@ x86 := i386
 mips64le := mips64le
 
 include scripts/base.mk
-include scripts/app/app.mk
 include scripts/rust/rust.mk
-
-images-app:
-	./scripts/build-targets.sh app
