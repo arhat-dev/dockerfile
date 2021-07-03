@@ -1,7 +1,27 @@
 # this build instruction is used in container
 golang:build:
 - name: conftest
-  matrix@file: .dukkha/specs/app-matrix-all.yml
+  matrix: &conftest_matrix
+    # conftest has no 32bit support
+    #
+    # /go/pkg/mod/cuelang.org/go@v0.0.15/cue/builtins.go:1850:12: constant 4611686018427387904 overflows uint
+    include:
+    - kernel:
+      - linux
+      rootfs:
+      - debian
+      arch:
+      - mips64le
+      # TODO: switch to alpine/ppc64le after #11 resolved
+      - ppc64le
+    kernel:
+    - linux
+    rootfs:
+    - alpine
+    arch:
+    - amd64
+    - arm64
+    - s390x
   chdir: /app/build/conftest
   path: ./
   outputs:
@@ -16,7 +36,7 @@ golang:build:
 
 buildah:bud:
 - name: conftest
-  matrix@file: .dukkha/specs/app-matrix-all.yml
+  matrix: *conftest_matrix
   hooks:
     before:
     - shell: |-
@@ -41,5 +61,5 @@ buildah:bud:
 
 buildah:push:
 - name: conftest
-  matrix@file: .dukkha/specs/app-matrix-all.yml
+  matrix: *conftest_matrix
   image_names: *conftest_image_names
