@@ -12,3 +12,5 @@ debian-*.dockerfile
 !/base/rust/*.dockerfile
 
 /build
+
+/private

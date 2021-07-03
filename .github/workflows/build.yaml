@@ -74,6 +74,8 @@ jobs:
         - kubeval
         - helm
         - conftest
+        - editorconfig-checker
+        - golangci-lint
       fail-fast: false
     runs-on: ubuntu-20.04
     steps:

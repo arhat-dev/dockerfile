@@ -1,4 +1,10 @@
-bootstrap: {}
+bootstrap:
+  env:
+  - DEBIAN_VERSION=buster
+  - ALPINE_VERSION=3.13
+  - GO_VERSION=1.16
+  # https://github.com/multiarch/qemu-user-static/releases
+  - QEMU_VERSION=5.2.0-2
 
 tools:
   docker:
@@ -31,10 +37,4 @@ tools:
 
 shells:
 - name: sh
-  env:
-  - DEBIAN_VERSION=buster
-  - ALPINE_VERSION=3.13
-  - GO_VERSION=1.16
-  # https://github.com/multiarch/qemu-user-static/releases
-  - QEMU_VERSION=5.2.0-2
   cmd: [sh]

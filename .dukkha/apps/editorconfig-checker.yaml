@@ -1,0 +1,50 @@
+# this build instruction is used in container
+golang:build:
+- name: editorconfig-checker
+  matrix@file: .dukkha/specs/app-matrix-all.yml
+  chdir: /app/build/editorconfig-checker
+  path: ./cmd/editorconfig-checker/
+  outputs:
+  - /app/build/editorconfig-checker.${MATRIX_KERNEL}.${MATRIX_ARCH}
+  cgo:
+    enabled: false
+  ldflags@shell: |-
+    cd /app/build/editorconfig-checker
+    cat <<EOF
+    - -X main.version="$(git describe --tags)"
+    EOF
+  tags:
+  - netgo
+  extraArgs:
+  - -trimpath
+  - -mod=readonly
+
+buildah:bud:
+- name: editorconfig-checker
+  matrix@file: .dukkha/specs/app-matrix-all.yml
+  hooks:
+    before:
+    - shell: |-
+        if [ -d build/editorconfig-checker ]; then
+          exit 0
+        fi
+
+        git clone --branch 2.3.5 \
+          https://github.com/editorconfig-checker/editorconfig-checker.git \
+          build/editorconfig-checker
+  dockerfile: app/golang-app.dockerfile
+  context: "."
+  image_names: &editorconfig-checker_image_names
+  - image: ghcr.io/arhat-dev/editorconfig-checker:latest-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/editorconfig-checker:latest
+  - image: ghcr.io/arhat-dev/editorconfig-checker:2.3.5-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/editorconfig-checker:2.3.5
+  extraArgs:
+  - --build-arg="APP=editorconfig-checker"
+  - --build-arg="MATRIX_ROOTFS=${MATRIX_ROOTFS}"
+  - --build-arg="MATRIX_ARCH=${MATRIX_ARCH}"
+
+buildah:push:
+- name: editorconfig-checker
+  matrix@file: .dukkha/specs/app-matrix-all.yml
+  image_names: *editorconfig-checker_image_names

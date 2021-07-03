@@ -1,0 +1,85 @@
+# this build instruction is used in container
+golang:build:
+- name: golangci-lint
+  matrix: &golangci_lint_matrix
+    include:
+    - kernel:
+      - linux
+      rootfs:
+      - debian
+      arch:
+      - amd64
+      - armv5
+      - armv7
+      - arm64
+      - ppc64le
+      - mips64le
+      - x86
+      - s390x
+    - kernel:
+      - linux
+      rootfs:
+      - alpine
+      arch:
+      - amd64
+      - arm64
+      - armv6
+      - armv7
+      - x86
+      - s390x
+      # TODO: add ppc64le after #11 resolved
+      # - ppc64le
+  chdir: /app/build/golangci-lint
+  path: ./cmd/golangci-lint/
+  outputs:
+  - /app/build/golangci-lint.${MATRIX_KERNEL}.${MATRIX_ARCH}
+  cgo:
+    enabled: false
+  ldflags@shell: |-
+    cd /app/build/golangci-lint
+
+    cat <<EOF
+    - -s -w
+    # https://github.com/golangci/golangci-lint/blob/master/.github/workflows/tag.yml#L51
+    - -X main.version="$(git describe --tags)"
+    - -X main.commit="$(date '+%Y-%m-%dT%H:%M:%SZ')"
+    - -X main.date="$(git rev-parse --short=8 HEAD)"
+    EOF
+  tags:
+  - netgo
+  extraArgs:
+  - -trimpath
+  - -mod=readonly
+
+buildah:bud:
+- name: golangci-lint
+  matrix: *golangci_lint_matrix
+  hooks:
+    before:
+    - shell: |-
+        if [ -d build/golangci-lint ]; then
+          exit 0
+        fi
+
+        git clone --branch v1.41.1 \
+          https://github.com/golangci/golangci-lint.git \
+          build/golangci-lint
+  dockerfile@template: |-
+    app/golangci-lint/{{ .Env.MATRIX_ROOTFS }}.dockerfile
+  context: "."
+  image_names@template: &golangci_lint_image_names |-
+    - image: ghcr.io/arhat-dev/golangci-lint:latest-{{ .Env.MATRIX_ROOTFS }}-{{ .Env.MATRIX_ARCH }}
+      manifest: ghcr.io/arhat-dev/golangci-lint:latest-{{ .Env.MATRIX_ROOTFS }}
+    - image: ghcr.io/arhat-dev/golangci-lint:v1.41.1-{{ .Env.MATRIX_ROOTFS }}-{{ .Env.MATRIX_ARCH }}
+      manifest: ghcr.io/arhat-dev/golangci-lint:v1.41.1-{{ .Env.MATRIX_ROOTFS }}
+  extraArgs@template: |-
+    - --build-arg="ALPINE_VERSION={{ .Env.ALPINE_VERSION }}"
+    - --build-arg="GO_VERSION={{ .Env.GO_VERSION }}"
+    - --build-arg="DEBIAN_VERSION={{ .Env.DEBIAN_VERSION }}"
+    - --build-arg="DOCKERHUB_ARCH={{ .Env.MATRIX_ARCH | getDockerHubArch }}"
+    - --build-arg="MATRIX_ARCH={{ .Env.MATRIX_ARCH }}"
+
+buildah:push:
+- name: golangci-lint
+  matrix: *golangci_lint_matrix
+  image_names@template: *golangci_lint_image_names
