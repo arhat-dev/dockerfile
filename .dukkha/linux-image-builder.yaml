@@ -4,17 +4,17 @@ docker:build:
   matrix@file: .dukkha/specs/matrix-linux.yml
 
   hooks:
-    before:matrix@template: |-
-      - shell: |-
-          sh scripts/${MATRIX_LANGUAGE}/builder-create-dockerfile.sh \
-            {{ getDockerHubArch (.Env.MATRIX_ARCH | default "amd64") }}
+    before:matrix@template:
+    - shell: |-
+        sh scripts/${MATRIX_LANGUAGE}/builder-create-dockerfile.sh \
+          {{ getDockerHubArch (.Env.MATRIX_ARCH | default "amd64") }}
 
     after:matrix:success:
     - shell: |-
         rm "builder/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile"
 
-  dockerfile@template: |-
-    builder/{{ .Env.MATRIX_LANGUAGE }}/{{ .Env.MATRIX_ROOTFS }}-{{ .Env.MATRIX_ARCH }}.dockerfile
+  dockerfile@env: |-
+    builder/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile
 
   image_names@template: &builder_image_names |-
     {{- $suffix := printf "%s:%s-%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}

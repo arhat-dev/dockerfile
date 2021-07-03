@@ -3,16 +3,16 @@ docker:build:
   name: linux/base
   matrix@file: .dukkha/specs/matrix-linux.yml
   hooks:
-    before:matrix@template: |-
-      - shell: |-
-          sh scripts/${MATRIX_LANGUAGE}/base-create-dockerfile.sh \
-            {{ getDockerHubArch (.Env.MATRIX_ARCH | default "amd64") }} \
-            {{ getQemuArch (.Env.MATRIX_ARCH | default "amd64") }}
+    before:matrix@template:
+    - shell: |-
+        sh scripts/${MATRIX_LANGUAGE}/base-create-dockerfile.sh \
+          {{ getDockerHubArch (.Env.MATRIX_ARCH | default "amd64") }} \
+          {{ getQemuArch (.Env.MATRIX_ARCH | default "amd64") }}
     after:matrix:success:
     - shell: rm "base/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile"
 
-  dockerfile@template: |-
-    base/{{ .Env.MATRIX_LANGUAGE }}/{{ .Env.MATRIX_ROOTFS }}-{{ .Env.MATRIX_ARCH }}.dockerfile
+  dockerfile@env: |-
+    base/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile
   image_names@template: &base_image_names |-
     {{- $suffix := printf "%s:%s-%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
     - image: docker.io/arhatdev/base-{{ $suffix }}

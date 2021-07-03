@@ -67,17 +67,17 @@ buildah:bud:
   dockerfile@template: |-
     app/golangci-lint/{{ .Env.MATRIX_ROOTFS }}.dockerfile
   context: "."
-  image_names@template: &golangci_lint_image_names |-
-    - image: ghcr.io/arhat-dev/golangci-lint:latest-{{ .Env.MATRIX_ROOTFS }}-{{ .Env.MATRIX_ARCH }}
-      manifest: ghcr.io/arhat-dev/golangci-lint:latest-{{ .Env.MATRIX_ROOTFS }}
-    - image: ghcr.io/arhat-dev/golangci-lint:v1.41.1-{{ .Env.MATRIX_ROOTFS }}-{{ .Env.MATRIX_ARCH }}
-      manifest: ghcr.io/arhat-dev/golangci-lint:v1.41.1-{{ .Env.MATRIX_ROOTFS }}
-  extraArgs@template: |-
-    - --build-arg="ALPINE_VERSION={{ .Env.ALPINE_VERSION }}"
-    - --build-arg="GO_VERSION={{ .Env.GO_VERSION }}"
-    - --build-arg="DEBIAN_VERSION={{ .Env.DEBIAN_VERSION }}"
-    - --build-arg="DOCKERHUB_ARCH={{ .Env.MATRIX_ARCH | getDockerHubArch }}"
-    - --build-arg="MATRIX_ARCH={{ .Env.MATRIX_ARCH }}"
+  image_names@env: &golangci_lint_image_names
+  - image: ghcr.io/arhat-dev/golangci-lint:latest-${MATRIX_ROOTFS}-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/golangci-lint:latest-${MATRIX_ROOTFS}
+  - image: ghcr.io/arhat-dev/golangci-lint:v1.41.1-${MATRIX_ROOTFS}-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/golangci-lint:v1.41.1-${MATRIX_ROOTFS}
+  extraArgs@template:
+  - --build-arg="ALPINE_VERSION={{ .Env.ALPINE_VERSION }}"
+  - --build-arg="GO_VERSION={{ .Env.GO_VERSION }}"
+  - --build-arg="DEBIAN_VERSION={{ .Env.DEBIAN_VERSION }}"
+  - --build-arg="DOCKERHUB_ARCH={{ .Env.MATRIX_ARCH | getDockerHubArch }}"
+  - --build-arg="MATRIX_ARCH={{ .Env.MATRIX_ARCH }}"
 
 buildah:push:
 - name: golangci-lint
