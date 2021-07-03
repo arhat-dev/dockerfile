@@ -1,0 +1,45 @@
+# this build instruction is used in container
+golang:build:
+- name: conftest
+  matrix@file: .dukkha/specs/app-matrix-all.yml
+  chdir: /app/build/conftest
+  path: ./
+  outputs:
+  - /app/build/conftest.${MATRIX_KERNEL}.${MATRIX_ARCH}
+  cgo:
+    enabled: false
+  tags:
+  - netgo
+  extraArgs:
+  - -trimpath
+  - -mod=readonly
+
+buildah:bud:
+- name: conftest
+  matrix@file: .dukkha/specs/app-matrix-all.yml
+  hooks:
+    before:
+    - shell: |-
+        if [ -d build/conftest ]; then
+          exit 0
+        fi
+
+        git clone --branch v0.25.0 \
+          https://github.com/open-policy-agent/conftest.git \
+          build/conftest
+  dockerfile: app/golang-app.dockerfile
+  context: "."
+  image_names: &conftest_image_names
+  - image: ghcr.io/arhat-dev/conftest:latest-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/conftest:latest
+  - image: ghcr.io/arhat-dev/conftest:v0.25.0-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/conftest:v0.25.0
+  extraArgs:
+  - --build-arg="APP=conftest"
+  - --build-arg="MATRIX_ROOTFS=${MATRIX_ROOTFS}"
+  - --build-arg="MATRIX_ARCH=${MATRIX_ARCH}"
+
+buildah:push:
+- name: conftest
+  matrix@file: .dukkha/specs/app-matrix-all.yml
+  image_names: *conftest_image_names

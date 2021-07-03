@@ -10,10 +10,6 @@ golang:build:
     #   /go/pkg/mod/github.com/!proton!mail/go-rfc5322@v0.8.0/parser/rfc5322_parser.go:2756: constant 4230534781 overflows int
     - amd64
     - arm64
-  chdir: /app/build/proton-bridge
-  path: ./cmd/Desktop-Bridge/
-  outputs@template: |-
-    - /app/build/proton-bridge.{{ .Env.MATRIX_KERNEL }}.{{ .Env.MATRIX_ARCH }}
   hooks:
     before:
     - shell: |-
@@ -33,6 +29,10 @@ golang:build:
         cd "${src_dir}/utils/"
         ./credits.sh bridge
         ./credits.sh importexport
+  chdir: /app/build/proton-bridge
+  path: ./cmd/Desktop-Bridge/
+  outputs@template: |-
+    - /app/build/proton-bridge.{{ .Env.MATRIX_KERNEL }}.{{ .Env.MATRIX_ARCH }}
   cgo:
     enabled: false
   ldflags@shell: |-

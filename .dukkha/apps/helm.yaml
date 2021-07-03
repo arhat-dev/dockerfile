@@ -1,27 +1,7 @@
 # this build instruction is used in container
 golang:build:
 - name: helm
-  matrix: &helm_matrix
-    include:
-    - kernel:
-      - linux
-      rootfs:
-      - debian
-      arch:
-      - mips64le
-      - armv5
-      - ppc64le
-    kernel:
-    - linux
-    rootfs:
-    - alpine
-    arch:
-    - amd64
-    - x86
-    - arm64
-    - armv7
-    - armv6
-    - s390x
+  matrix@file: .dukkha/specs/app-matrix-all.yml
   chdir: /app/build/helm
   path: ./cmd/helm
   outputs:
@@ -52,7 +32,7 @@ golang:build:
 
 buildah:bud:
 - name: helm
-  matrix: *helm_matrix
+  matrix@file: .dukkha/specs/app-matrix-all.yml
   hooks:
     before:
     - shell: |-
@@ -76,5 +56,5 @@ buildah:bud:
 
 buildah:push:
 - name: helm
-  matrix: *helm_matrix
+  matrix@file: .dukkha/specs/app-matrix-all.yml
   image_names: *helm_image_names

@@ -1,5 +1,6 @@
 buildah:bud:
 - name: yamllint
+  matrix@file: .dukkha/specs/app-matrix-all.yml
   hooks:
     before:
     - shell: |-
@@ -16,28 +17,6 @@ buildah:bud:
         [packages]
         yamllint = "==1.26.1"
         EOF
-
-  matrix: &yamllint_matrix
-    include:
-    - kernel:
-      - linux
-      rootfs:
-      - debian
-      arch:
-      - mips64le
-      - armv5
-      - ppc64le
-    kernel:
-    - linux
-    rootfs:
-    - alpine
-    arch:
-    - amd64
-    - x86
-    - arm64
-    - armv7
-    - armv6
-    - s390x
   dockerfile: app/yamllint.dockerfile
   context: build/yamllint
   image_names: &yamllint_image_names
@@ -52,5 +31,5 @@ buildah:bud:
 
 buildah:push:
 - name: yamllint
-  matrix: *yamllint_matrix
+  matrix@file: .dukkha/specs/app-matrix-all.yml
   image_names: *yamllint_image_names

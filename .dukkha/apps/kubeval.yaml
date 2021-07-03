@@ -1,27 +1,7 @@
 # this build instruction is used in container
 golang:build:
 - name: kubeval
-  matrix: &kubeval_matrix
-    include:
-    - kernel:
-      - linux
-      rootfs:
-      - debian
-      arch:
-      - mips64le
-      - armv5
-      - ppc64le
-    kernel:
-    - linux
-    rootfs:
-    - alpine
-    arch:
-    - amd64
-    - x86
-    - arm64
-    - armv7
-    - armv6
-    - s390x
+  matrix@file: .dukkha/specs/app-matrix-all.yml
   chdir: /app/build/kubeval
   path: ./
   outputs:
@@ -38,7 +18,7 @@ golang:build:
 
 buildah:bud:
 - name: kubeval
-  matrix: *kubeval_matrix
+  matrix@file: .dukkha/specs/app-matrix-all.yml
   hooks:
     before:
     - shell: |-
@@ -62,5 +42,5 @@ buildah:bud:
 
 buildah:push:
 - name: kubeval
-  matrix: *kubeval_matrix
+  matrix@file: .dukkha/specs/app-matrix-all.yml
   image_names: *kubeval_image_names

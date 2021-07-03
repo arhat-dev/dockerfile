@@ -65,8 +65,6 @@ jobs:
         buildah images
 
   apps:
-    needs:
-    - common
     strategy:
       matrix:
         app:
@@ -75,6 +73,7 @@ jobs:
         - yamllint
         - kubeval
         - helm
+        - conftest
       fail-fast: false
     runs-on: ubuntu-20.04
     steps:
