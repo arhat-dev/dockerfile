@@ -1,36 +1,43 @@
-exclude:
-- rootfs:
+include:
+- language:
+  - go
+  - python3.6
+  - python3.7
+  - python3.8
+  - python3.9
+  kernel:
+  - linux
+  rootfs:
   - alpine
   arch:
   # alpine has no armv5 and mips64le support
-  - armv5
-  - mips64le
+  - amd64
+  - arm64
+  - armv7
+  - armv6
+  - s390x
+  - x86
   # ERROR: patch-2.7.6-r6: package mentioned in index not found (try 'apk update')
-  - ppc64le
+  # TODO: fix this and close #11
+  # - ppc64le
 
-- rootfs:
+- language:
+  - go
+  - python3.6
+  - python3.7
+  - python3.8
+  - python3.9
+  kernel:
+  - linux
+  rootfs:
   - debian
   arch:
-  - armv6
-
-rootfs:
-- alpine
-- debian
-kernel:
-- linux
-language:
-- go
-- python3.6
-- python3.7
-- python3.8
-- python3.9
-arch:
-- amd64
-- arm64
-- armv7
-- armv6
-- ppc64le
-- s390x
-- x86
-- mips64le
-- armv5
+  # debian has no armv6 support
+  - amd64
+  - arm64
+  - armv7
+  - armv5
+  - ppc64le
+  - s390x
+  - x86
+  - mips64le
