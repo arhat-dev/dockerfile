@@ -64,8 +64,8 @@ buildah:bud:
         git clone --branch v1.41.1 \
           https://github.com/golangci/golangci-lint.git \
           build/golangci-lint
-  dockerfile@template: |-
-    app/golangci-lint/{{ .Env.MATRIX_ROOTFS }}.dockerfile
+  dockerfile@env: |-
+    app/golangci-lint/${MATRIX_ROOTFS}.dockerfile
   context: "."
   image_names@env: &golangci_lint_image_names
   - image: ghcr.io/arhat-dev/golangci-lint:latest-${MATRIX_ROOTFS}-${MATRIX_ARCH}
@@ -82,4 +82,4 @@ buildah:bud:
 buildah:push:
 - name: golangci-lint
   matrix: *golangci_lint_matrix
-  image_names@template: *golangci_lint_image_names
+  image_names@env: *golangci_lint_image_names
