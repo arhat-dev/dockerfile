@@ -12,7 +12,7 @@ golang:build:
   - netgo
   ldflags:
   - -s -w
-  extraArgs:
+  extra_args:
   - -trimpath
   - -mod=readonly
 
@@ -35,7 +35,7 @@ buildah:bud:
     manifest: ghcr.io/arhat-dev/kubeval:latest
   - image: ghcr.io/arhat-dev/kubeval:v0.16.1-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/kubeval:v0.16.1
-  extraArgs:
+  extra_args:
   - --build-arg="APP=kubeval"
   - --build-arg="MATRIX_ROOTFS=${MATRIX_ROOTFS}"
   - --build-arg="MATRIX_ARCH=${MATRIX_ARCH}"

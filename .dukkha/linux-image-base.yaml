@@ -18,7 +18,7 @@ docker:build:
     - image: docker.io/arhatdev/base-{{ $suffix }}
     - image: ghcr.io/arhat-dev/base-{{ $suffix }}
 
-  extraArgs:
+  extra_args:
   - --pull
   - --no-cache
 

@@ -18,7 +18,7 @@ buildah:bud:
   context: build/spilo/postgres-appliance
   image_names:
   - image: spilo-base:${MATRIX_ARCH}
-  extraArgs:
+  extra_args:
   - --build-arg="TIMESCALEDB=2.3.0"
   - --build-arg="ARCH=${MATRIX_ARCH}"
   - --build-arg="BASE_IMAGE=registry.opensource.zalan.do/library/ubuntu-18.04"
@@ -39,7 +39,7 @@ buildah:bud:
     manifest: ghcr.io/arhat-dev/spilo:latest-${MATRIX_ARCH}
   - image: ghcr.io/arhat-dev/spilo:2.0-p7-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/spilo:2.0-p7
-  extraArgs:
+  extra_args:
   - --build-arg="BASE_IMAGE=spilo-base:${MATRIX_ARCH}"
 
 buildah:push:

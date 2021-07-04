@@ -24,7 +24,7 @@ buildah:bud:
     manifest: ghcr.io/arhat-dev/yamllint:latest
   - image: ghcr.io/arhat-dev/yamllint:1.26.1-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/yamllint:1.26.1
-  extraArgs:
+  extra_args:
   - --build-arg="MATRIX_PYTHON=python3.8"
   - --build-arg="MATRIX_ROOTFS=${MATRIX_ROOTFS}"
   - --build-arg="MATRIX_ARCH=${MATRIX_ARCH}"

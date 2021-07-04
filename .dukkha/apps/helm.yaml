@@ -26,7 +26,7 @@ golang:build:
     EOF
   tags:
   - netgo
-  extraArgs:
+  extra_args:
   - -trimpath
   - -mod=readonly
 
@@ -49,7 +49,7 @@ buildah:bud:
     manifest: ghcr.io/arhat-dev/helm:latest
   - image: ghcr.io/arhat-dev/helm:v3.6.2-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/helm:v3.6.2
-  extraArgs:
+  extra_args:
   - --build-arg="APP=helm"
   - --build-arg="MATRIX_ROOTFS=${MATRIX_ROOTFS}"
   - --build-arg="MATRIX_ARCH=${MATRIX_ARCH}"

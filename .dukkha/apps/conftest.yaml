@@ -30,7 +30,7 @@ golang:build:
     enabled: false
   tags:
   - netgo
-  extraArgs:
+  extra_args:
   - -trimpath
   - -mod=readonly
 
@@ -54,7 +54,7 @@ buildah:bud:
     manifest: ghcr.io/arhat-dev/conftest:latest
   - image: ghcr.io/arhat-dev/conftest:v0.25.0-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/conftest:v0.25.0
-  extraArgs:
+  extra_args:
   - --build-arg="APP=conftest"
   - --build-arg="MATRIX_ROOTFS=${MATRIX_ROOTFS}"
   - --build-arg="MATRIX_ARCH=${MATRIX_ARCH}"

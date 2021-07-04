@@ -15,7 +15,7 @@ golang:build:
     EOF
   tags:
   - netgo
-  extraArgs:
+  extra_args:
   - -trimpath
   - -mod=readonly
 
@@ -39,7 +39,7 @@ buildah:bud:
     manifest: ghcr.io/arhat-dev/editorconfig-checker:latest
   - image: ghcr.io/arhat-dev/editorconfig-checker:2.3.5-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/editorconfig-checker:2.3.5
-  extraArgs:
+  extra_args:
   - --build-arg="APP=editorconfig-checker"
   - --build-arg="MATRIX_ROOTFS=${MATRIX_ROOTFS}"
   - --build-arg="MATRIX_ARCH=${MATRIX_ARCH}"

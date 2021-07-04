@@ -47,7 +47,7 @@ golang:build:
     EOF
   tags:
   - netgo
-  extraArgs:
+  extra_args:
   - -trimpath
   - -mod=readonly
 
@@ -72,7 +72,7 @@ buildah:bud:
     manifest: ghcr.io/arhat-dev/golangci-lint:latest-${MATRIX_ROOTFS}
   - image: ghcr.io/arhat-dev/golangci-lint:v1.41.1-${MATRIX_ROOTFS}-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/golangci-lint:v1.41.1-${MATRIX_ROOTFS}
-  extraArgs@template:
+  extra_args@template:
   - --build-arg="ALPINE_VERSION={{ .Env.ALPINE_VERSION }}"
   - --build-arg="GO_VERSION={{ .Env.GO_VERSION }}"
   - --build-arg="DEBIAN_VERSION={{ .Env.DEBIAN_VERSION }}"
