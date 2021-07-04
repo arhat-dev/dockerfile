@@ -37,9 +37,13 @@ golang:build:
     enabled: false
   ldflags@shell: |-
     cd /app/build/proton-bridge
+    tag_name="$(git describe --tags)"
+    # tag_name may include `br-` prefix, see https://github.com/arhat-dev/dockerfile/issues/13
+    tag_name="${tag_name#br-*}"
+
     cat <<EOF
     - -s -w
-    - -X github.com/ProtonMail/proton-bridge/internal/constants.Version=$(git describe --tags)+git
+    - -X github.com/ProtonMail/proton-bridge/internal/constants.Version=${tag_name}+git
     # https://github.com/ProtonMail/proton-bridge/blob/master/Makefile#L33
     - -X github.com/ProtonMail/proton-bridge/internal/constants.Revision=$(git rev-parse --short=10 HEAD)
     - -X github.com/ProtonMail/proton-bridge/internal/constants.BuildTime=$(date +%FT%T%z)
