@@ -41,3 +41,24 @@ include:
   - s390x
   - x86
   - mips64le
+
+- language:
+  - rust
+  kernel:
+  - linux
+  rootfs:
+  - debian
+  - alpine
+  arch:
+  - amd64
+  - arm64
+
+- language:
+  - rust
+  kernel:
+  - linux
+  rootfs:
+  - debian
+  arch:
+  - armv7
+  - x86
