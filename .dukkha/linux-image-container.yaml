@@ -1,4 +1,4 @@
-docker:build:
+buildah:bud:
 - &linux_container_build
   name: linux/container
   matrix@file: .dukkha/specs/matrix-linux.yml
@@ -19,20 +19,13 @@ docker:build:
   image_names@template: &container_image_names |-
     {{- $suffix := printf "%s:%s-%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
     {{- $manifest_suffix := printf "%s:%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS -}}
-    - image: docker.io/arhatdev/{{ $suffix }}
-    # docker registry has no oci manifest support
-    #   manifest: docker.io/arhatdev/{{ $manifest_suffix }}
     - image: ghcr.io/arhat-dev/{{ $suffix }}
       manifest: ghcr.io/arhat-dev/{{ $manifest_suffix }}
 
-docker:push:
-- &linux_container_push
-  name: linux/container
+buildah:push:
+- name: linux/container
+  hooks:
+    before:
+    - task: buildah:login:ghcr
   matrix@file: .dukkha/specs/matrix-linux.yml
   image_names@template: *container_image_names
-
-buildah:bud:
-- *linux_container_build
-
-buildah:push:
-- *linux_container_push

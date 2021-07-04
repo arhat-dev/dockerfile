@@ -81,5 +81,8 @@ buildah:bud:
 
 buildah:push:
 - name: golangci-lint
+  hooks:
+    before:
+    - task: buildah:login:ghcr
   matrix: *golangci_lint_matrix
   image_names@env: *golangci_lint_image_names

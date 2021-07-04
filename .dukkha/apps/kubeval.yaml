@@ -42,5 +42,8 @@ buildah:bud:
 
 buildah:push:
 - name: kubeval
+  hooks:
+    before:
+    - task: buildah:login:ghcr
   matrix@file: .dukkha/specs/app-matrix-all.yml
   image_names: *kubeval_image_names

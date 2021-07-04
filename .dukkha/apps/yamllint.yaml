@@ -31,5 +31,8 @@ buildah:bud:
 
 buildah:push:
 - name: yamllint
+  hooks:
+    before:
+    - task: buildah:login:ghcr
   matrix@file: .dukkha/specs/app-matrix-all.yml
   image_names: *yamllint_image_names

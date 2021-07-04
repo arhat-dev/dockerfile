@@ -56,5 +56,8 @@ buildah:bud:
 
 buildah:push:
 - name: helm
+  hooks:
+    before:
+    - task: buildah:login:ghcr
   matrix@file: .dukkha/specs/app-matrix-all.yml
   image_names: *helm_image_names

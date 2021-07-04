@@ -61,5 +61,8 @@ buildah:bud:
 
 buildah:push:
 - name: conftest
+  hooks:
+    before:
+    - task: buildah:login:ghcr
   matrix: *conftest_matrix
   image_names: *conftest_image_names

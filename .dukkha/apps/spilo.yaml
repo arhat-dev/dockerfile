@@ -44,5 +44,8 @@ buildah:bud:
 
 buildah:push:
 - name: spilo
+  hooks:
+    before:
+    - task: buildah:login:ghcr
   matrix: *spilo_matrix
   image_names: *spilo_image_names

@@ -68,5 +68,8 @@ buildah:bud:
 
 buildah:push:
 - name: proton-bridge
+  hooks:
+    before:
+    - task: buildah:login:ghcr
   matrix: *proton_bridge_matrix
   image_names: *proton_bridge_image_names
