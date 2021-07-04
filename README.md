@@ -1,9 +1,6 @@
 # Dockerfile
 
 [![build](https://github.com/arhat-dev/dockerfile/actions/workflows/build.yaml/badge.svg)](https://github.com/arhat-dev/dockerfile/actions/workflows/build.yaml)
-
-[![rust](https://github.com/arhat-dev/dockerfile/workflows/rust/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=rust)
-
 [![kind](https://github.com/arhat-dev/dockerfile/workflows/kind/badge.svg)](https://github.com/arhat-dev/dockerfile/actions?workflow=kind)
 
 Building blocks for [arhat-dev](https://github.com/arhat-dev), suitable for organizations using same project structure.
