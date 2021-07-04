@@ -9,7 +9,11 @@ buildah:bud:
           {{ getDockerHubArch (.Env.MATRIX_ARCH | default "amd64") }} \
           {{ getQemuArch (.Env.MATRIX_ARCH | default "amd64") }}
     after:matrix:success:
-    - shell: rm "base/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile"
+    - shell: |-
+        rm "base/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile"
+    after:matrix:failure:
+    - shell: |-
+        cat "base/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile"
 
   dockerfile@env: |-
     base/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile

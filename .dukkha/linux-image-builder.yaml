@@ -12,6 +12,9 @@ buildah:bud:
     after:matrix:success:
     - shell: |-
         rm "builder/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile"
+    after:matrix:failure:
+    - shell: |-
+        cat "builder/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile"
 
   dockerfile@env: |-
     builder/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile
