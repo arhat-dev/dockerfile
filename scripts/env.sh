@@ -1,6 +1,6 @@
 #!/bin/sh
 
-IMAGE_REPOS="ghcr.io/arhat-dev docker.io/arhatdev"
+IMAGE_REPOS="ghcr.io/arhat-dev"
 
 get_tag_args() {
   name="$1"

@@ -1,7 +1,6 @@
 DOCKERBUILD := docker build
 DOCKERPUSH := docker push
 
-DOCKERHUB_REPO := docker.io/arhatdev
 GITHUBPKG_REPO := ghcr.io/arhat-dev
 
 #
@@ -14,10 +13,8 @@ GITHUBPKG_REPO := ghcr.io/arhat-dev
 	$(eval IMAGE_NAME := base-$(LANGUAGE):$(MAKECMDGOALS:base-$(LANGUAGE)-%=%))
 
 	$(DOCKERBUILD) -f $(DOCKERFILE) \
-		-t $(DOCKERHUB_REPO)/$(IMAGE_NAME) \
 		-t $(GITHUBPKG_REPO)/$(IMAGE_NAME) .
 
-	$(DOCKERPUSH) $(DOCKERHUB_REPO)/$(IMAGE_NAME)
 	$(DOCKERPUSH) $(GITHUBPKG_REPO)/$(IMAGE_NAME)
 
 #
@@ -34,15 +31,10 @@ GITHUBPKG_REPO := ghcr.io/arhat-dev
 	$(eval IMAGE_TAG := $(MAKECMDGOALS:builder-$(LANGUAGE)-%=%))
 
 	$(DOCKERBUILD) -f $(DOCKERFILE) --build-arg ARCH=$(ARCH) \
-		-t $(DOCKERHUB_REPO)/$(IMAGE_NAME):$(IMAGE_TAG) \
 		-t $(GITHUBPKG_REPO)/$(IMAGE_NAME):$(IMAGE_TAG) .
 
-	$(DOCKERPUSH) $(DOCKERHUB_REPO)/$(IMAGE_NAME):$(IMAGE_TAG)
 	$(DOCKERPUSH) $(GITHUBPKG_REPO)/$(IMAGE_NAME):$(IMAGE_TAG)
 
-	./scripts/manifest.sh create $(DOCKERHUB_REPO)/$(IMAGE_NAME) $(IMAGE_TAG) $(MANIFEST_TAG)
-	./scripts/manifest.sh annotate $(DOCKERHUB_REPO)/$(IMAGE_NAME) $(IMAGE_TAG) $(MANIFEST_TAG) $(ARCH)
-	./scripts/manifest.sh push $(DOCKERHUB_REPO)/$(IMAGE_NAME) $(MANIFEST_TAG)
 
 	./scripts/manifest.sh create $(GITHUBPKG_REPO)/$(IMAGE_NAME) $(IMAGE_TAG) $(MANIFEST_TAG)
 	./scripts/manifest.sh annotate $(GITHUBPKG_REPO)/$(IMAGE_NAME) $(IMAGE_TAG) $(MANIFEST_TAG) $(ARCH)
@@ -58,10 +50,8 @@ GITHUBPKG_REPO := ghcr.io/arhat-dev
 	$(eval IMAGE_NAME := $(LANGUAGE):$(MAKECMDGOALS:$(LANGUAGE)-%=%))
 
 	$(DOCKERBUILD) -f $(DOCKERFILE) \
-		-t $(DOCKERHUB_REPO)/$(IMAGE_NAME) \
 		-t $(GITHUBPKG_REPO)/$(IMAGE_NAME) .
 
-	$(DOCKERPUSH) $(DOCKERHUB_REPO)/$(IMAGE_NAME)
 	$(DOCKERPUSH) $(GITHUBPKG_REPO)/$(IMAGE_NAME)
 
 #
@@ -79,15 +69,9 @@ GITHUBPKG_REPO := ghcr.io/arhat-dev
 	$(DOCKERBUILD) -f $(DOCKERFILE) \
 		--build-arg ARCH=$(ARCH) \
 		--build-arg DOCKER_ARCH=$($(ARCH)) \
-		-t $(DOCKERHUB_REPO)/$(IMAGE_NAME):$(IMAGE_TAG) \
 		-t $(GITHUBPKG_REPO)/$(IMAGE_NAME):$(IMAGE_TAG) .
 
-	$(DOCKERPUSH) $(DOCKERHUB_REPO)/$(IMAGE_NAME):$(IMAGE_TAG)
 	$(DOCKERPUSH) $(GITHUBPKG_REPO)/$(IMAGE_NAME):$(IMAGE_TAG)
-
-	./scripts/manifest.sh create $(DOCKERHUB_REPO)/$(IMAGE_NAME) $(IMAGE_TAG) $(MANIFEST_TAG)
-	./scripts/manifest.sh annotate $(DOCKERHUB_REPO)/$(IMAGE_NAME) $(IMAGE_TAG) $(MANIFEST_TAG) $(ARCH)
-	./scripts/manifest.sh push $(DOCKERHUB_REPO)/$(IMAGE_NAME) $(MANIFEST_TAG)
 
 	./scripts/manifest.sh create $(GITHUBPKG_REPO)/$(IMAGE_NAME) $(IMAGE_TAG) $(MANIFEST_TAG)
 	./scripts/manifest.sh annotate $(GITHUBPKG_REPO)/$(IMAGE_NAME) $(IMAGE_TAG) $(MANIFEST_TAG) $(ARCH)

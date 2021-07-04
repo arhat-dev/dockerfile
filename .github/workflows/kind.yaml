@@ -73,12 +73,9 @@ jobs:
     - name: Build and Push Images
       env:
         DOCKER_CLI_EXPERIMENTAL: enabled
-        DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-        DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
         GITHUB_DOCKER_USERNAME: ${{ github.actor }}
         GITHUB_DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD"
         docker login ghcr.io -u="$GITHUB_DOCKER_USERNAME" -p="$GITHUB_DOCKER_PASSWORD"
         docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
@@ -86,11 +83,6 @@ jobs:
           --image ghcr.io/arhat-dev/kind-node:${{ matrix.kube }} \
           "${GITHUB_WORKSPACE}/kube"
 
-        docker tag \
-          ghcr.io/arhat-dev/kind-node:${{ matrix.kube }} \
-          docker.io/arhatdev/kind-node:${{ matrix.kube }}
-
         docker images
 
         docker push ghcr.io/arhat-dev/kind-node:${{ matrix.kube }}
-        docker push docker.io/arhatdev/kind-node:${{ matrix.kube }}
