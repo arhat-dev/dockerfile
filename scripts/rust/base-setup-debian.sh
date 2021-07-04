@@ -1,10 +1,11 @@
 #!/bin/sh
 
-set -e ;\
-    if [ -n "${MIRROR_SITE}" ]; then \
-      sed -i "s/deb.debian.org/${MIRROR_SITE}/g" /etc/apt/sources.list ;\
-      sed -i "s|security.debian.org/debian-security|${MIRROR_SITE}/debian-security|g" /etc/apt/sources.list ;\
-    fi ;
+set -e
+
+if [ -n "${MIRROR_SITE}" ]; then
+  sed -i "s/deb.debian.org/${MIRROR_SITE}/g" /etc/apt/sources.list
+  sed -i "s|security.debian.org/debian-security|${MIRROR_SITE}/debian-security|g" /etc/apt/sources.list
+fi
 
 # install dependencies
 apt-get update
