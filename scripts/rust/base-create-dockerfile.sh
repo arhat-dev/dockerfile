@@ -28,8 +28,6 @@ FROM ${base_image}
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
-# ARG MIRROR_SITE
-
 COPY scripts/${MATRIX_LANGUAGE}/base-setup-debian-amd64.sh /setup.sh
 RUN sh /setup.sh && rm /setup.sh
 
@@ -62,8 +60,6 @@ FROM ${base_image}
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
 COPY --from=qemu /usr/bin/qemu* /usr/bin/
-
-# ARG MIRROR_SITE
 
 COPY scripts/${MATRIX_LANGUAGE}/base-setup-${MATRIX_ROOTFS}.sh /setup.sh
 RUN sh /setup.sh && rm /setup.sh

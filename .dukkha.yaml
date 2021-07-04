@@ -3,6 +3,7 @@ bootstrap:
   - DEBIAN_VERSION=buster
   - ALPINE_VERSION=3.13
   - GO_VERSION=1.16
+  - RUST_VERSION=1.53
   # https://github.com/multiarch/qemu-user-static/releases
   - QEMU_VERSION=5.2.0-2
 

@@ -28,8 +28,6 @@ FROM ${base_image}
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
-# ARG MIRROR_SITE
-
 COPY scripts/${MATRIX_LANGUAGE}/base-setup-${MATRIX_ROOTFS}-amd64.sh /setup.sh
 RUN sh /setup.sh && rm /setup.sh
 EOF
