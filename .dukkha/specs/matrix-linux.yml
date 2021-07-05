@@ -47,18 +47,18 @@ include:
   kernel:
   - linux
   rootfs:
-  - debian
+  # - debian
   - alpine
   arch:
   - amd64
   - arm64
 
-- language:
-  - rust
-  kernel:
-  - linux
-  rootfs:
-  - debian
-  arch:
-  - armv7
-  - x86
+# - language:
+#   - rust
+#   kernel:
+#   - linux
+#   rootfs:
+#   - debian
+#   arch:
+#   - armv7
+#   - x86

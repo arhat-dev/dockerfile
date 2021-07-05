@@ -1,6 +1,5 @@
 buildah:bud:
-- &linux_container_build
-  name: linux/container
+- name: linux/container
   matrix@file: .dukkha/specs/matrix-linux.yml
 
   hooks:
@@ -24,6 +23,10 @@ buildah:bud:
     {{- $manifest_suffix := printf "%s:%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS -}}
     - image: ghcr.io/arhat-dev/{{ $suffix }}
       manifest: ghcr.io/arhat-dev/{{ $manifest_suffix }}
+
+  extra_args:
+  - --pull=true
+  - --pull-always
 
 buildah:push:
 - name: linux/container

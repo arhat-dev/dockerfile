@@ -1,0 +1,18 @@
+include:
+- kernel:
+  - linux
+  rootfs:
+  - debian
+  arch:
+  - mips64le
+  # TODO: switch to alpine/ppc64le after #11 resolved
+  - ppc64le
+
+- kernel:
+  - linux
+  rootfs:
+  - alpine
+  arch:
+  - amd64
+  - arm64
+  - s390x

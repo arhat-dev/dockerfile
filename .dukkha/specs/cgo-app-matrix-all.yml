@@ -1,0 +1,29 @@
+include:
+# debian for gnu libc
+- kernel:
+  - linux
+  rootfs:
+  - debian
+  arch:
+  - amd64
+  - armv5
+  - armv7
+  - arm64
+  - ppc64le
+  - mips64le
+  - x86
+  - s390x
+# alpine for musl libc
+- kernel:
+  - linux
+  rootfs:
+  - alpine
+  arch:
+  - amd64
+  - arm64
+  - armv6
+  - armv7
+  - x86
+  - s390x
+  # TODO: add ppc64le after #11 resolved
+  # - ppc64le

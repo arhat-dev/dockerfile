@@ -1,6 +1,5 @@
 buildah:bud:
-- &linux_base_build
-  name: linux/base
+- name: linux/base
   matrix@file: .dukkha/specs/matrix-linux.yml
   hooks:
     before:matrix@template:
@@ -22,7 +21,8 @@ buildah:bud:
     - image: ghcr.io/arhat-dev/base-{{ $suffix }}
 
   extra_args:
-  - --pull
+  - --pull=true
+  - --pull-always
   - --no-cache
 
 buildah:push:
