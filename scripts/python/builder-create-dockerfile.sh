@@ -1,8 +1,11 @@
 #!/bin/sh
 
 cat <<EOF > "builder/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile"
-FROM ghcr.io/arhat-dev/dukkha:latest-${MATRIX_ARCH} as dukkha
-FROM ghcr.io/arhat-dev/base-${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}-${MATRIX_ARCH}
+ARG DUKKHA_IMAGE
+ARG BASE_IMAGE
+
+FROM \${DUKKHA_IMAGE} as dukkha
+FROM \${BASE_IMAGE}
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 

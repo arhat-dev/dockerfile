@@ -1,12 +1,24 @@
 buildah:bud:
-- name: linux/builder
-  matrix@file: .dukkha/specs/matrix-linux.yml
+- name: linux/builder-prepare
+  matrix@file: &matrix .dukkha/specs/matrix-linux.yml
+  dockerfile@env: |-
+    builder/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile
+  image_names@env:
+  - image: prepare-${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}-${MATRIX_ARCH}
+  extra_args@env:
+  - --target=dukkha
+  - --pull-always
+  - --build-arg="DUKKHA_IMAGE=ghcr.io/arhat-dev/dukkha:latest-${MATRIX_ARCH}"
+  - --build-arg="BASE_IMAGE=scratch"
 
+- name: linux/builder
+  matrix@file: *matrix
   hooks:
     before:matrix@template:
     - shell: |-
         sh scripts/${MATRIX_LANGUAGE}/builder-create-dockerfile.sh \
           {{ getDockerHubArch (.Env.MATRIX_ARCH | default "amd64") }}
+    - task: buildah:bud:linux/builder-prepare
 
     after:matrix:success:
     - shell: |-
@@ -18,20 +30,25 @@ buildah:bud:
   dockerfile@env: |-
     builder/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile
 
-  image_names@template: &builder_image_names |-
-    {{- $suffix := printf "%s:%s-%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
-    {{- $manifest_suffix := printf "%s:%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS -}}
-    - image: ghcr.io/arhat-dev/builder-{{ $suffix }}
-      manifest: ghcr.io/arhat-dev/builder-{{ $manifest_suffix }}
+  image_names@env: &image_names
+  - image: ghcr.io/arhat-dev/builder-${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/builder-${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}
 
-  extra_args:
-  - --pull=false
-  - --pull-never
+  extra_args@template: |-
+    {{- $base_image_name := printf "ghcr.io/arhat-dev/base-%s:%s-%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
+    {{- $base_image_id := os_ReadFile (getBuildahImageIDFile $base_image_name) -}}
+
+    {{- $dukkha_image_name := printf "prepare-%s:%s-%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
+    {{- $dukkha_image_id := os_ReadFile (getBuildahImageIDFile $dukkha_image_name) -}}
+
+    - --pull-never
+    - --build-arg="DUKKHA_IMAGE={{ $dukkha_image_id }}"
+    - --build-arg="BASE_IMAGE={{ $base_image_id }}"
 
 buildah:push:
 - name: linux/builder
   hooks:
     before:
     - task: buildah:login:ghcr
-  matrix@file: .dukkha/specs/matrix-linux.yml
-  image_names@template: *builder_image_names
+  matrix@file: *matrix
+  image_names@env: *image_names
