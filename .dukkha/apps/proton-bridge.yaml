@@ -1,53 +1,36 @@
 # this build instruction is used in container
 golang:build:
 - name: proton-bridge
-  matrix: &proton_bridge_matrix
-    kernel:
-    - linux
-    arch:
-    # proton-bridge doesn't have 32bit support
-    #
-    #   /go/pkg/mod/github.com/!proton!mail/go-rfc5322@v0.8.0/parser/rfc5322_parser.go:2756: constant 4230534781 overflows int
-    - amd64
-    - arm64
+  # proton-bridge doesn't have 32bit support
+  #
+  #   /go/pkg/mod/github.com/!proton!mail/go-rfc5322@v0.8.0/parser/rfc5322_parser.go:2756: constant 4230534781 overflows int
+  matrix@file: &matrix .dukkha/specs/app-matrix-64bit-only.yml
   hooks:
     before:
     - shell: |-
-        src_dir="build/proton-bridge"
-        if [ ! -d "${src_dir}" ]; then
-          git clone --branch "v1.8.7" \
-            https://github.com/ProtonMail/proton-bridge.git \
-            "${src_dir}"
-        fi
-
-        sed -i 's/github.com\/docker\/docker-credential-helpers\/secretservice/fmt/g' \
-          "${src_dir}/pkg/keychain/helper_linux.go"
+        set -ex
+        sed -i 's#github.com/docker/docker-credential-helpers/secretservice#fmt#g' \
+          /app/build/proton-bridge/pkg/keychain/helper_linux.go
 
         sed -i 's/return \&secretservice\.Secretservice.*, nil/return nil, fmt\.Errorf\("not supported"\)/g' \
-          "${src_dir}/pkg/keychain/helper_linux.go"
+          /app/build/proton-bridge/pkg/keychain/helper_linux.go
 
-        cd "${src_dir}/utils/"
+        cd /app/build/proton-bridge/utils/
         ./credits.sh bridge
         ./credits.sh importexport
+
   chdir: /app/build/proton-bridge
   path: ./cmd/Desktop-Bridge/
-  outputs@template: |-
-    - /app/build/proton-bridge.{{ .Env.MATRIX_KERNEL }}.{{ .Env.MATRIX_ARCH }}
+  outputs@env:
+  - /app/build/proton-bridge.${MATRIX_KERNEL}.${MATRIX_ARCH}
   cgo:
     enabled: false
-  ldflags@shell: |-
-    cd /app/build/proton-bridge
-    tag_name="$(git describe --tags)"
-    # tag_name may include `br-` prefix, see https://github.com/arhat-dev/dockerfile/issues/13
-    tag_name="${tag_name#br-*}"
-
-    cat <<EOF
-    - -s -w
-    - -X github.com/ProtonMail/proton-bridge/internal/constants.Version=${tag_name}+git
-    # https://github.com/ProtonMail/proton-bridge/blob/master/Makefile#L33
-    - -X github.com/ProtonMail/proton-bridge/internal/constants.Revision=$(git rev-parse --short=10 HEAD)
-    - -X github.com/ProtonMail/proton-bridge/internal/constants.BuildTime=$(date +%FT%T%z)
-    EOF
+  ldflags@env:
+  - -s -w
+  - -X github.com/ProtonMail/proton-bridge/internal/constants.Version=$(sh /app/app/proton-bridge/get-version.sh /app/build/proton-bridge)+git
+  # https://github.com/ProtonMail/proton-bridge/blob/master/Makefile#L33
+  - -X github.com/ProtonMail/proton-bridge/internal/constants.Revision=$(git -C /app/build/proton-bridge rev-parse --short=10 HEAD)
+  - -X github.com/ProtonMail/proton-bridge/internal/constants.BuildTime=$(date +%FT%T%z)
   tags:
   - netgo
   extra_args:
@@ -56,14 +39,27 @@ golang:build:
 
 buildah:bud:
 - name: proton-bridge
-  matrix: *proton_bridge_matrix
+  hooks:
+    before:
+    - shell: |-
+        set -ex
+        [ -d build/proton-bridge ] && exit 0
+
+        git clone --branch v1.8.7 \
+            https://github.com/ProtonMail/proton-bridge.git \
+            build/proton-bridge
+
+  matrix@file: *matrix
   dockerfile: app/proton-bridge/Dockerfile
-  image_names: &proton_bridge_image_names
+  image_names@env: &image_names
   - image: ghcr.io/arhat-dev/proton-bridge:latest-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/proton-bridge:latest
-  - image: ghcr.io/arhat-dev/proton-bridge:v1.8.7-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/proton-bridge:v1.8.7
-  extra_args:
+  - image: ghcr.io/arhat-dev/proton-bridge:$(sh app/proton-bridge/get-version.sh build/proton-bridge)-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/proton-bridge:$(sh app/proton-bridge/get-version.sh build/proton-bridge)
+
+  extra_args@env:
+  - --pull-always
+  - --build-arg="MATRIX_ROOTFS=${MATRIX_ROOTFS}"
   - --build-arg="MATRIX_ARCH=${MATRIX_ARCH}"
 
 buildah:push:
@@ -71,5 +67,5 @@ buildah:push:
   hooks:
     before:
     - task: buildah:login:ghcr
-  matrix: *proton_bridge_matrix
-  image_names: *proton_bridge_image_names
+  matrix@file: *matrix
+  image_names@env: *image_names

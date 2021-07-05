@@ -7,7 +7,8 @@ ARG MATRIX_ARCH
 ARG APP
 
 COPY . /app
-RUN dukkha golang local build ${APP} -m kernel=linux -m arch=${MATRIX_ARCH}
+RUN dukkha golang local build ${APP} \
+  -m kernel=linux -m arch=${MATRIX_ARCH}
 
 FROM ghcr.io/arhat-dev/go:${MATRIX_ROOTFS}-${MATRIX_ARCH}
 

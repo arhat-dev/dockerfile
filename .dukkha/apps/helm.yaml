@@ -8,22 +8,18 @@ golang:build:
   - /app/build/helm.${MATRIX_KERNEL}.${MATRIX_ARCH}
   cgo:
     enabled: false
-  ldflags@shell: |-
-    cd /app/build/helm
-
-    cat <<EOF
-    - -s -w
-    - -X helm.sh/helm/v3/internal/version.version="$(git describe --tags)"
-    - -X helm.sh/helm/v3/internal/version.metadata=""
-    - -X helm.sh/helm/v3/internal/version.gitCommit="$(git rev-parse HEAD)"
-    - -X helm.sh/helm/v3/internal/version.gitTreeState=$(test -n "`git status --porcelain`" && printf "dirty" || printf "clean")
-    # Update according to client-go dependency
-    #  https://github.com/helm/helm/blob/main/go.mod#L44
-    - -X helm.sh/helm/v3/pkg/lint/rules.k8sVersionMajor=1
-    - -X helm.sh/helm/v3/pkg/lint/rules.k8sVersionMinor=21
-    - -X helm.sh/helm/v3/pkg/chartutil.k8sVersionMajor=1
-    - -X helm.sh/helm/v3/pkg/chartutil.k8sVersionMinor=21
-    EOF
+  ldflags@env:
+  - -s -w
+  - -X helm.sh/helm/v3/internal/version.version="$(git -C /app/build/helm describe --tags | tr -d '[:space:]')"
+  - -X helm.sh/helm/v3/internal/version.metadata=""
+  - -X helm.sh/helm/v3/internal/version.gitCommit="$(git -C /app/build/helm rev-parse HEAD | tr -d '[:space:]')"
+  - -X helm.sh/helm/v3/internal/version.gitTreeState=$(test -n "`git -C /app/build/helm status --porcelain`" && printf "dirty" || printf "clean")
+  # Update according to client-go dependency
+  #  https://github.com/helm/helm/blob/main/go.mod#L44
+  - -X helm.sh/helm/v3/pkg/lint/rules.k8sVersionMajor=1
+  - -X helm.sh/helm/v3/pkg/lint/rules.k8sVersionMinor=21
+  - -X helm.sh/helm/v3/pkg/chartutil.k8sVersionMajor=1
+  - -X helm.sh/helm/v3/pkg/chartutil.k8sVersionMinor=21
   tags:
   - netgo
   extra_args:
@@ -36,20 +32,20 @@ buildah:bud:
   hooks:
     before:
     - shell: |-
-        if [ -d build/helm ]; then
-          exit 0
-        fi
+        [ -d build/helm ] && exit 0
 
         git clone --branch v3.6.2 \
           https://github.com/helm/helm.git build/helm
-  dockerfile: app/golang-app.dockerfile
-  context: "."
-  image_names: &helm_image_names
+
+  dockerfile: app/golang-nocgo.dockerfile
+  image_names@env: &image_names
   - image: ghcr.io/arhat-dev/helm:latest-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/helm:latest
-  - image: ghcr.io/arhat-dev/helm:v3.6.2-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/helm:v3.6.2
-  extra_args:
+  - image: ghcr.io/arhat-dev/helm:$(git -C build/helm describe --tags | tr -d '[:space:]')-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/helm:$(git -C build/helm describe --tags | tr -d '[:space:]')
+
+  extra_args@env:
+  - --pull-always
   - --build-arg="APP=helm"
   - --build-arg="MATRIX_ROOTFS=${MATRIX_ROOTFS}"
   - --build-arg="MATRIX_ARCH=${MATRIX_ARCH}"
@@ -60,4 +56,4 @@ buildah:push:
     before:
     - task: buildah:login:ghcr
   matrix@file: .dukkha/specs/app-matrix-all.yml
-  image_names: *helm_image_names
+  image_names@env: *image_names

@@ -1,6 +1,6 @@
 buildah:bud:
 - name: spilo-base
-  matrix: &spilo_matrix
+  matrix: &matrix
     kernel:
     - linux
     arch:
@@ -12,40 +12,47 @@ buildah:bud:
           exit 0
         fi
 
-        git clone --depth=1 --branch=2.0-p7 \
-          https://github.com/zalando/spilo.git build/spilo
+        git clone --depth=1 --branch 2.0-p7 \
+          https://github.com/zalando/spilo.git \
+          build/spilo
   dockerfile: build/spilo/postgres-appliance/Dockerfile
   context: build/spilo/postgres-appliance
-  image_names:
+  image_names@env:
   - image: spilo-base:${MATRIX_ARCH}
-  extra_args:
+
+  extra_args@env:
   - --build-arg="TIMESCALEDB=2.3.0"
-  - --build-arg="ARCH=${MATRIX_ARCH}"
   - --build-arg="BASE_IMAGE=registry.opensource.zalan.do/library/ubuntu-18.04"
   - --build-arg="PGVERSION=13"
   - --build-arg="PGOLDVERSIONS='9.6 10 11 12'"
   - --build-arg="DEMO=false"
   - --build-arg="TIMESCALEDB_APACHE_ONLY=false"
+  # required, or buildah bud will fail due to unable to find
+  # image resulted from `builder-false` stage
   - --layers=true
 
 - name: spilo
-  matrix: *spilo_matrix
+  matrix: *matrix
   hooks:
     before:
     - task: buildah:bud:spilo-base
   dockerfile: app/spilo.dockerfile
-  image_names: &spilo_image_names
+  image_names@env: &image_names
   - image: ghcr.io/arhat-dev/spilo:latest-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/spilo:latest-${MATRIX_ARCH}
-  - image: ghcr.io/arhat-dev/spilo:2.0-p7-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/spilo:2.0-p7
-  extra_args:
-  - --build-arg="BASE_IMAGE=spilo-base:${MATRIX_ARCH}"
+  - image: ghcr.io/arhat-dev/spilo:$(git -C build/spilo describe --tags | tr -d '[:space:]')-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/spilo:$(git -C build/spilo describe --tags | tr -d '[:space:]')
+
+  extra_args@template: |-
+    {{- $base_image_name := printf "spilo-base:%s" .Env.MATRIX_ARCH -}}
+    {{- $base_image_id := os_ReadFile (getBuildahImageIDFile $base_image_name) -}}
+    - --pull-never
+    - --build-arg="BASE_IMAGE={{ $base_image_id }}"
 
 buildah:push:
 - name: spilo
   hooks:
     before:
     - task: buildah:login:ghcr
-  matrix: *spilo_matrix
-  image_names: *spilo_image_names
+  matrix: *matrix
+  image_names@env: *image_names

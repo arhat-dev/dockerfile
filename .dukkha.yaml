@@ -2,9 +2,11 @@ bootstrap:
   env:
   - DEBIAN_VERSION=buster
   - ALPINE_VERSION=3.13
+  # source: https://github.com/golang/go
   - GO_VERSION=1.16
+  # source: https://github.com/rust-lang/rust
   - RUST_VERSION=1.53
-  # https://github.com/multiarch/qemu-user-static/releases
+  # source: https://github.com/multiarch/qemu-user-static
   - QEMU_VERSION=5.2.0-2
 
 tools:

@@ -1,6 +1,6 @@
 buildah:bud:
 - name: yamllint
-  matrix@file: .dukkha/specs/app-matrix-all.yml
+  matrix@file: &matrix .dukkha/specs/app-matrix-all.yml
   hooks:
     before:
     - shell: |-
@@ -19,12 +19,15 @@ buildah:bud:
         EOF
   dockerfile: app/yamllint.dockerfile
   context: build/yamllint
-  image_names: &yamllint_image_names
+  image_names@env: &image_names
   - image: ghcr.io/arhat-dev/yamllint:latest-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/yamllint:latest
+    # source: https://github.com/adrienverge/yamllint
   - image: ghcr.io/arhat-dev/yamllint:1.26.1-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/yamllint:1.26.1
-  extra_args:
+
+  extra_args@env:
+  - --pull-always
   - --build-arg="MATRIX_PYTHON=python3.8"
   - --build-arg="MATRIX_ROOTFS=${MATRIX_ROOTFS}"
   - --build-arg="MATRIX_ARCH=${MATRIX_ARCH}"
@@ -34,5 +37,5 @@ buildah:push:
   hooks:
     before:
     - task: buildah:login:ghcr
-  matrix@file: .dukkha/specs/app-matrix-all.yml
-  image_names: *yamllint_image_names
+  matrix@file: *matrix
+  image_names@env: *image_names

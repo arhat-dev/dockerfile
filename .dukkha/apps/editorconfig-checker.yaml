@@ -1,18 +1,15 @@
 # this build instruction is used in container
 golang:build:
 - name: editorconfig-checker
-  matrix@file: .dukkha/specs/app-matrix-all.yml
+  matrix@file: &matrix .dukkha/specs/app-matrix-all.yml
   chdir: /app/build/editorconfig-checker
   path: ./cmd/editorconfig-checker/
   outputs:
   - /app/build/editorconfig-checker.${MATRIX_KERNEL}.${MATRIX_ARCH}
   cgo:
     enabled: false
-  ldflags@shell: |-
-    cd /app/build/editorconfig-checker
-    cat <<EOF
-    - -X main.version="$(git describe --tags)"
-    EOF
+  ldflags@env:
+  - -X main.version="$(git -C /app/build/editorconfig-checker describe --tags | tr -d '[:space:]')"
   tags:
   - netgo
   extra_args:
@@ -21,25 +18,24 @@ golang:build:
 
 buildah:bud:
 - name: editorconfig-checker
-  matrix@file: .dukkha/specs/app-matrix-all.yml
+  matrix@file: *matrix
   hooks:
     before:
     - shell: |-
-        if [ -d build/editorconfig-checker ]; then
-          exit 0
-        fi
+        [ -d build/editorconfig-checker ] && exit 0
 
         git clone --branch 2.3.5 \
           https://github.com/editorconfig-checker/editorconfig-checker.git \
           build/editorconfig-checker
-  dockerfile: app/golang-app.dockerfile
-  context: "."
-  image_names: &editorconfig-checker_image_names
+
+  dockerfile: app/golang-nocgo.dockerfile
+  image_names@env: &image_names
   - image: ghcr.io/arhat-dev/editorconfig-checker:latest-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/editorconfig-checker:latest
-  - image: ghcr.io/arhat-dev/editorconfig-checker:2.3.5-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/editorconfig-checker:2.3.5
-  extra_args:
+  - image: ghcr.io/arhat-dev/editorconfig-checker:$(git -C build/editorconfig-checker describe --tags  | tr -d '[:space:]')-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/editorconfig-checker:$(git -C build/editorconfig-checker describe --tags  | tr -d '[:space:]')
+  extra_args@env:
+  - --pull-always
   - --build-arg="APP=editorconfig-checker"
   - --build-arg="MATRIX_ROOTFS=${MATRIX_ROOTFS}"
   - --build-arg="MATRIX_ARCH=${MATRIX_ARCH}"
@@ -49,5 +45,5 @@ buildah:push:
   hooks:
     before:
     - task: buildah:login:ghcr
-  matrix@file: .dukkha/specs/app-matrix-all.yml
-  image_names: *editorconfig-checker_image_names
+  matrix@file: *matrix
+  image_names@env: *image_names

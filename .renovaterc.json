@@ -1,4 +1,30 @@
 {
   "extends": ["github>arhat-dev/renovate-presets:general"],
-  "dependencyDashboardHeader": "This issue tracks dependency version upgrades"
+  "dependencyDashboardHeader": "This issue tracks dependency version upgrades",
+  "regexManagers": [
+    {
+      "fileMatch": ["^\\.dukkha/apps/.+\\.yaml$"],
+      "matchStrings": [
+        "--branch (?<currentValue>.*?)\\s+\\?\\s+(?<gitRepo>.*?)\\s"
+      ],
+      "depNameTemplate": "{{gitRepo}}",
+      "datasourceTemplate": "git-tags"
+    },
+    {
+      "fileMatch": ["^\\.dukkha/apps/.+\\.yaml$"],
+      "matchStrings": [
+        "# source (?<gitRepo>.*?)\\s+- image: .+:(?<currentValue>.*?)-\\$"
+      ],
+      "depNameTemplate": "{{gitRepo}}",
+      "datasourceTemplate": "git-tags"
+    },
+    {
+      "fileMatch": ["^.dukkha\\.yaml$"],
+      "matchStrings": [
+        "# source: (?<gitRepo>.*?)\\s+-\\w+=(?<currentValue>.*?)\\s"
+      ],
+      "depNameTemplate": "{{gitRepo}}",
+      "datasourceTemplate": "git-tags"
+    }
+  ]
 }

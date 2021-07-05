@@ -1,27 +1,10 @@
 # this build instruction is used in container
 golang:build:
 - name: conftest
-  matrix: &conftest_matrix
-    # conftest has no 32bit support
-    #
-    # /go/pkg/mod/cuelang.org/go@v0.0.15/cue/builtins.go:1850:12: constant 4611686018427387904 overflows uint
-    include:
-    - kernel:
-      - linux
-      rootfs:
-      - debian
-      arch:
-      - mips64le
-      # TODO: switch to alpine/ppc64le after #11 resolved
-      - ppc64le
-    kernel:
-    - linux
-    rootfs:
-    - alpine
-    arch:
-    - amd64
-    - arm64
-    - s390x
+  # conftest has no 32bit support
+  #
+  # /go/pkg/mod/cuelang.org/go@v0.0.15/cue/builtins.go:1850:12: constant 4611686018427387904 overflows uint
+  matrix@file: &matrix .dukkha/specs/app-matrix-64bit-only.yml
   chdir: /app/build/conftest
   path: ./
   outputs:
@@ -36,25 +19,25 @@ golang:build:
 
 buildah:bud:
 - name: conftest
-  matrix: *conftest_matrix
+  matrix@file: *matrix
   hooks:
     before:
     - shell: |-
-        if [ -d build/conftest ]; then
-          exit 0
-        fi
+        [ -d build/conftest ] && exit 0
 
         git clone --branch v0.25.0 \
           https://github.com/open-policy-agent/conftest.git \
           build/conftest
-  dockerfile: app/golang-app.dockerfile
-  context: "."
-  image_names: &conftest_image_names
+
+  dockerfile: app/golang-nocgo.dockerfile
+  image_names@env: &image_names
   - image: ghcr.io/arhat-dev/conftest:latest-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/conftest:latest
-  - image: ghcr.io/arhat-dev/conftest:v0.25.0-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/conftest:v0.25.0
-  extra_args:
+  - image: ghcr.io/arhat-dev/conftest:$(git -C build/conftest describe --tags | tr -d '[:space:]')-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/conftest:$(git -C build/conftest describe --tags | tr -d '[:space:]')
+
+  extra_args@env:
+  - --pull-always
   - --build-arg="APP=conftest"
   - --build-arg="MATRIX_ROOTFS=${MATRIX_ROOTFS}"
   - --build-arg="MATRIX_ARCH=${MATRIX_ARCH}"
@@ -64,5 +47,5 @@ buildah:push:
   hooks:
     before:
     - task: buildah:login:ghcr
-  matrix: *conftest_matrix
-  image_names: *conftest_image_names
+  matrix@file: *matrix
+  image_names@env: *image_names

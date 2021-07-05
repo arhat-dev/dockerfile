@@ -1,7 +1,7 @@
 # this build instruction is used in container
 golang:build:
 - name: kubeval
-  matrix@file: .dukkha/specs/app-matrix-all.yml
+  matrix@file: &matrix .dukkha/specs/app-matrix-all.yml
   chdir: /app/build/kubeval
   path: ./
   outputs:
@@ -18,24 +18,24 @@ golang:build:
 
 buildah:bud:
 - name: kubeval
-  matrix@file: .dukkha/specs/app-matrix-all.yml
+  matrix@file: *matrix
   hooks:
     before:
     - shell: |-
-        if [ -d build/kubeval ]; then
-          exit 0
-        fi
+        [ -d build/kubeval ] && exit 0
 
         git clone --branch v0.16.1 \
-          https://github.com/instrumenta/kubeval.git build/kubeval
-  dockerfile: app/golang-app.dockerfile
-  context: "."
-  image_names: &kubeval_image_names
+          https://github.com/instrumenta/kubeval.git \
+          build/kubeval
+  dockerfile: app/golang-nocgo.dockerfile
+  image_names@env: &image_names
   - image: ghcr.io/arhat-dev/kubeval:latest-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/kubeval:latest
-  - image: ghcr.io/arhat-dev/kubeval:v0.16.1-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/kubeval:v0.16.1
-  extra_args:
+  - image: ghcr.io/arhat-dev/kubeval:$(git -C build/kubeval describe --tags | tr -d '[:space:]')-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/kubeval:$(git -C build/kubeval describe --tags | tr -d '[:space:]')
+
+  extra_args@env:
+  - --pull-always
   - --build-arg="APP=kubeval"
   - --build-arg="MATRIX_ROOTFS=${MATRIX_ROOTFS}"
   - --build-arg="MATRIX_ARCH=${MATRIX_ARCH}"
@@ -45,5 +45,5 @@ buildah:push:
   hooks:
     before:
     - task: buildah:login:ghcr
-  matrix@file: .dukkha/specs/app-matrix-all.yml
-  image_names: *kubeval_image_names
+  matrix@file: *matrix
+  image_names@env: *image_names
