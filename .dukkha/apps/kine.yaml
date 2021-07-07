@@ -35,18 +35,21 @@ buildah:bud:
   image_names@env: &image_names
   - image: ghcr.io/arhat-dev/kine:latest-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/kine:latest
-  - image: ghcr.io/arhat-dev/kine:$(git -C build/kine describe --tags | tr -d '[:space:]')-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/kine:$(git -C build/kine describe --tags | tr -d '[:space:]')
+  - image: ghcr.io/arhat-dev/kine:$(git -C build/kine describe --tags)-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/kine:$(git -C build/kine describe --tags)
   extra_args@env:
   - --pull-always
-  - --build-arg="APP=kine"
-  - --build-arg="MATRIX_ROOTFS=${MATRIX_ROOTFS}"
-  - --build-arg="MATRIX_ARCH=${MATRIX_ARCH}"
+  - --build-arg
+  - APP=kine
+  - --build-arg
+  - MATRIX_ROOTFS=${MATRIX_ROOTFS}
+  - --build-arg
+  - MATRIX_ARCH=${MATRIX_ARCH}
 
 buildah:push:
 - name: kine
   hooks:
     before:
-    - task: buildah:login:ghcr
+    - task: buildah:login(ghcr)
   matrix@file: *matrix
   image_names@env: *image_names

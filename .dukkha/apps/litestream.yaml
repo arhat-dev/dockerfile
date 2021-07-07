@@ -10,7 +10,7 @@ golang:build:
     enabled: true
   ldflags@env:
   - -s -w
-  - -X main.Version=$(git -C /app/build/litestream describe --tags | tr -d '[:space:]')
+  - -X main.Version=$(git -C /app/build/litestream describe --tags)
   tags:
   - netgo
   extra_args:
@@ -35,19 +35,22 @@ buildah:bud:
   image_names@env: &litestream_image_names
   - image: ghcr.io/arhat-dev/litestream:latest-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/litestream:latest
-  - image: ghcr.io/arhat-dev/litestream:$(git -C build/litestream describe --tags | tr -d '[:space:]')-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/litestream:$(git -C build/litestream describe --tags | tr -d '[:space:]')
+  - image: ghcr.io/arhat-dev/litestream:$(git -C build/litestream describe --tags)-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/litestream:$(git -C build/litestream describe --tags)
 
   extra_args@env:
   - --pull-always
-  - --build-arg="APP=litestream"
-  - --build-arg="MATRIX_ROOTFS=${MATRIX_ROOTFS}"
-  - --build-arg="MATRIX_ARCH=${MATRIX_ARCH}"
+  - --build-arg
+  - APP=litestream
+  - --build-arg
+  - MATRIX_ROOTFS=${MATRIX_ROOTFS}
+  - --build-arg
+  - MATRIX_ARCH=${MATRIX_ARCH}
 
 buildah:push:
 - name: litestream
   hooks:
     before:
-    - task: buildah:login:ghcr
+    - task: buildah:login(ghcr)
   matrix@file: *matrix
   image_names@env: *litestream_image_names

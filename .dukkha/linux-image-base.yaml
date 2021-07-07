@@ -29,6 +29,6 @@ buildah:push:
 - name: linux/base
   hooks:
     before:
-    - task: buildah:login:ghcr
+    - task: buildah:login(ghcr)
   matrix@file: .dukkha/specs/matrix-linux.yml
   image_names@env: *base_image_names

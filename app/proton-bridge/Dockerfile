@@ -6,7 +6,7 @@ FROM ghcr.io/arhat-dev/builder-go:alpine AS builder
 COPY . /app
 
 ARG MATRIX_ARCH
-RUN dukkha golang build proton-bridge -m arch=${MATRIX_ARCH}
+RUN dukkha golang local build proton-bridge -m arch=${MATRIX_ARCH}
 
 FROM ghcr.io/arhat-dev/go:${MATRIX_ROOTFS}-${MATRIX_ARCH}
 

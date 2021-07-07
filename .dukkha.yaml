@@ -17,20 +17,31 @@ tools:
     # create a docker volume for buildah
     #
     # $ docker volume create buildah-dockerfile
-    cmd:
-    - |-
-      docker run -it --rm \
-        --workdir $(pwd) \
-        -v $(pwd):$(pwd) \
-        --security-opt label=disable \
-        --security-opt seccomp=unconfined \
-        -v buildah-dockerfile:/var/lib/containers \
-        --device /dev/fuse:rw \
-        quay.io/buildah/stable \
-        buildah
+    cmd@env:
+    - docker
+    - run
+    - -it
+    - --rm
+    - --workdir
+    - $(pwd)
+    - -v
+    - $(pwd):$(pwd)
+    - --security-opt
+    - label=disable
+    - --security-opt
+    - seccomp=unconfined
+    - -v
+    - buildah-dockerfile:/var/lib/containers
+    - --device
+    - /dev/fuse:rw
+    - quay.io/buildah/stable
+    - buildah
 
   golang:
   - name: local
+  workflow:
+  - name: local
+  - name: in-docker
 
 shells:
 - name: sh
@@ -41,3 +52,34 @@ buildah:login:
   registry: ghcr.io
   username: ${GHCR_USER}
   password@env: ${GHCR_PASS}
+
+workflow:run:
+- name: build-common-images
+  matrix:
+    kernel:
+    - linux
+    target:
+    - base
+    - builder
+    - container
+    language:
+    - go
+    - python3.6
+    - python3.7
+    - python3.8
+    - python3.9
+    - rust
+  hooks:
+    after:
+    - shell: buildah images
+  jobs:
+  - task@env: |-
+      buildah:bud(
+        ${MATRIX_KERNEL}/${MATRIX_TARGET},
+        { language: [${MATRIX_LANGUAGE}] }
+      )
+  - task@env: |-
+      buildah:push(
+        ${MATRIX_KERNEL}/${MATRIX_TARGET},
+        { language: [${MATRIX_LANGUAGE}] }
+      )

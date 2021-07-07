@@ -49,66 +49,53 @@ jobs:
         GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
       run: |
         sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
+        dukkha workflow run build-common-images -m language=${{ matrix.language }}
 
-        actions="bud push"
-        targets="base builder container"
-        for act in ${actions}; do
-          for t in ${targets}; do
-            dukkha buildah local ${act} "linux/${t}" \
-              -m language=${{ matrix.language }}
-          done
-        done
-
-    - name: Inspect Images
-      if: always()
-      run: |-
-        buildah images
-
-  apps:
-    strategy:
-      matrix:
-        app:
-        # - proton-bridge
-        # - spilo
-        # - yamllint
-        # - kubeval
-        # - helm
-        # - conftest
-        # - editorconfig-checker
-        # - golangci-lint
-        - kine
-        - litestream
-      fail-fast: false
-    runs-on: ubuntu-20.04
-    steps:
-    - uses: actions/checkout@v2
-    - name: Install dukkha
-      run: |-
-        mkdir -p "${HOME}/bin"
-        echo "${HOME}/bin" >> $GITHUB_PATH
-
-        docker pull ghcr.io/arhat-dev/dukkha:latest
-        ctr_id=$(docker create ghcr.io/arhat-dev/dukkha:latest : 2>/dev/null)
-        docker cp ${ctr_id}:/dukkha "${HOME}/bin/dukkha"
-
-        chmod +x "${HOME}/bin/dukkha"
-
-    - name: Enable Multiarch Support
-      run: |-
-        sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
-
-        sudo apt update
-        sudo apt install -y qemu-user-static
-
-    - name: Build and Push ${{ matrix.app }}
-      env:
-        GHCR_USER: ${{ github.actor }}
-        GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
-      run: |-
-        dukkha buildah local bud ${{ matrix.app }}
-        dukkha buildah local push ${{ matrix.app }}
-
-    - name: Inspect Images
-      if: always()
-      run: |-
-        buildah images
+#   apps:
+#     strategy:
+#       matrix:
+#         app:
+#         # - proton-bridge
+#         # - spilo
+#         # - yamllint
+#         # - kubeval
+#         # - helm
+#         # - conftest
+#         # - editorconfig-checker
+#         # - golangci-lint
+#         # - kine
+#         # - litestream
+#       fail-fast: false
+#     runs-on: ubuntu-20.04
+#     steps:
+#     - uses: actions/checkout@v2
+#     - name: Install dukkha
+#       run: |-
+#         mkdir -p "${HOME}/bin"
+#         echo "${HOME}/bin" >> $GITHUB_PATH
+#
+#         docker pull ghcr.io/arhat-dev/dukkha:latest
+#         ctr_id=$(docker create ghcr.io/arhat-dev/dukkha:latest : 2>/dev/null)
+#         docker cp ${ctr_id}:/dukkha "${HOME}/bin/dukkha"
+#
+#         chmod +x "${HOME}/bin/dukkha"
+#
+#     - name: Enable Multiarch Support
+#       run: |-
+#         sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
+#
+#         sudo apt update
+#         sudo apt install -y qemu-user-static
+#
+#     - name: Build and Push ${{ matrix.app }}
+#       env:
+#         GHCR_USER: ${{ github.actor }}
+#         GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
+#       run: |-
+#         dukkha buildah local bud ${{ matrix.app }}
+#         dukkha buildah local push ${{ matrix.app }}
+#
+#     - name: Inspect Images
+#       if: always()
+#       run: |-
+#         buildah images

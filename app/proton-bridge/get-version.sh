@@ -7,6 +7,6 @@
 
 src_path="${1}"
 
-tag_name="$(git -C "${src_path}" describe --tags | tr -d '[:space:]')"
+tag_name="$(git -C "${src_path}" describe --tags)"
 
 printf "%s" "${tag_name#br-*}"

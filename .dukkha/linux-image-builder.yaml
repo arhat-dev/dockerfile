@@ -8,8 +8,10 @@ buildah:bud:
   extra_args@env:
   - --target=dukkha
   - --pull-always
-  - --build-arg="DUKKHA_IMAGE=ghcr.io/arhat-dev/dukkha:latest-${MATRIX_ARCH}"
-  - --build-arg="BASE_IMAGE=scratch"
+  - --build-arg
+  - DUKKHA_IMAGE=ghcr.io/arhat-dev/dukkha:latest-${MATRIX_ARCH}
+  - --build-arg
+  - BASE_IMAGE=scratch
 
 - name: linux/builder
   matrix@file: *matrix
@@ -18,7 +20,7 @@ buildah:bud:
     - shell: |-
         sh scripts/${MATRIX_LANGUAGE}/builder-create-dockerfile.sh \
           {{ getDockerHubArch (.Env.MATRIX_ARCH | default "amd64") }}
-    - task: buildah:bud:linux/builder-prepare
+    - task: buildah:bud(linux/builder-prepare)
 
     after:matrix:success:
     - shell: |-
@@ -34,21 +36,23 @@ buildah:bud:
   - image: ghcr.io/arhat-dev/builder-${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/builder-${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}
 
-  extra_args@template: |-
-    {{- $base_image_name := printf "ghcr.io/arhat-dev/base-%s:%s-%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
-    {{- $base_image_id := os_ReadFile (getBuildahImageIDFile $base_image_name) -}}
+  extra_args@env|template: |-
+    {{- \$base_image_name := "ghcr.io/arhat-dev/base-${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}-${MATRIX_ARCH}" -}}
+    {{- \$base_image_id := os_ReadFile (getBuildahImageIDFile \$base_image_name) -}}
 
-    {{- $dukkha_image_name := printf "prepare-%s:%s-%s" .Env.MATRIX_LANGUAGE .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
-    {{- $dukkha_image_id := os_ReadFile (getBuildahImageIDFile $dukkha_image_name) -}}
+    {{- \$dukkha_image_name := "prepare-${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}-${MATRIX_ARCH}" -}}
+    {{- \$dukkha_image_id := os_ReadFile (getBuildahImageIDFile \$dukkha_image_name) -}}
 
     - --pull-never
-    - --build-arg="DUKKHA_IMAGE={{ $dukkha_image_id }}"
-    - --build-arg="BASE_IMAGE={{ $base_image_id }}"
+    - --build-arg
+    - DUKKHA_IMAGE={{ \$dukkha_image_id }}
+    - --build-arg
+    - BASE_IMAGE={{ \$base_image_id }}
 
 buildah:push:
 - name: linux/builder
   hooks:
     before:
-    - task: buildah:login:ghcr
+    - task: buildah:login(ghcr)
   matrix@file: *matrix
   image_names@env: *image_names

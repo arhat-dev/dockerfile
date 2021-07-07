@@ -9,7 +9,7 @@ golang:build:
   cgo:
     enabled: false
   ldflags@env:
-  - -X main.version="$(git -C /app/build/editorconfig-checker describe --tags | tr -d '[:space:]')"
+  - -X main.version="$(git -C /app/build/editorconfig-checker describe --tags)"
   tags:
   - netgo
   extra_args:
@@ -32,18 +32,21 @@ buildah:bud:
   image_names@env: &image_names
   - image: ghcr.io/arhat-dev/editorconfig-checker:latest-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/editorconfig-checker:latest
-  - image: ghcr.io/arhat-dev/editorconfig-checker:$(git -C build/editorconfig-checker describe --tags  | tr -d '[:space:]')-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/editorconfig-checker:$(git -C build/editorconfig-checker describe --tags  | tr -d '[:space:]')
+  - image: ghcr.io/arhat-dev/editorconfig-checker:$(git -C build/editorconfig-checker describe --tags )-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/editorconfig-checker:$(git -C build/editorconfig-checker describe --tags )
   extra_args@env:
   - --pull-always
-  - --build-arg="APP=editorconfig-checker"
-  - --build-arg="MATRIX_ROOTFS=${MATRIX_ROOTFS}"
-  - --build-arg="MATRIX_ARCH=${MATRIX_ARCH}"
+  - --build-arg
+  - APP=editorconfig-checker
+  - --build-arg
+  - MATRIX_ROOTFS=${MATRIX_ROOTFS}
+  - --build-arg
+  - MATRIX_ARCH=${MATRIX_ARCH}
 
 buildah:push:
 - name: editorconfig-checker
   hooks:
     before:
-    - task: buildah:login:ghcr
+    - task: buildah:login(ghcr)
   matrix@file: *matrix
   image_names@env: *image_names

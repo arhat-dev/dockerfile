@@ -31,19 +31,22 @@ buildah:bud:
   image_names@env: &image_names
   - image: ghcr.io/arhat-dev/kubeval:latest-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/kubeval:latest
-  - image: ghcr.io/arhat-dev/kubeval:$(git -C build/kubeval describe --tags | tr -d '[:space:]')-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/kubeval:$(git -C build/kubeval describe --tags | tr -d '[:space:]')
+  - image: ghcr.io/arhat-dev/kubeval:$(git -C build/kubeval describe --tags)-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/kubeval:$(git -C build/kubeval describe --tags)
 
   extra_args@env:
   - --pull-always
-  - --build-arg="APP=kubeval"
-  - --build-arg="MATRIX_ROOTFS=${MATRIX_ROOTFS}"
-  - --build-arg="MATRIX_ARCH=${MATRIX_ARCH}"
+  - --build-arg
+  - APP=kubeval
+  - --build-arg
+  - MATRIX_ROOTFS=${MATRIX_ROOTFS}
+  - --build-arg
+  - MATRIX_ARCH=${MATRIX_ARCH}
 
 buildah:push:
 - name: kubeval
   hooks:
     before:
-    - task: buildah:login:ghcr
+    - task: buildah:login(ghcr)
   matrix@file: *matrix
   image_names@env: *image_names

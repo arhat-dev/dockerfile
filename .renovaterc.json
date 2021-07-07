@@ -5,26 +5,22 @@
     {
       "fileMatch": ["^\\.dukkha/apps/.+\\.yaml$"],
       "matchStrings": [
-        "--branch (?<currentValue>.*?)\\s+\\?\\s+(?<gitRepo>.*?)\\s"
+        "--branch (?<currentValue>.*?)\\s+\\\\?\\s+(?<gitRepo>.*?)\\s"
       ],
       "depNameTemplate": "{{gitRepo}}",
-      "datasourceTemplate": "git-tags"
+      "lookupNameTemplate": "{{{gitRepo}}}",
+      "datasourceTemplate": "git-tags",
+      "versioningTemplate": "git"
     },
     {
-      "fileMatch": ["^\\.dukkha/apps/.+\\.yaml$"],
+      "fileMatch": ["^.dukkha\\.yaml$", "^\\.dukkha/apps/.+\\.yaml$"],
       "matchStrings": [
-        "# source (?<gitRepo>.*?)\\s+- image: .+:(?<currentValue>.*?)-\\$"
+        "# source: (?<gitRepo>.*?)\\s+- .+=(?<currentValue>.*?)\\s"
       ],
       "depNameTemplate": "{{gitRepo}}",
-      "datasourceTemplate": "git-tags"
-    },
-    {
-      "fileMatch": ["^.dukkha\\.yaml$"],
-      "matchStrings": [
-        "# source: (?<gitRepo>.*?)\\s+-\\w+=(?<currentValue>.*?)\\s"
-      ],
-      "depNameTemplate": "{{gitRepo}}",
-      "datasourceTemplate": "git-tags"
+      "lookupNameTemplate": "{{{gitRepo}}}",
+      "datasourceTemplate": "git-tags",
+      "versioningTemplate": "git"
     }
   ]
 }

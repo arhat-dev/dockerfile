@@ -10,9 +10,9 @@ golang:build:
     enabled: false
   ldflags@env:
   - -s -w
-  - -X helm.sh/helm/v3/internal/version.version="$(git -C /app/build/helm describe --tags | tr -d '[:space:]')"
+  - -X helm.sh/helm/v3/internal/version.version="$(git -C /app/build/helm describe --tags)"
   - -X helm.sh/helm/v3/internal/version.metadata=""
-  - -X helm.sh/helm/v3/internal/version.gitCommit="$(git -C /app/build/helm rev-parse HEAD | tr -d '[:space:]')"
+  - -X helm.sh/helm/v3/internal/version.gitCommit="$(git -C /app/build/helm rev-parse HEAD)"
   - -X helm.sh/helm/v3/internal/version.gitTreeState=$(test -n "`git -C /app/build/helm status --porcelain`" && printf "dirty" || printf "clean")
   # Update according to client-go dependency
   #  https://github.com/helm/helm/blob/main/go.mod#L44
@@ -41,19 +41,22 @@ buildah:bud:
   image_names@env: &image_names
   - image: ghcr.io/arhat-dev/helm:latest-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/helm:latest
-  - image: ghcr.io/arhat-dev/helm:$(git -C build/helm describe --tags | tr -d '[:space:]')-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/helm:$(git -C build/helm describe --tags | tr -d '[:space:]')
+  - image: ghcr.io/arhat-dev/helm:$(git -C build/helm describe --tags)-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/helm:$(git -C build/helm describe --tags)
 
   extra_args@env:
   - --pull-always
-  - --build-arg="APP=helm"
-  - --build-arg="MATRIX_ROOTFS=${MATRIX_ROOTFS}"
-  - --build-arg="MATRIX_ARCH=${MATRIX_ARCH}"
+  - --build-arg
+  - APP=helm
+  - --build-arg
+  - MATRIX_ROOTFS=${MATRIX_ROOTFS}
+  - --build-arg
+  - MATRIX_ARCH=${MATRIX_ARCH}
 
 buildah:push:
 - name: helm
   hooks:
     before:
-    - task: buildah:login:ghcr
+    - task: buildah:login(ghcr)
   matrix@file: .dukkha/specs/app-matrix-all.yml
   image_names@env: *image_names
