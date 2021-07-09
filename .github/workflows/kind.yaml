@@ -55,12 +55,24 @@ jobs:
       env:
         # NOTE: once updated version of kind, need to update all e2e tests
         #       require kind with the same version
+        # source: https://github.com/kubernetes-sigs/kind.git
         KIND_VERSION: v0.11.1
       run: |
         mkdir -p "${HOME}/bin"
         curl -Lo "${HOME}/bin/kind" https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-amd64
         chmod +x "${HOME}/bin/kind"
         echo "${HOME}/bin" >> $GITHUB_PATH
+
+    - name: Install dukkha
+      run: |-
+        mkdir -p "${HOME}/bin"
+        echo "${HOME}/bin" >> $GITHUB_PATH
+
+        docker pull ghcr.io/arhat-dev/dukkha:latest
+        ctr_id=$(docker create ghcr.io/arhat-dev/dukkha:latest : 2>/dev/null)
+        docker cp ${ctr_id}:/dukkha "${HOME}/bin/dukkha"
+
+        chmod +x "${HOME}/bin/dukkha"
 
     - name: Restore cache
       uses: actions/cache@v2

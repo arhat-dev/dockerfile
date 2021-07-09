@@ -55,16 +55,16 @@ jobs:
 #     strategy:
 #       matrix:
 #         app:
-#         # - proton-bridge
-#         # - spilo
-#         # - yamllint
-#         # - kubeval
-#         # - helm
-#         # - conftest
-#         # - editorconfig-checker
-#         # - golangci-lint
-#         # - kine
-#         # - litestream
+#         - proton-bridge
+#         - spilo
+#         - yamllint
+#         - kubeval
+#         - helm
+#         - conftest
+#         - editorconfig-checker
+#         - golangci-lint
+#         - kine
+#         - litestream
 #       fail-fast: false
 #     runs-on: ubuntu-20.04
 #     steps:

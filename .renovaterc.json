@@ -13,7 +13,11 @@
       "versioningTemplate": "git"
     },
     {
-      "fileMatch": ["^.dukkha\\.yaml$", "^\\.dukkha/apps/.+\\.yaml$"],
+      "fileMatch": [
+        "^\\.dukkha\\.yaml$",
+        "^\\.dukkha/apps/.+\\.yaml$",
+        "^\\.github/workflows/kind\\.yaml$"
+      ],
       "matchStrings": [
         "# source: (?<gitRepo>.*?)\\s+- .+=(?<currentValue>.*?)\\s"
       ],
