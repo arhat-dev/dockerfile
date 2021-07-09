@@ -42,20 +42,26 @@ tools:
   workflow:
   - name: local
   - name: in-docker
+  docker:
+  - name: local
 
 shells:
 - name: sh
   cmd: [sh]
 
 buildah:login:
-- name: ghcr
+- &ghcr_login
+  name: ghcr
   registry: ghcr.io
   username: ${GHCR_USER}
   password@env: ${GHCR_PASS}
 
+docker:login:
+- *ghcr_login
+
 workflow:run:
 - name: build-common-images
-  matrix:
+  matrix: &kind_matrix
     kernel:
     - linux
     target:

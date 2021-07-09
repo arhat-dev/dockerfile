@@ -1,0 +1,37 @@
+workflow:run:
+- name: build-kind-node-images
+  env:
+  - KUBE_SRC_DIR=${KUBE_SRC_DIR}
+  matrix: &kind_matrix
+    kernel:
+    - linux
+    arch:
+    - amd64
+    kube:
+    - "1.14"
+    - "1.15"
+    - "1.16"
+    - "1.17"
+    - "1.18"
+    - "1.19"
+    - "1.20"
+    - "1.21"
+  hooks:
+    after:success:
+    - task: docker:login(ghcr)
+    - task: docker:push(kind-node)
+    after:
+    - shell: docker images
+  jobs:
+    # TODO: support multiarch image build
+  - shell@env: |-
+      kind build node-image \
+        --image ghcr.io/arhat-dev/kind-node:${MATRIX_KUBE}-${MATRIX_ARCH} \
+        "${KUBE_SRC_DIR}"
+
+docker:push:
+- name: kind-node
+  matrix: *kind_matrix
+  image_names@env:
+  - name: ghcr.io/arhat-dev/kind-node:${MATRIX_KUBE}-${MATRIX_ARCH}
+    manifest: ghcr.io/arhat-dev/kind-node:${MATRIX_KUBE}
