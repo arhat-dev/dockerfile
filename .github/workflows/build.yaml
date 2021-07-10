@@ -18,20 +18,38 @@ on:
   - cron: "0 0 * * *"
 
 jobs:
-  common:
-    strategy:
-      matrix:
-        language:
-        - go
-        - python3.6
-        - python3.7
-        - python3.8
-        - python3.9
-        - rust
-      fail-fast: false
+  kind:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        kube:
+        - "1.14"
+        - "1.15"
+        - "1.16"
+        - "1.17"
+        - "1.18"
+        - "1.19"
+        - "1.20"
+        - "1.21"
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/setup-go@v2
+      with:
+        go-version: 1.16.x
+
+    - name: Install KinD
+      env:
+        # NOTE: once updated version of kind, need to update all e2e tests
+        #       require kind with the same version
+        # source: https://github.com/kubernetes-sigs/kind.git
+        KIND_VERSION: v0.11.1
+      run: |
+        mkdir -p "${HOME}/bin"
+        curl -Lo "${HOME}/bin/kind" https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-amd64
+        chmod +x "${HOME}/bin/kind"
+        echo "${HOME}/bin" >> $GITHUB_PATH
+
     - name: Install dukkha
       run: |-
         mkdir -p "${HOME}/bin"
@@ -43,30 +61,37 @@ jobs:
 
         chmod +x "${HOME}/bin/dukkha"
 
+    - name: Restore cache
+      uses: actions/cache@v2
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
     - name: Build and Push Images
       env:
+        DOCKER_CLI_EXPERIMENTAL: enabled
         GHCR_USER: ${{ github.actor }}
         GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
+        KUBE_SRC_DIR: ${GITHUB_WORKSPACE}/kube
       run: |
-        sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
-        dukkha workflow local run build-common-images -m language=${{ matrix.language }}
+        docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+        dukkha workflow local run build-kind-node-images \
+          -m kube=${{ matrix.kube }}
 
-#   apps:
+#   common:
 #     strategy:
 #       matrix:
-#         app:
-#         - proton-bridge
-#         - spilo
-#         - yamllint
-#         - kubeval
-#         - helm
-#         - conftest
-#         - editorconfig-checker
-#         - golangci-lint
-#         - kine
-#         - litestream
+#         language:
+#         - go
+#         - python3.6
+#         - python3.7
+#         - python3.8
+#         - python3.9
+#         - rust
 #       fail-fast: false
-#     runs-on: ubuntu-20.04
+#     runs-on: ubuntu-latest
 #     steps:
 #     - uses: actions/checkout@v2
 #     - name: Install dukkha
@@ -80,22 +105,59 @@ jobs:
 #
 #         chmod +x "${HOME}/bin/dukkha"
 #
-#     - name: Enable Multiarch Support
-#       run: |-
-#         sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
-#
-#         sudo apt update
-#         sudo apt install -y qemu-user-static
-#
-#     - name: Build and Push ${{ matrix.app }}
+#     - name: Build and Push Images
 #       env:
 #         GHCR_USER: ${{ github.actor }}
 #         GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
-#       run: |-
-#         dukkha buildah local bud ${{ matrix.app }}
-#         dukkha buildah local push ${{ matrix.app }}
-#
-#     - name: Inspect Images
-#       if: always()
-#       run: |-
-#         buildah images
+#       run: |
+#         sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
+#         dukkha workflow local run build-common-images -m language=${{ matrix.language }}
+
+  apps:
+    strategy:
+      matrix:
+        app:
+        - proton-bridge
+        - spilo
+        - yamllint
+        - kubeval
+        - helm
+        - conftest
+        - editorconfig-checker
+        - golangci-lint
+        # - kine
+        # - litestream
+      fail-fast: false
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dukkha
+      run: |-
+        mkdir -p "${HOME}/bin"
+        echo "${HOME}/bin" >> $GITHUB_PATH
+
+        docker pull ghcr.io/arhat-dev/dukkha:latest
+        ctr_id=$(docker create ghcr.io/arhat-dev/dukkha:latest : 2>/dev/null)
+        docker cp ${ctr_id}:/dukkha "${HOME}/bin/dukkha"
+
+        chmod +x "${HOME}/bin/dukkha"
+
+    - name: Enable Multiarch Support
+      run: |-
+        sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+        sudo apt update
+        sudo apt install -y qemu-user-static
+
+    - name: Build and Push ${{ matrix.app }}
+      env:
+        GHCR_USER: ${{ github.actor }}
+        GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
+      run: |-
+        dukkha buildah local bud ${{ matrix.app }}
+        dukkha buildah local push ${{ matrix.app }}
+
+    - name: Inspect Images
+      if: always()
+      run: |-
+        buildah images
