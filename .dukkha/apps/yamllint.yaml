@@ -1,6 +1,6 @@
 buildah:bud:
 - name: yamllint
-  env:
+  env: &env
   # source: https://github.com/adrienverge/yamllint.git
   - VERSION=1.26.1
   matrix@file: &matrix .dukkha/specs/app-matrix-all.yml
@@ -39,6 +39,7 @@ buildah:bud:
 
 buildah:push:
 - name: yamllint
+  env: *env
   hooks:
     before:
     - task: buildah:login(ghcr)
