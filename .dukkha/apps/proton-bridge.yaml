@@ -27,10 +27,10 @@ golang:build:
     enabled: false
   ldflags@env:
   - -s -w
-  - -X github.com/ProtonMail/proton-bridge/internal/constants.Version=$(sh /app/app/proton-bridge/get-version.sh /app/build/proton-bridge)+git
+  - -X "github.com/ProtonMail/proton-bridge/internal/constants.Version=$(sh /app/app/proton-bridge/get-version.sh /app/build/proton-bridge)+git"
   # https://github.com/ProtonMail/proton-bridge/blob/master/Makefile#L33
-  - -X github.com/ProtonMail/proton-bridge/internal/constants.Revision=$(git -C /app/build/proton-bridge rev-parse --short=10 HEAD)
-  - -X github.com/ProtonMail/proton-bridge/internal/constants.BuildTime=$(date +%FT%T%z)
+  - -X "github.com/ProtonMail/proton-bridge/internal/constants.Revision=$(git -C /app/build/proton-bridge rev-parse --short=10 HEAD)"
+  - -X "github.com/ProtonMail/proton-bridge/internal/constants.BuildTime=$(date +%FT%T%z)"
   tags:
   - netgo
   extra_args:

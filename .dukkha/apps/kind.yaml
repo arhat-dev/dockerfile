@@ -24,7 +24,6 @@ workflow:run:
           build/kube-${MATRIX_KUBE}
 
     after:matrix:success:
-    - task: docker:login(ghcr)
     - task: docker:push(kind-node)
     after:
     - shell: docker images
@@ -38,6 +37,9 @@ workflow:run:
 docker:push:
 - name: kind-node
   matrix: *kind_matrix
+  hooks:
+    before:
+    - task: docker:login(ghcr)
   image_names@env:
   - image: ghcr.io/arhat-dev/kind-node:${MATRIX_KUBE}-${MATRIX_ARCH}
     manifest: ghcr.io/arhat-dev/kind-node:${MATRIX_KUBE}

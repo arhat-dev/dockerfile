@@ -3,43 +3,28 @@ buildah:bud:
   env: &env
   # source: https://github.com/NixOS/nix.git
   - VERSION=2.3.14
+  - IMAGE_NAME=ghcr.io/arhat-dev/nix
   matrix: &matrix
+    kernel:
+    - linux
     rootfs:
     - alpine
     - debian
-    kernel:
-    - linux
     arch:
     - amd64
     - arm64
     - x86
   dockerfile@env: app/nix/Dockerfile
-  image_names@env|template: &image_names |-
-    - image: ghcr.io/arhat-dev/nix:${VERSION}-${MATRIX_ROOTFS}-${MATRIX_ARCH}
-      manifest: ghcr.io/arhat-dev/nix:${VERSION}-${MATRIX_ROOTFS}
-    {{ if eq .Env.MATRIX_ROOTFS "alpine" }}
-    - image: ghcr.io/arhat-dev/nix:${VERSION}-${MATRIX_ARCH}
-      manifest: ghcr.io/arhat-dev/nix:${VERSION}
-    {{- end -}}
-  extra_args@env|template: |-
-    - --pull-always
-    - --build-arg
-    - MATRIX_ROOTFS=${MATRIX_ROOTFS}
-    - --build-arg
-    - MATRIX_ARCH=${MATRIX_ARCH}
-    - --build-arg
-    - VERSION=${VERSION}
-    - --build-arg
-    - DOCKERHUB_ARCH={{ .Env.MATRIX_ARCH | getDockerHubArch }}
-    - --build-arg
-    {{ if eq .Env.MATRIX_ROOTFS "alpine" }}
-    - ROOTFS_VERSION=${ALPINE_VERSION}
-    {{ else }}
-    - ROOTFS_VERSION=${DEBIAN_VERSION}-slim
-    {{ end }}
+  image_names@file|env|template: &image_names |-
+    .dukkha/templates/app-image-env-version-image-name.yml
+  extra_args@file|env|template: |-
+    .dukkha/templates/app-image-env-version-extra-args.yml
 
 buildah:push:
 - name: nix
   env: *env
   matrix: *matrix
-  image_names@env|template: *image_names
+  hooks:
+    before:
+    - task: buildah:login(ghcr)
+  image_names@file|env|template: *image_names

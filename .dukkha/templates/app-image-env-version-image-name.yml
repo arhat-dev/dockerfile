@@ -1,0 +1,11 @@
+# requires setting
+# task env VERSION and IMAGE_NAME
+
+- image: ${IMAGE_NAME}:${VERSION}-${MATRIX_ROOTFS}-${MATRIX_ARCH}
+  manifest: ${IMAGE_NAME}:${VERSION}-${MATRIX_ROOTFS}
+{{ if eq .Env.MATRIX_ROOTFS "alpine" }}
+- image: ${IMAGE_NAME}:${VERSION}-${MATRIX_ARCH}
+  manifest: ${IMAGE_NAME}:${VERSION}
+- image: ${IMAGE_NAME}:latest-${MATRIX_ARCH}
+  manifest: ${IMAGE_NAME}:latest
+{{- end -}}

@@ -1,0 +1,17 @@
+# requires setting
+# task env VERSION
+- --pull-always
+- --build-arg
+- MATRIX_ROOTFS=${MATRIX_ROOTFS}
+- --build-arg
+- MATRIX_ARCH=${MATRIX_ARCH}
+- --build-arg
+- VERSION=${VERSION}
+- --build-arg
+- DOCKERHUB_ARCH={{ .Env.MATRIX_ARCH | getDockerHubArch }}
+- --build-arg
+{{ if eq .Env.MATRIX_ROOTFS "alpine" }}
+- ROOTFS_VERSION=${ALPINE_VERSION}
+{{ else }}
+- ROOTFS_VERSION=${DEBIAN_VERSION}-slim
+{{ end }}
