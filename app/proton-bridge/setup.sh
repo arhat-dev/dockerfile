@@ -8,8 +8,9 @@ setup_debian() {
     --shell "$(which nologin)" \
     --disabled-password \
     --uid 1000 \
-    --gid 1000 \
     proton-bridge
+
+  adduser proton-bridge proton-bridge
 
   apt-get update
   apt-get install -y --no-install-recommends \
@@ -38,4 +39,11 @@ debian)
 alpine)
   setup_alpine
   ;;
+*)
+  echo "Unsupported rootfs"
+  exit 1
+  ;;
 esac
+
+mkdir -p /data
+chown -R proton-bridge:proton-bridge /data

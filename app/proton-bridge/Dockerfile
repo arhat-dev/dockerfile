@@ -19,10 +19,6 @@ ARG MATRIX_ROOTFS
 COPY app/proton-bridge/setup.sh /setup.sh
 RUN sh /setup.sh && rm /setup.sh
 
-RUN set -ex ;\
-    mkdir -p /data ;\
-    chown -R proton-bridge:proton-bridge /data
-
 COPY app/proton-bridge/entrypoint.sh app/proton-bridge/login.exp /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/login.exp /usr/local/bin/entrypoint.sh
@@ -33,7 +29,7 @@ EXPOSE 9587/tcp
 # IMAP STARTTLS
 EXPOSE 9143/tcp
 
-USER 1000
+USER proton-bridge
 
 VOLUME [ "/data" ]
 
