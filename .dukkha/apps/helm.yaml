@@ -4,22 +4,22 @@ golang:build:
   matrix@file: .dukkha/specs/app-matrix-all.yml
   chdir: /app/build/helm
   path: ./cmd/helm
-  outputs:
+  outputs@env:
   - /app/build/helm.${MATRIX_KERNEL}.${MATRIX_ARCH}
   cgo:
     enabled: false
   ldflags@env:
   - -s -w
-  - -X helm.sh/helm/v3/internal/version.version="$(git -C /app/build/helm describe --tags)"
-  - -X helm.sh/helm/v3/internal/version.metadata=""
-  - -X helm.sh/helm/v3/internal/version.gitCommit="$(git -C /app/build/helm rev-parse HEAD)"
-  - -X helm.sh/helm/v3/internal/version.gitTreeState=$(test -n "`git -C /app/build/helm status --porcelain`" && printf "dirty" || printf "clean")
+  - -X "helm.sh/helm/v3/internal/version.version=$(git -C /app/build/helm describe --tags)"
+  # - -X "helm.sh/helm/v3/internal/version.metadata="
+  - -X "helm.sh/helm/v3/internal/version.gitCommit=$(git -C /app/build/helm rev-parse HEAD)"
+  - -X "helm.sh/helm/v3/internal/version.gitTreeState=$(test -n "`git -C /app/build/helm status --porcelain`" && printf "dirty" || printf "clean")"
   # Update according to client-go dependency
   #  https://github.com/helm/helm/blob/main/go.mod#L44
-  - -X helm.sh/helm/v3/pkg/lint/rules.k8sVersionMajor=1
-  - -X helm.sh/helm/v3/pkg/lint/rules.k8sVersionMinor=21
-  - -X helm.sh/helm/v3/pkg/chartutil.k8sVersionMajor=1
-  - -X helm.sh/helm/v3/pkg/chartutil.k8sVersionMinor=21
+  - -X "helm.sh/helm/v3/pkg/lint/rules.k8sVersionMajor=1"
+  - -X "helm.sh/helm/v3/pkg/lint/rules.k8sVersionMinor=21"
+  - -X "helm.sh/helm/v3/pkg/chartutil.k8sVersionMajor=1"
+  - -X "helm.sh/helm/v3/pkg/chartutil.k8sVersionMinor=21"
   tags:
   - netgo
   extra_args:

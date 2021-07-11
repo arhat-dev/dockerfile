@@ -4,7 +4,7 @@ golang:build:
   matrix@file: &matrix .dukkha/specs/cgo-app-matrix-all.yml
   chdir: /app/build/golangci-lint
   path: ./cmd/golangci-lint/
-  outputs:
+  outputs@env:
   - /app/build/golangci-lint.${MATRIX_KERNEL}.${MATRIX_ARCH}
   cgo:
     enabled: false

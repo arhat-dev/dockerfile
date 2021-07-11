@@ -4,7 +4,7 @@ golang:build:
   matrix@file: &matrix .dukkha/specs/app-matrix-all.yml
   chdir: /app/build/editorconfig-checker
   path: ./cmd/editorconfig-checker/
-  outputs:
+  outputs@env:
   - /app/build/editorconfig-checker.${MATRIX_KERNEL}.${MATRIX_ARCH}
   cgo:
     enabled: false

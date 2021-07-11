@@ -7,7 +7,7 @@ golang:build:
   matrix@file: &matrix .dukkha/specs/app-matrix-64bit-only.yml
   chdir: /app/build/conftest
   path: ./
-  outputs:
+  outputs@env:
   - /app/build/conftest.${MATRIX_KERNEL}.${MATRIX_ARCH}
   cgo:
     enabled: false
