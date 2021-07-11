@@ -22,6 +22,7 @@ buildah:bud:
       manifest: ghcr.io/arhat-dev/nix:${VERSION}
     {{- end -}}
   extra_args@env|template: |-
+    - --pull-always
     - --build-arg
     - MATRIX_ROOTFS=${MATRIX_ROOTFS}
     - --build-arg
