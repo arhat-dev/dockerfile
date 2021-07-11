@@ -76,7 +76,7 @@ install_nix() {
   # nix optimise-store
   nix-store --verify --check-contents
 
-  replace_root_user nixuser nixuser /app
+  replace_root_user nixuser nixgroup /app
 }
 
 setup_alpine() {
@@ -94,10 +94,11 @@ setup_alpine() {
   done
 
   # user for container app
-  addgroup -g 20000 -S nixuser
+  addgroup -g 20000 -S nixgroup
   adduser \
     -S -D -h /app -g "Container App" \
-    -u 20000 -G nixuser nixuser
+    -u 20000 -G nixgroup \
+    nixuser
 }
 
 setup_debian() {
@@ -118,13 +119,15 @@ setup_debian() {
   done
 
   # user for container app
-  addgroup --gid 20000 nixuser
+  addgroup --gid 20000 nixgroup
   adduser \
     --disabled-password \
     --home /app \
     --gecos "Container App" \
-    --uid 20000 nixuser
-  adduser nixuser nixuser
+    --uid 20000 \
+    --gid 20000 \
+    nixuser
+  adduser nixuser nixgroup
 }
 
 case "${MATRIX_ROOTFS}" in
