@@ -1,0 +1,38 @@
+buildah:bud:
+- name: renovate
+  env: &env
+  # source: https://github.com/renovatebot/renovate.git
+  - VERSION=25.53.3
+  - IMAGE_NAME=ghcr.io/arhat-dev/renovate
+  matrix: &matrix
+    kernel:
+    - linux
+    rootfs:
+    - alpine
+    arch:
+    - arm64
+    # - amd64
+    # - x86
+  hooks:
+    before:
+    - shell@env: |-
+        [ -d build/renovate ] && exit 0
+
+        git clone --branch ${VERSION} \
+          https://github.com/renovatebot/renovate.git \
+          build/renovate
+
+  dockerfile: app/renovate/Dockerfile
+  image_names@file|env|template: &image_names |-
+    .dukkha/templates/app-image-env-version-image-name.yml
+  extra_args@file|env|template: |-
+    .dukkha/templates/app-image-env-version-extra-args.yml
+
+buildah:push:
+- name: renovate
+  env: *env
+  matrix: *matrix
+  hooks:
+    before:
+    - task: buildah:login(ghcr)
+  image_names@file|env|template: *image_names

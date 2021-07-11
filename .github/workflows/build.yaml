@@ -127,7 +127,8 @@ jobs:
         # - golangci-lint
         # - kine
         # - litestream
-        - nix
+        # - nix
+        - renovate
       fail-fast: false
     runs-on: ubuntu-20.04
     steps:

@@ -9,9 +9,14 @@
 - VERSION=${VERSION}
 - --build-arg
 - DOCKERHUB_ARCH={{ .Env.MATRIX_ARCH | getDockerHubArch }}
-- --build-arg
 {{ if eq .Env.MATRIX_ROOTFS "alpine" }}
+- --build-arg
 - ROOTFS_VERSION=${ALPINE_VERSION}
+- --build-arg
+- ROOTFS_WITH_VERSION=alpine${ALPINE_VERSION}
 {{ else }}
+- --build-arg
 - ROOTFS_VERSION=${DEBIAN_VERSION}-slim
+- --build-arg
+- ROOTFS_WITH_VERSION=${DEBIAN_VERSION}-slim
 {{ end }}
