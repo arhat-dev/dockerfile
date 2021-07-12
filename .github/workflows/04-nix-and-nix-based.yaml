@@ -1,0 +1,97 @@
+name: build
+
+# yamllint disable-line rule:truthy
+on:
+  check_run:
+    types:
+    - rerequested
+    - requested_action
+  push:
+    branches:
+    - master
+    paths:
+    - app/**
+    - scripts/**
+    - .dukkha/**
+    - .github/workflows/build.yaml
+  schedule:
+  - cron: "0 4 * * *"
+
+jobs:
+  nix:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dukkha
+      run: |-
+        mkdir -p "${HOME}/bin"
+        echo "${HOME}/bin" >> $GITHUB_PATH
+
+        docker pull ghcr.io/arhat-dev/dukkha:latest
+        ctr_id=$(docker create ghcr.io/arhat-dev/dukkha:latest : 2>/dev/null)
+        docker cp ${ctr_id}:/dukkha "${HOME}/bin/dukkha"
+
+        chmod +x "${HOME}/bin/dukkha"
+
+    - name: Enable Multiarch Support
+      run: |-
+        sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+        sudo apt update
+        sudo apt install -y qemu-user-static
+
+    - name: Build and Push ${{ matrix.app }}
+      env:
+        GHCR_USER: ${{ github.actor }}
+        GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
+      run: |-
+        dukkha buildah local bud nix
+        dukkha buildah local push nix
+
+    - name: Inspect Images
+      if: always()
+      run: |-
+        buildah images
+
+  nix-based-apps:
+    strategy:
+      matrix:
+        app:
+        - renovate
+      fail-fast: false
+    runs-on: ubuntu-20.04
+    needs:
+    - nix
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dukkha
+      run: |-
+        mkdir -p "${HOME}/bin"
+        echo "${HOME}/bin" >> $GITHUB_PATH
+
+        docker pull ghcr.io/arhat-dev/dukkha:latest
+        ctr_id=$(docker create ghcr.io/arhat-dev/dukkha:latest : 2>/dev/null)
+        docker cp ${ctr_id}:/dukkha "${HOME}/bin/dukkha"
+
+        chmod +x "${HOME}/bin/dukkha"
+
+    - name: Enable Multiarch Support
+      run: |-
+        sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+        sudo apt update
+        sudo apt install -y qemu-user-static
+
+    - name: Build and Push ${{ matrix.app }}
+      env:
+        GHCR_USER: ${{ github.actor }}
+        GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
+      run: |-
+        dukkha buildah local bud ${{ matrix.app }}
+        dukkha buildah local push ${{ matrix.app }}
+
+    - name: Inspect Images
+      if: always()
+      run: |-
+        buildah images

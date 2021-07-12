@@ -37,16 +37,18 @@ buildah:bud:
   - --layers=true
 
 - name: spilo
+  env:
+  - IMAGE_NAME=ghcr.io/arhat-dev/spilo
   matrix: *matrix
   hooks:
-    before:
+    before:matrix:
     - task: buildah:bud(spilo-base)
   dockerfile: app/spilo.dockerfile
   image_names@env: &image_names
-  - image: ghcr.io/arhat-dev/spilo:latest-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/spilo:latest-${MATRIX_ARCH}
-  - image: ghcr.io/arhat-dev/spilo:$(git -C build/spilo describe --tags)-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/spilo:$(git -C build/spilo describe --tags)
+  - image: ${IMAGE_NAME}:latest-${MATRIX_ARCH}
+    manifest: ${IMAGE_NAME}:latest-${MATRIX_ARCH}
+  - image: ${IMAGE_NAME}:$(git -C build/spilo describe --tags)-${MATRIX_ARCH}
+    manifest: ${IMAGE_NAME}:$(git -C build/spilo describe --tags)
 
   extra_args@template: |-
     {{- $base_image_name := printf "spilo-base:%s" .Env.MATRIX_ARCH -}}

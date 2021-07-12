@@ -23,11 +23,11 @@ ENV NIX_SSL_CERT_FILE /etc/ssl/certs/ca-certificates.crt
 ENV PATH="/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:${PATH}"
 
 RUN set -ex ;\
+    nix-channel --remove nixpkgs ;\
+    nix-channel --add \
+      https://nixos.org/channels/nixpkgs-unstable unstable ;\
     nix-channel --add \
       https://channels.nixos.org/nixos-21.05-small stable ;\
-    nix-channel --add \
-      https://github.com/nix-community/home-manager/archive/release-21.05.tar.gz \
-      home-manager ;\
     nix-channel --update ;\
     nix-store --delete ;\
     nix-store --verify --check-contents

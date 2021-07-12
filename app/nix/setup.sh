@@ -44,10 +44,11 @@ replace_root_user() {
   ln -s "${nix_profile_dir}/profile" "$home/.nix-profile"
   chown -h "${user}:${group}" "$home/.nix-profile"
 
-  mkdir -p "${home}/.config/nix/"
-  (
-    echo 'experimental-features = nix-command'
-  ) >"${home}/.config/nix/nix.conf"
+  # TODO: enable experimental-features
+  # mkdir -p "${home}/.config/nix/"
+  # (
+  #   echo 'experimental-features = nix-command'
+  # ) >"${home}/.config/nix/nix.conf"
 
   (
     echo ". /etc/profile.d/nix.sh"

@@ -1,9 +1,9 @@
 buildah:bud:
-- name: renovate
+- name: renovate-slim
   env: &env
   # source: https://github.com/renovatebot/renovate.git
-  - VERSION=25.53.3
-  - IMAGE_NAME=ghcr.io/arhat-dev/renovate
+  - &version VERSION=25.53.3
+  - IMAGE_NAME=ghcr.io/arhat-dev/renovate-slim
   matrix: &matrix
     kernel:
     - linux
@@ -22,11 +22,30 @@ buildah:bud:
           https://github.com/renovatebot/renovate.git \
           build/renovate
 
-  dockerfile: app/renovate/Dockerfile
   image_names@file|env|template: &image_names |-
     .dukkha/templates/app-image-env-version-image-name.yml
+  dockerfile: app/renovate/slim.dockerfile
   extra_args@file|env|template: |-
     .dukkha/templates/app-image-env-version-extra-args.yml
+
+- name: renovate
+  env:
+  - *version
+  - IMAGE_NAME=ghcr.io/arhat-dev/renovate
+  matrix: *matrix
+  hooks:
+    before:matrix:
+    - task: buildah:bud(renovate-slim)
+
+  dockerfile: app/renovate/full.dockerfile
+  image_names@file|env|template: &image_names |-
+    .dukkha/templates/app-image-env-version-image-name.yml
+  extra_args@template: |-
+    {{- $slim_image_name := printf  "ghcr.io/arhat-dev/renovate-slim:%s-%s-$s" .Env.VERSION .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
+    {{- $slim_image_id := os_ReadFile (getBuildahImageIDFile $slim_image_name) -}}
+    - --pull-never
+    - --build-arg
+    - SLIM_IMAGE={{ $slim_image_id }}
 
 buildah:push:
 - name: renovate
