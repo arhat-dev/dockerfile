@@ -1,3 +1,6 @@
+include:
+- renovate/dukkha.yaml
+
 buildah:build:
 - name: nix
   env: &env
