@@ -19,7 +19,7 @@ buildah:build:
   file@env: |-
     base/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile
   image_names@env: &base_image_names
-  - image: ghcr.io/arhat-dev/base-${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}-${MATRIX_ARCH}
+  - image: ${IMAGE_REPO}/base-${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}-${MATRIX_ARCH}
 
   extra_args:
   - --pull-always

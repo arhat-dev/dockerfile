@@ -20,8 +20,8 @@ buildah:build:
     container/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile
 
   image_names@env: &image_names
-  - image: ghcr.io/arhat-dev/${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}
+  - image: ${IMAGE_REPO}/${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}-${MATRIX_ARCH}
+    manifest: ${IMAGE_REPO}/${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}
 
   extra_args:
   - --pull-always

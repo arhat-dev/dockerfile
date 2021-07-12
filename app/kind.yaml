@@ -31,7 +31,7 @@ workflow:run:
     # TODO: support multiarch image build
   - shell@env: |-
       kind build node-image \
-        --image ghcr.io/arhat-dev/kind-node:${MATRIX_KUBE}-${MATRIX_ARCH} \
+        --image ${IMAGE_REPO}/kind-node:${MATRIX_KUBE}-${MATRIX_ARCH} \
         "$(pwd)/build/kube-${MATRIX_KUBE}"
 
 docker:push:
@@ -41,5 +41,5 @@ docker:push:
     before:
     - task: docker:login(ghcr)
   image_names@env:
-  - image: ghcr.io/arhat-dev/kind-node:${MATRIX_KUBE}-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/kind-node:${MATRIX_KUBE}
+  - image: ${IMAGE_REPO}/kind-node:${MATRIX_KUBE}-${MATRIX_ARCH}
+    manifest: ${IMAGE_REPO}/kind-node:${MATRIX_KUBE}

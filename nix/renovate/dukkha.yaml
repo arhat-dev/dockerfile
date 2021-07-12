@@ -33,12 +33,12 @@ buildah:build:
 
   file: app/renovate/full.dockerfile
   image_names@template|file|env|template: *image_names
-  extra_args@template: |-
-    {{- $slim_image_name := printf  "ghcr.io/arhat-dev/renovate-slim:%s-%s-$s" .Env.VERSION .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
-    {{- $slim_image_id := os_ReadFile (getBuildahImageIDFile $slim_image_name) -}}
+  extra_args@env|template: |-
+    {{- \$slim_image_name := printf  "${IMAGE_REPO}/renovate-slim:${VERSION}-${MATRIX_ROOTFS}-${MATRIX_ARCH}" -}}
+    {{- \$slim_image_id := os_ReadFile (getBuildahImageIDFile \$slim_image_name) -}}
     - --pull-never
     - --build-arg
-    - SLIM_IMAGE={{ $slim_image_id }}
+    - SLIM_IMAGE={{ \$slim_image_id }}
 
 buildah:push:
 - name: renovate-slim
