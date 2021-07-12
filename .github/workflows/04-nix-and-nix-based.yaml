@@ -61,8 +61,8 @@ jobs:
         - renovate
       fail-fast: false
     runs-on: ubuntu-20.04
-    needs:
-    - nix
+    # needs:
+    # - nix
 
     steps:
     - uses: actions/checkout@v2
