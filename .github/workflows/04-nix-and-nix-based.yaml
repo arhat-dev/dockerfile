@@ -54,6 +54,12 @@ jobs:
 #         buildah images
 
   renovate:
+    strategy:
+      matrix:
+        rootfs:
+        - debian
+        - alpine
+      fail-fast: false
     runs-on: ubuntu-20.04
     # needs:
     # - nix
@@ -82,9 +88,14 @@ jobs:
         GHCR_USER: ${{ github.actor }}
         GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
       run: |-
-        dukkha buildah local build renovate
-        dukkha buildah local push renovate-slim
-        dukkha buildah local push renovate
+        dukkha buildah local build renovate \
+          -m rootfs=${{ matrix.rootfs }}
+
+        dukkha buildah local push renovate-slim \
+          -m rootfs=${{ matrix.rootfs }}
+
+        dukkha buildah local push renovate \
+          -m rootfs=${{ matrix.rootfs }}
 
     - name: Inspect Images
       if: always()
