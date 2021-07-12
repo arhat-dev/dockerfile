@@ -14,7 +14,7 @@ buildah:bud:
     - amd64
     - arm64
     - x86
-  dockerfile@env: app/nix/Dockerfile
+  dockerfile@env: nix/Dockerfile
   image_names@file|env|template: &image_names |-
     .dukkha/templates/app-image-env-version-image-name.yml
   extra_args@file|env|template: |-

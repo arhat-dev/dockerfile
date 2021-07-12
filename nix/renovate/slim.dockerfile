@@ -7,7 +7,7 @@ FROM docker.io/${DOCKERHUB_ARCH}/node:14-${ROOTFS_WITH_VERSION} as builder
 
 ARG MATRIX_ROOTFS
 
-COPY app/renovate/setup.sh /setup.sh
+COPY nix/renovate/setup.sh /setup.sh
 # need to install node-gyp to make re2 work
 RUN sh /setup.sh && rm -f /setup.sh
 
@@ -30,6 +30,7 @@ RUN set -ex ;\
 
 FROM ghcr.io/arhat-dev/nix:2.3.14-${MATRIX_ROOTFS}-${MATRIX_ARCH}
 
+# TODO: use /nixuser instead of /app
 ENV PATH="/app/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:${PATH}"
 
 # add required packages to build re2
@@ -39,13 +40,14 @@ RUN set -ex ;\
         stable.nodePackages.npm \
         stable.nodePackages.node-gyp \
         stable.python39 \
-        stable.gcc
+        stable.gcc \
+        stable.gnumake
 
 USER root
 ENV USER root
 
 # for testing
-COPY --chmod=0775 app/renovate/entrypoint.sh /usr/local/bin/entrypoint
+COPY --chmod=0775 nix/renovate/entrypoint.sh /usr/local/bin/entrypoint
 COPY --from=builder /usr/local/renovate /usr/local/renovate
 
 # re2 is a optional dependency at compile time but required by

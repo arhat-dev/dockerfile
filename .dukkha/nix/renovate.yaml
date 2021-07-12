@@ -24,7 +24,7 @@ buildah:bud:
 
   image_names@file|env|template: &image_names |-
     .dukkha/templates/app-image-env-version-image-name.yml
-  dockerfile: app/renovate/slim.dockerfile
+  dockerfile: nix/renovate/slim.dockerfile
   extra_args@file|env|template: |-
     .dukkha/templates/app-image-env-version-extra-args.yml
 

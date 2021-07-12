@@ -10,7 +10,7 @@ ARG MATRIX_ARCH
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
-COPY app/nix/setup.sh /setup.sh
+COPY nix/setup.sh /setup.sh
 RUN sh /setup.sh && rm -f /setup.sh
 
 USER nixuser
