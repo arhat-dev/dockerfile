@@ -1,14 +1,15 @@
 buildah:bud:
 - name: yamllint
   env: &env
+  - APP=yamllint
   # source: https://github.com/adrienverge/yamllint.git
   - VERSION=1.26.1
   matrix@file: &matrix .dukkha/specs/app-matrix-all.yml
   hooks:
     before:
-    - shell: |-
-        mkdir -p build/yamllint
-        cat <<EOF > build/yamllint/Pipfile
+    - shell@env: |-
+        mkdir -p build/${APP}
+        cat <<EOF > build/${APP}/Pipfile
         [[source]]
         url = 'https://pypi.python.org/simple'
         verify_ssl = true
@@ -20,13 +21,10 @@ buildah:bud:
         [packages]
         yamllint = "==${VERSION}"
         EOF
-  dockerfile: app/yamllint.dockerfile
-  context: build/yamllint
-  image_names@env: &image_names
-  - image: ghcr.io/arhat-dev/yamllint:latest-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/yamllint:latest
-  - image: ghcr.io/arhat-dev/yamllint:${VERSION}-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/yamllint:${VERSION}
+  dockerfile@env: app/${APP}.dockerfile
+  context@env: build/${APP}
+  image_names@file|env: &image_names |-
+    templates/image-names/no-rootfs-info/env[APP:VERSION].yml
 
   extra_args@env:
   - --pull-always

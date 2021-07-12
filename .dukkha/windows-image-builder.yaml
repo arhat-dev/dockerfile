@@ -2,8 +2,8 @@
 
 # docker:build:
 # - name: windows/builder
-#   matrix@file: .dukkha/specs/matrix-windows.yml
+#   matrix@file: &matrix .dukkha/specs/matrix-windows.yml
 #
 # docker:push:
 # - name: windows/builder
-#   matrix@file: .dukkha/specs/matrix-windows.yml
+#   matrix@file: *matrix

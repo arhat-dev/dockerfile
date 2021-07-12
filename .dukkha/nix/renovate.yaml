@@ -1,9 +1,10 @@
 buildah:bud:
 - name: renovate-slim
-  env: &env
+  env: &slim_env
+  - APP=renovate-slim
   # source: https://github.com/renovatebot/renovate.git
   - &version VERSION=25.53.3
-  - IMAGE_NAME=ghcr.io/arhat-dev/renovate-slim
+  - &default_rootfs DEFAULT_ROOTFS=alpine
   matrix: &matrix
     kernel:
     - linux
@@ -13,33 +14,25 @@ buildah:bud:
     - arm64
     # - amd64
     # - x86
-  hooks:
-    before:
-    - shell@env: |-
-        [ -d build/renovate ] && exit 0
-
-        git clone --branch ${VERSION} \
-          https://github.com/renovatebot/renovate.git \
-          build/renovate
-
-  image_names@file|env|template: &image_names |-
-    .dukkha/templates/app-image-env-version-image-name.yml
   dockerfile: nix/renovate/slim.dockerfile
-  extra_args@file|env|template: |-
-    .dukkha/templates/app-image-env-version-extra-args.yml
+  image_names@template|file|env|template: &image_names |-
+    templates/image-names/include-rootfs-info/
+    {{- /* multi-line join */ -}}
+    env[APP:VERSION:DEFAULT_ROOTFS].yml
+  extra_args@file|env|template: templates/image-extra-args/env[VERSION].yml
 
 - name: renovate
-  env:
+  env: &full_env
+  - APP=renovate
   - *version
-  - IMAGE_NAME=ghcr.io/arhat-dev/renovate
+  - *default_rootfs
   matrix: *matrix
   hooks:
     before:matrix:
     - task: buildah:bud(renovate-slim)
 
   dockerfile: app/renovate/full.dockerfile
-  image_names@file|env|template: &image_names |-
-    .dukkha/templates/app-image-env-version-image-name.yml
+  image_names@template|file|env|template: *image_names
   extra_args@template: |-
     {{- $slim_image_name := printf  "ghcr.io/arhat-dev/renovate-slim:%s-%s-$s" .Env.VERSION .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
     {{- $slim_image_id := os_ReadFile (getBuildahImageIDFile $slim_image_name) -}}
@@ -48,10 +41,16 @@ buildah:bud:
     - SLIM_IMAGE={{ $slim_image_id }}
 
 buildah:push:
-- name: renovate
-  env: *env
+- name: renovate-slim
+  env: *slim_env
   matrix: *matrix
-  hooks:
+  hooks: &push_hooks
     before:
     - task: buildah:login(ghcr)
+  image_names@file|env|template: *image_names
+
+- name: renovate
+  env: *full_env
+  matrix: *matrix
+  hooks: *push_hooks
   image_names@file|env|template: *image_names

@@ -1,5 +1,9 @@
 buildah:bud:
 - name: spilo-base
+  env: &env
+  - APP=spilo
+  # source: https://github.com/zalando/spilo.git
+  - VERSION=2.0-p7
   matrix: &matrix
     kernel:
     - linux
@@ -7,14 +11,15 @@ buildah:bud:
     - amd64
   hooks:
     before:
-    - shell: |-
-        [ -d build/spilo ] && exit 0
+    - shell@env: |-
+        [ -d build/${APP} ] && exit 0
 
-        git clone --branch 2.0-p7 \
+        git clone --branch ${VERSION} \
           https://github.com/zalando/spilo.git \
-          build/spilo
-  dockerfile: build/spilo/postgres-appliance/Dockerfile
-  context: build/spilo/postgres-appliance
+          build/${APP}
+
+  dockerfile@env: build/${APP}/postgres-appliance/Dockerfile
+  context@env: build/${APP}/postgres-appliance
   image_names@env:
   - image: spilo-base:${MATRIX_ARCH}
 
@@ -37,19 +42,14 @@ buildah:bud:
   - --layers=true
 
 - name: spilo
-  env:
-  - IMAGE_NAME=ghcr.io/arhat-dev/spilo
+  env: *env
   matrix: *matrix
   hooks:
     before:matrix:
     - task: buildah:bud(spilo-base)
   dockerfile: app/spilo.dockerfile
-  image_names@env: &image_names
-  - image: ${IMAGE_NAME}:latest-${MATRIX_ARCH}
-    manifest: ${IMAGE_NAME}:latest-${MATRIX_ARCH}
-  - image: ${IMAGE_NAME}:$(git -C build/spilo describe --tags)-${MATRIX_ARCH}
-    manifest: ${IMAGE_NAME}:$(git -C build/spilo describe --tags)
-
+  image_names@file|env: &image_names |-
+    templates/image-names/no-rootfs-info/env[APP:VERSION].yml
   extra_args@template: |-
     {{- $base_image_name := printf "spilo-base:%s" .Env.MATRIX_ARCH -}}
     {{- $base_image_id := os_ReadFile (getBuildahImageIDFile $base_image_name) -}}
@@ -59,8 +59,9 @@ buildah:bud:
 
 buildah:push:
 - name: spilo
+  env: *env
   hooks:
     before:
     - task: buildah:login(ghcr)
   matrix: *matrix
-  image_names@env: *image_names
+  image_names@file|env: *image_names

@@ -1,0 +1,12 @@
+# requires setting
+# task env VERSION and IMAGE_REPO
+# use @file|env|template: templates/image-names/include-rootfs-info/env[APP:VERSION:DEFAULT_ROOTFS].yml
+
+- image: ${IMAGE_REPO}/${APP}:${VERSION}-${MATRIX_ROOTFS}-${MATRIX_ARCH}
+  manifest: ${IMAGE_REPO}/${APP}:${VERSION}-${MATRIX_ROOTFS}
+{{ if eq .Env.MATRIX_ROOTFS "${DEFAULT_ROOTFS}" }}
+- image: ${IMAGE_REPO}/${APP}:${VERSION}-${MATRIX_ARCH}
+  manifest: ${IMAGE_REPO}/${APP}:${VERSION}
+- image: ${IMAGE_REPO}/${APP}:latest-${MATRIX_ARCH}
+  manifest: ${IMAGE_REPO}/${APP}:latest
+{{- end -}}

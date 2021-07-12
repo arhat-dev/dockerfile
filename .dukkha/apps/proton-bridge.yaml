@@ -1,12 +1,18 @@
 # this build instruction is used in container
 golang:build:
 - name: proton-bridge
+  env: &env
+  - APP=proton-bridge
+  # source: https://github.com/ProtonMail/proton-bridge.git
+  - VERSION=v1.8.7
+
   # proton-bridge doesn't have 32bit support
   #
   #   /go/pkg/mod/github.com/!proton!mail/go-rfc5322@v0.8.0/parser/rfc5322_parser.go:2756: constant 4230534781 overflows int
   matrix@file: &matrix .dukkha/specs/app-matrix-64bit-only.yml
   hooks:
     before:
+    # patch to make it cgo free
     - shell: |-
         set -ex
         sed -i 's#github.com/docker/docker-credential-helpers/secretservice#fmt#g' \
@@ -19,15 +25,15 @@ golang:build:
         ./credits.sh bridge
         ./credits.sh importexport
 
-  chdir: /app/build/proton-bridge
+  chdir@env: /app/build/${APP}
   path: ./cmd/Desktop-Bridge/
   outputs@env:
-  - /app/build/proton-bridge.${MATRIX_KERNEL}.${MATRIX_ARCH}
+  - /app/build/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}
   cgo:
     enabled: false
   ldflags@env:
   - -s -w
-  - -X "github.com/ProtonMail/proton-bridge/internal/constants.Version=$(sh /app/app/proton-bridge/get-version.sh /app/build/proton-bridge)+git"
+  - -X "github.com/ProtonMail/proton-bridge/internal/constants.Version=${VERSION}+git"
   # https://github.com/ProtonMail/proton-bridge/blob/master/Makefile#L33
   - -X "github.com/ProtonMail/proton-bridge/internal/constants.Revision=$(git -C /app/build/proton-bridge rev-parse --short=10 HEAD)"
   - -X "github.com/ProtonMail/proton-bridge/internal/constants.BuildTime=$(date +%FT%T%z)"
@@ -39,35 +45,28 @@ golang:build:
 
 buildah:bud:
 - name: proton-bridge
+  env: *env
   hooks:
     before:
-    - shell: |-
+    - shell@env: |-
         set -ex
-        [ -d build/proton-bridge ] && exit 0
+        [ -d build/${APP} ] && exit 0
 
-        git clone --branch v1.8.7 \
+        git clone --branch ${VERSION} \
             https://github.com/ProtonMail/proton-bridge.git \
-            build/proton-bridge
+            build/${APP}
 
   matrix@file: *matrix
-  dockerfile: app/proton-bridge/Dockerfile
-  image_names@env: &image_names
-  - image: ghcr.io/arhat-dev/proton-bridge:latest-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/proton-bridge:latest
-  - image: ghcr.io/arhat-dev/proton-bridge:$(sh app/proton-bridge/get-version.sh build/proton-bridge)-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/proton-bridge:$(sh app/proton-bridge/get-version.sh build/proton-bridge)
-
-  extra_args@env:
-  - --pull-always
-  - --build-arg
-  - MATRIX_ROOTFS=${MATRIX_ROOTFS}
-  - --build-arg
-  - MATRIX_ARCH=${MATRIX_ARCH}
+  dockerfile@env: app/${APP}/Dockerfile
+  image_names@file|env: &image_names |-
+    templates/image-names/no-rootfs-info/env[APP:VERSION].yml
+  extra_args@file|env|template: templates/image-extra-args/env[APP].yml
 
 buildah:push:
 - name: proton-bridge
+  env: *env
   hooks:
     before:
     - task: buildah:login(ghcr)
   matrix@file: *matrix
-  image_names@env: *image_names
+  image_names@file|env: *image_names

@@ -1,6 +1,6 @@
 workflow:run:
 - name: build-kind-node-images
-  matrix: &kind_matrix
+  matrix: &matrix
     kernel:
     - linux
     arch:
@@ -36,7 +36,7 @@ workflow:run:
 
 docker:push:
 - name: kind-node
-  matrix: *kind_matrix
+  matrix: *matrix
   hooks:
     before:
     - task: docker:login(ghcr)

@@ -1,14 +1,18 @@
 # this build instruction is used in container
 golang:build:
 - name: conftest
+  env: &env
+  - APP=conftest
+  # source: https://github.com/open-policy-agent/conftest.git
+  - VERSION=v0.25.0
   # conftest has no 32bit support
   #
   # /go/pkg/mod/cuelang.org/go@v0.0.15/cue/builtins.go:1850:12: constant 4611686018427387904 overflows uint
   matrix@file: &matrix .dukkha/specs/app-matrix-64bit-only.yml
-  chdir: /app/build/conftest
+  chdir@env: /app/build/${APP}
   path: ./
   outputs@env:
-  - /app/build/conftest.${MATRIX_KERNEL}.${MATRIX_ARCH}
+  - /app/build/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}
   cgo:
     enabled: false
   tags:
@@ -19,36 +23,27 @@ golang:build:
 
 buildah:bud:
 - name: conftest
+  env: *env
   matrix@file: *matrix
   hooks:
     before:
-    - shell: |-
-        [ -d build/conftest ] && exit 0
+    - shell@env: |-
+        [ -d build/${APP} ] && exit 0
 
-        git clone --branch v0.25.0 \
+        git clone --branch ${VERSION} \
           https://github.com/open-policy-agent/conftest.git \
-          build/conftest
+          build/${APP}
 
   dockerfile: app/golang-nocgo.dockerfile
-  image_names@env: &image_names
-  - image: ghcr.io/arhat-dev/conftest:latest-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/conftest:latest
-  - image: ghcr.io/arhat-dev/conftest:$(git -C build/conftest describe --tags)-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/conftest:$(git -C build/conftest describe --tags)
-
-  extra_args@env:
-  - --pull-always
-  - --build-arg
-  - APP=conftest
-  - --build-arg
-  - MATRIX_ROOTFS=${MATRIX_ROOTFS}
-  - --build-arg
-  - MATRIX_ARCH=${MATRIX_ARCH}
+  image_names@file|env: &image_names |-
+    templates/image-names/no-rootfs-info/env[APP:VERSION].yml
+  extra_args@file|env|template: templates/image-extra-args/env[APP].yml
 
 buildah:push:
 - name: conftest
+  env: *env
   hooks:
     before:
     - task: buildah:login(ghcr)
   matrix@file: *matrix
-  image_names@env: *image_names
+  image_names@file|env: *image_names

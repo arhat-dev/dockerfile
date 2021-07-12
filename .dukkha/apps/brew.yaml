@@ -1,21 +1,21 @@
 buildah:bud:
-- name: nix
+- name: brew
   env: &env
-  - APP=nix
-  # source: https://github.com/NixOS/nix.git
-  - VERSION=2.3.14
-  - DEFAULT_ROOTFS=alpine
+  - APP=brew
+  # source: https://github.com/Homebrew/brew.git
+  - VERSION=3.2.1
   matrix: &matrix
     kernel:
     - linux
     rootfs:
-    - alpine
     - debian
     arch:
     - amd64
     - arm64
-    - x86
-  dockerfile@env: nix/Dockerfile
+    - armv7
+    - armv6
+    - armv5
+  dockerfile@env: app/${APP}/Dockerfile
   image_names@template|file|env|template: &image_names |-
     templates/image-names/include-rootfs-info/
     {{- /* multi-line join */ -}}
@@ -23,7 +23,7 @@ buildah:bud:
   extra_args@file|env|template: templates/image-extra-args/env[VERSION].yml
 
 buildah:push:
-- name: nix
+- name: brew
   env: *env
   matrix: *matrix
   hooks:

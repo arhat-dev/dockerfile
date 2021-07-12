@@ -1,15 +1,19 @@
 # this build instruction is used in container
 golang:build:
 - name: editorconfig-checker
+  env: &env
+  - APP=editorconfig-checker
+  # source: https://github.com/editorconfig-checker/editorconfig-checker.git
+  - VERSION=2.3.5
   matrix@file: &matrix .dukkha/specs/app-matrix-all.yml
-  chdir: /app/build/editorconfig-checker
+  chdir@env: /app/build/${APP}
   path: ./cmd/editorconfig-checker/
   outputs@env:
-  - /app/build/editorconfig-checker.${MATRIX_KERNEL}.${MATRIX_ARCH}
+  - /app/build/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}
   cgo:
     enabled: false
   ldflags@env:
-  - -X main.version="$(git -C /app/build/editorconfig-checker describe --tags)"
+  - -X "main.version=${VERSION}"
   tags:
   - netgo
   extra_args:
@@ -18,35 +22,27 @@ golang:build:
 
 buildah:bud:
 - name: editorconfig-checker
+  env: *env
   matrix@file: *matrix
   hooks:
     before:
-    - shell: |-
-        [ -d build/editorconfig-checker ] && exit 0
+    - shell@env: |-
+        [ -d build/${APP} ] && exit 0
 
-        git clone --branch 2.3.5 \
+        git clone --branch ${VERSION} \
           https://github.com/editorconfig-checker/editorconfig-checker.git \
-          build/editorconfig-checker
+          build/${APP}
 
   dockerfile: app/golang-nocgo.dockerfile
-  image_names@env: &image_names
-  - image: ghcr.io/arhat-dev/editorconfig-checker:latest-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/editorconfig-checker:latest
-  - image: ghcr.io/arhat-dev/editorconfig-checker:$(git -C build/editorconfig-checker describe --tags )-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/editorconfig-checker:$(git -C build/editorconfig-checker describe --tags )
-  extra_args@env:
-  - --pull-always
-  - --build-arg
-  - APP=editorconfig-checker
-  - --build-arg
-  - MATRIX_ROOTFS=${MATRIX_ROOTFS}
-  - --build-arg
-  - MATRIX_ARCH=${MATRIX_ARCH}
+  image_names@file|env: &image_names |-
+    templates/image-names/no-rootfs-info/env[APP:VERSION].yml
+  extra_args@file|env|template: templates/image-extra-args/env[APP].yml
 
 buildah:push:
 - name: editorconfig-checker
+  env: *env
   hooks:
     before:
     - task: buildah:login(ghcr)
   matrix@file: *matrix
-  image_names@env: *image_names
+  image_names@file|env: *image_names

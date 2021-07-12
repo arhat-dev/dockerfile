@@ -1,17 +1,21 @@
 golang:build:
 - name: kine
+  env: &env
+  - APP=kine
+  # source: https://github.com/k3s-io/kine.git
+  - VERSION=v0.6.1
   matrix@file: &matrix .dukkha/specs/cgo-app-matrix-all.yml
-  chdir: /app/build/kine
+  chdir@env: /app/build/${APP}
   path: ./
   hooks:
     after:matrix:success@env:
     - shell: |-
-        file /app/build/kine.${MATRIX_KERNEL}.${MATRIX_ROOTFS}.${MATRIX_ARCH}
+        file /app/build/${APP}.${MATRIX_KERNEL}.${MATRIX_ROOTFS}.${MATRIX_ARCH}
   cgo:
     # sqlite driver requires cgo
     enabled: true
   outputs@env:
-  - /app/build/kine.${MATRIX_KERNEL}.${MATRIX_ROOTFS}.${MATRIX_ARCH}
+  - /app/build/${APP}.${MATRIX_KERNEL}.${MATRIX_ROOTFS}.${MATRIX_ARCH}
   ldflags:
   - -s -w
   extra_args:
@@ -21,35 +25,27 @@ golang:build:
 
 buildah:bud:
 - name: kine
+  env: *env
   matrix@file: *matrix
   hooks:
     before:
     - shell: |-
-        [ -d build/kine ] && exit 0
+        [ -d build/${APP} ] && exit 0
 
-        git clone -b v0.6.1 \
+        git clone -b ${VERSION} \
           https://github.com/k3s-io/kine.git \
-          build/kine
+          build/${APP}
 
   dockerfile: app/golang-cgo.dockerfile
-  image_names@env: &image_names
-  - image: ghcr.io/arhat-dev/kine:latest-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/kine:latest
-  - image: ghcr.io/arhat-dev/kine:$(git -C build/kine describe --tags)-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/kine:$(git -C build/kine describe --tags)
-  extra_args@env:
-  - --pull-always
-  - --build-arg
-  - APP=kine
-  - --build-arg
-  - MATRIX_ROOTFS=${MATRIX_ROOTFS}
-  - --build-arg
-  - MATRIX_ARCH=${MATRIX_ARCH}
+  image_names@file|env: &image_names |-
+    templates/image-names/no-rootfs-info/env[APP:VERSION].yml
+  extra_args@file|env|template: templates/image-extra-args/env[APP].yml
 
 buildah:push:
 - name: kine
+  env: *env
   hooks:
     before:
     - task: buildah:login(ghcr)
   matrix@file: *matrix
-  image_names@env: *image_names
+  image_names@file|env: *image_names

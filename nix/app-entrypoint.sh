@@ -1,6 +1,6 @@
 #!/bin/sh
 
-nix_bin_path="/nixuser/.nix-profile/bin"
+nix_bin_path="/nixuser/bin:/nixuser/.nix-profile/bin"
 nix_bin_path="${nix_bin_path}:/nix/var/nix/profiles/default/bin"
 nix_bin_path="${nix_bin_path}:/nix/var/nix/profiles/default/sbin"
 

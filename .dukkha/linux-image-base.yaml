@@ -1,6 +1,6 @@
 buildah:bud:
 - name: linux/base
-  matrix@file: .dukkha/specs/matrix-linux.yml
+  matrix@file: &matrix .dukkha/specs/matrix-linux.yml
   hooks:
     before:matrix@template:
     - shell: |-
@@ -30,5 +30,5 @@ buildah:push:
   hooks:
     before:
     - task: buildah:login(ghcr)
-  matrix@file: .dukkha/specs/matrix-linux.yml
+  matrix@file: *matrix
   image_names@env: *base_image_names

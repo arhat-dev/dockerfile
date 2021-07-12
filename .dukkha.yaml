@@ -8,6 +8,9 @@ bootstrap:
   - RUST_VERSION=1.53
   # source: https://github.com/multiarch/qemu-user-static
   - QEMU_VERSION=5.2.0-2
+  # TODO: set source for ruby so renovate can work
+  - RUBY_VERSION=2.7
+  - IMAGE_REPO=ghcr.io/arhat-dev
 
 tools:
   buildah:

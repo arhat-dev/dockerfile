@@ -1,12 +1,13 @@
 # requires setting
-# task env VERSION
+# task env APP
+
 - --pull-always
+- --build-arg
+- APP=${APP}
 - --build-arg
 - MATRIX_ROOTFS=${MATRIX_ROOTFS}
 - --build-arg
 - MATRIX_ARCH=${MATRIX_ARCH}
-- --build-arg
-- VERSION=${VERSION}
 - --build-arg
 - DOCKERHUB_ARCH={{ .Env.MATRIX_ARCH | getDockerHubArch }}
 {{ if eq .Env.MATRIX_ROOTFS "alpine" }}
