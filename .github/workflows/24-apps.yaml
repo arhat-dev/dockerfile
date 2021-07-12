@@ -11,9 +11,8 @@ on:
     - master
     paths:
     - app/**
-    - scripts/**
     - .dukkha/**
-    - .github/workflows/build.yaml
+    - .github/workflows/*-app*.yaml
   schedule:
   - cron: "0 0 * * *"
 

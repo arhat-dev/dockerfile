@@ -57,7 +57,7 @@ jobs:
     strategy:
       matrix:
         app:
-        - renovate-slim
+        # - renovate-slim
         - renovate
       fail-fast: false
     runs-on: ubuntu-20.04
