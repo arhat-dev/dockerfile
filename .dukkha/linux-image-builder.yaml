@@ -1,7 +1,7 @@
-buildah:bud:
+buildah:build:
 - name: linux/builder-prepare
   matrix@file: &matrix .dukkha/specs/matrix-linux.yml
-  dockerfile@env: |-
+  file@env: |-
     builder/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile
   image_names@env:
   - image: prepare-${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}-${MATRIX_ARCH}
@@ -20,7 +20,7 @@ buildah:bud:
     - shell: |-
         sh scripts/${MATRIX_LANGUAGE}/builder-create-dockerfile.sh \
           {{ getDockerHubArch (.Env.MATRIX_ARCH | default "amd64") }}
-    - task: buildah:bud(linux/builder-prepare)
+    - task: buildah:build(linux/builder-prepare)
 
     after:matrix:success:
     - shell: |-
@@ -29,7 +29,7 @@ buildah:bud:
     - shell: |-
         cat "builder/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile"
 
-  dockerfile@env: |-
+  file@env: |-
     builder/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile
 
   image_names@env: &image_names

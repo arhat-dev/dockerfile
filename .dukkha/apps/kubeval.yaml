@@ -20,7 +20,7 @@ golang:build:
   - -trimpath
   - -mod=readonly
 
-buildah:bud:
+buildah:build:
 - name: kubeval
   env: *env
   matrix@file: *matrix
@@ -32,7 +32,7 @@ buildah:bud:
         git clone --branch ${VERSION} \
           https://github.com/instrumenta/kubeval.git \
           build/${APP}
-  dockerfile: app/golang-nocgo.dockerfile
+  file: app/golang-nocgo.dockerfile
   image_names@file|env: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
   extra_args@file|env|template: templates/image-extra-args/env[APP].yml

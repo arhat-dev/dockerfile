@@ -1,4 +1,4 @@
-buildah:bud:
+buildah:build:
 - name: nix
   env: &env
   - APP=nix
@@ -15,7 +15,7 @@ buildah:bud:
     - amd64
     - arm64
     - x86
-  dockerfile@env: nix/Dockerfile
+  file@env: nix/Dockerfile
   image_names@template|file|env|template: &image_names |-
     templates/image-names/include-rootfs-info/
     {{- /* multi-line join */ -}}

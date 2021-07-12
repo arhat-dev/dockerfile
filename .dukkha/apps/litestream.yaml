@@ -21,7 +21,7 @@ golang:build:
   - -trimpath
   - -mod=readonly
 
-buildah:bud:
+buildah:build:
 - name: litestream
   env: *env
   matrix@file: *matrix
@@ -36,7 +36,7 @@ buildah:bud:
           https://github.com/benbjohnson/litestream.git \
           build/${APP}
 
-  dockerfile: app/golang-cgo.dockerfile
+  file: app/golang-cgo.dockerfile
   image_names@file|env: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
   extra_args@file|env|template: templates/image-extra-args/env[APP].yml

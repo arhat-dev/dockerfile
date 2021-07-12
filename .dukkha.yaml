@@ -83,7 +83,7 @@ workflow:run:
     - shell: buildah images
   jobs:
   - task@env: |-
-      buildah:bud(
+      buildah:build(
         ${MATRIX_KERNEL}/${MATRIX_TARGET},
         { language: [${MATRIX_LANGUAGE}] }
       )

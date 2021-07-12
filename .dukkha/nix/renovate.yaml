@@ -1,4 +1,4 @@
-buildah:bud:
+buildah:build:
 - name: renovate-slim
   env: &slim_env
   - APP=renovate-slim
@@ -14,7 +14,7 @@ buildah:bud:
     - arm64
     # - amd64
     # - x86
-  dockerfile: nix/renovate/slim.dockerfile
+  file@env: nix/renovate/slim.dockerfile
   image_names@template|file|env|template: &image_names |-
     templates/image-names/include-rootfs-info/
     {{- /* multi-line join */ -}}
@@ -29,9 +29,9 @@ buildah:bud:
   matrix: *matrix
   hooks:
     before:matrix:
-    - task: buildah:bud(renovate-slim)
+    - task: buildah:build(renovate-slim)
 
-  dockerfile: app/renovate/full.dockerfile
+  file: app/renovate/full.dockerfile
   image_names@template|file|env|template: *image_names
   extra_args@template: |-
     {{- $slim_image_name := printf  "ghcr.io/arhat-dev/renovate-slim:%s-%s-$s" .Env.VERSION .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}

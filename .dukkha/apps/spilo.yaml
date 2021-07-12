@@ -1,4 +1,4 @@
-buildah:bud:
+buildah:build:
 - name: spilo-base
   env: &env
   - APP=spilo
@@ -18,7 +18,7 @@ buildah:bud:
           https://github.com/zalando/spilo.git \
           build/${APP}
 
-  dockerfile@env: build/${APP}/postgres-appliance/Dockerfile
+  file@env: build/${APP}/postgres-appliance/Dockerfile
   context@env: build/${APP}/postgres-appliance
   image_names@env:
   - image: spilo-base:${MATRIX_ARCH}
@@ -37,7 +37,7 @@ buildah:bud:
   - DEMO=false
   - --build-arg
   - TIMESCALEDB_APACHE_ONLY=false
-  # required, or buildah bud will fail due to unable to find
+  # required, or buildah build will fail due to unable to find
   # image resulted from `builder-false` stage
   - --layers=true
 
@@ -46,8 +46,8 @@ buildah:bud:
   matrix: *matrix
   hooks:
     before:matrix:
-    - task: buildah:bud(spilo-base)
-  dockerfile: app/spilo.dockerfile
+    - task: buildah:build(spilo-base)
+  file@env: app/${APP}.dockerfile
   image_names@file|env: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
   extra_args@template: |-

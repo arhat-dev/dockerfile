@@ -45,7 +45,7 @@ jobs:
 #         GHCR_USER: ${{ github.actor }}
 #         GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
 #       run: |-
-#         dukkha buildah local bud nix
+#         dukkha buildah local build nix
 #         dukkha buildah local push nix
 #
 #     - name: Inspect Images
@@ -89,7 +89,7 @@ jobs:
         GHCR_USER: ${{ github.actor }}
         GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
       run: |-
-        dukkha buildah local bud ${{ matrix.app }}
+        dukkha buildah local build ${{ matrix.app }}
         dukkha buildah local push ${{ matrix.app }}
 
     - name: Inspect Images

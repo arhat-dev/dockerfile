@@ -1,4 +1,4 @@
-buildah:bud:
+buildah:build:
 - name: yamllint
   env: &env
   - APP=yamllint
@@ -21,7 +21,7 @@ buildah:bud:
         [packages]
         yamllint = "==${VERSION}"
         EOF
-  dockerfile@env: app/${APP}.dockerfile
+  file@env: app/${APP}.dockerfile
   context@env: build/${APP}
   image_names@file|env: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml

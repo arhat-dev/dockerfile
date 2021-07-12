@@ -25,7 +25,7 @@ golang:build:
   - -trimpath
   - -mod=readonly
 
-buildah:bud:
+buildah:build:
 - name: golangci-lint
   env: *env
   matrix@file: *matrix
@@ -38,7 +38,7 @@ buildah:bud:
           https://github.com/golangci/golangci-lint.git \
           build/golangci-lint
 
-  dockerfile@env: app/golangci-lint/${MATRIX_ROOTFS}.dockerfile
+  file@env: app/golangci-lint/${MATRIX_ROOTFS}.dockerfile
   image_names@template|file|env|template: &image_names |-
     templates/image-names/include-rootfs-info/
     {{- /* multi-line join */ -}}

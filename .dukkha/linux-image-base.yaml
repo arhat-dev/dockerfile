@@ -1,4 +1,4 @@
-buildah:bud:
+buildah:build:
 - name: linux/base
   matrix@file: &matrix .dukkha/specs/matrix-linux.yml
   hooks:
@@ -16,7 +16,7 @@ buildah:bud:
     - shell: |-
         cat "base/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile"
 
-  dockerfile@env: |-
+  file@env: |-
     base/${MATRIX_LANGUAGE}/${MATRIX_ROOTFS}-${MATRIX_ARCH}.dockerfile
   image_names@env: &base_image_names
   - image: ghcr.io/arhat-dev/base-${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}-${MATRIX_ARCH}

@@ -1,4 +1,4 @@
-buildah:bud:
+buildah:build:
 - name: brew
   env: &env
   - APP=brew
@@ -15,7 +15,7 @@ buildah:bud:
     - armv7
     - armv6
     - armv5
-  dockerfile@env: app/${APP}/Dockerfile
+  file@env: app/${APP}/Dockerfile
   image_names@template|file|env|template: &image_names |-
     templates/image-names/include-rootfs-info/
     {{- /* multi-line join */ -}}

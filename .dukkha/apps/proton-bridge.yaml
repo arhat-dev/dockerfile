@@ -43,7 +43,7 @@ golang:build:
   - -trimpath
   - -mod=readonly
 
-buildah:bud:
+buildah:build:
 - name: proton-bridge
   env: *env
   hooks:
@@ -57,7 +57,7 @@ buildah:bud:
             build/${APP}
 
   matrix@file: *matrix
-  dockerfile@env: app/${APP}/Dockerfile
+  file@env: app/${APP}/Dockerfile
   image_names@file|env: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
   extra_args@file|env|template: templates/image-extra-args/env[APP].yml
