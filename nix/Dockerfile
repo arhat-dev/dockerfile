@@ -30,6 +30,7 @@ RUN set -ex ;\
       https://channels.nixos.org/nixos-21.05-small stable ;\
     nix-channel --update ;\
     nix-store --delete ;\
+    nix optimise-store ;\
     nix-store --verify --check-contents
 
 WORKDIR /nixuser

@@ -10,10 +10,11 @@ buildah:build:
     - linux
     rootfs:
     - alpine
+    - debian
     arch:
+    - amd64
     - arm64
-    # - amd64
-    # - x86
+    - x86
   file@env: nix/renovate/slim.dockerfile
   image_names@template|file|env|template: &image_names |-
     templates/image-names/include-rootfs-info/

@@ -78,8 +78,8 @@ install_nix() {
   ln -s /nix/var/nix/profiles/default/etc/profile.d/nix.sh /etc/profile.d/
 
   export PATH="/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:${PATH}"
-  nix-collect-garbage -d
-  # nix optimise-store
+  nix-store --delete
+  nix optimise-store
   nix-store --verify --check-contents
 
   replace_root_user nixuser nixgroup /nixuser

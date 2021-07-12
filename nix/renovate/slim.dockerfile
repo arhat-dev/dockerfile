@@ -41,6 +41,8 @@ RUN set -ex ;\
     yarn remove "@ls-lint/ls-lint" ;\
     yarn install --dev ;\
     yarn build ;\
+    yarn cache clean --all ;\
+    rm -rf /nixuser/.cache ;\
     chmod +x dist/*.js
 
 ENV PATH "/nixuser/bin:${PATH}"
