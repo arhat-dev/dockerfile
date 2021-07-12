@@ -1,22 +1,22 @@
-# name: common
-#
-# # yamllint disable-line rule:truthy
-# on:
-#   check_run:
-#     types:
-#     - rerequested
-#     - requested_action
-#   push:
-#     branches:
-#     - master
-#     paths:
-#     - scripts/**
-#     - .dukkha/**
-#     - .github/workflows/build.yaml
-#   schedule:
-#   - cron: "0 22 * * *"
-#
-# jobs:
+name: common
+
+# yamllint disable-line rule:truthy
+on:
+  check_run:
+    types:
+    - rerequested
+    - requested_action
+  push:
+    branches:
+    - master
+    paths:
+    - scripts/**
+    - .dukkha/**
+    - .github/workflows/build.yaml
+  schedule:
+  - cron: "0 22 * * *"
+
+jobs: {}
 #   common:
 #     strategy:
 #       matrix:

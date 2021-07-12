@@ -1,23 +1,23 @@
-# name: kind
-#
-# # yamllint disable-line rule:truthy
-# on:
-#   check_run:
-#     types:
-#     - rerequested
-#     - requested_action
-#   push:
-#     branches:
-#     - master
-#     paths:
-#     - app/**
-#     - scripts/**
-#     - .dukkha/**
-#     - .github/workflows/build.yaml
-#   schedule:
-#   - cron: "0 2 * * *"
-#
-# jobs:
+name: kind
+
+# yamllint disable-line rule:truthy
+on:
+  check_run:
+    types:
+    - rerequested
+    - requested_action
+  push:
+    branches:
+    - master
+    paths:
+    - app/**
+    - scripts/**
+    - .dukkha/**
+    - .github/workflows/build.yaml
+  schedule:
+  - cron: "0 2 * * *"
+
+jobs: {}
 #   kind:
 #     runs-on: ubuntu-latest
 #     strategy:
