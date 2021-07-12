@@ -18,59 +18,66 @@ on:
   - cron: "0 4 * * *"
 
 jobs:
-  nix:
-    strategy:
-      matrix:
-        rootfs:
-        - alpine
-        - debian
-        arch:
-        - amd64
-        - arm64
-        - x86
-      fail-fast: true
-    runs-on: ubuntu-20.04
-    steps:
-    - uses: actions/checkout@v2
-    - name: Install dukkha
-      run: |-
-        mkdir -p "${HOME}/bin"
-        echo "${HOME}/bin" >> $GITHUB_PATH
-
-        docker pull ghcr.io/arhat-dev/dukkha:latest
-        ctr_id=$(docker create ghcr.io/arhat-dev/dukkha:latest : 2>/dev/null)
-        docker cp ${ctr_id}:/dukkha "${HOME}/bin/dukkha"
-
-        chmod +x "${HOME}/bin/dukkha"
-
-    - name: Enable Multiarch Support
-      run: |-
-        sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
-
-        sudo apt update
-        sudo apt install -y qemu-user-static
-
-    - name: Build and Push nix
-      env:
-        GHCR_USER: ${{ github.actor }}
-        GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
-      run: |-
-        dukkha buildah local build nix \
-          -m rootfs=${{ matrix.rootfs }} \
-          -m arch=${{ matrix.arch }}
-
-        dukkha buildah local push nix \
-          -m rootfs=${{ matrix.rootfs }} \
-          -m arch=${{ matrix.arch }}
-
-    - name: Inspect Images
-      if: always()
-      run: |-
-        buildah images
+#   nix:
+#     strategy:
+#       matrix:
+#         rootfs:
+#         - alpine
+#         - debian
+#         arch:
+#         - amd64
+#         - arm64
+#         - x86
+#       fail-fast: true
+#     runs-on: ubuntu-20.04
+#     steps:
+#     - uses: actions/checkout@v2
+#     - name: Install dukkha
+#       run: |-
+#         mkdir -p "${HOME}/bin"
+#         echo "${HOME}/bin" >> $GITHUB_PATH
+#
+#         docker pull ghcr.io/arhat-dev/dukkha:latest
+#         ctr_id=$(docker create ghcr.io/arhat-dev/dukkha:latest : 2>/dev/null)
+#         docker cp ${ctr_id}:/dukkha "${HOME}/bin/dukkha"
+#
+#         chmod +x "${HOME}/bin/dukkha"
+#
+#     - name: Enable Multiarch Support
+#       run: |-
+#         sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
+#
+#         sudo apt update
+#         sudo apt install -y qemu-user-static
+#
+#     - name: Build and Push nix
+#       env:
+#         GHCR_USER: ${{ github.actor }}
+#         GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
+#       run: |-
+#         dukkha buildah local build nix \
+#           -m rootfs=${{ matrix.rootfs }} \
+#           -m arch=${{ matrix.arch }}
+#
+#         dukkha buildah local push nix \
+#           -m rootfs=${{ matrix.rootfs }} \
+#           -m arch=${{ matrix.arch }}
+#
+#     - name: Inspect Images
+#       if: always()
+#       run: |-
+#         buildah images
 
   nix-based-apps:
     strategy:
       matrix:
+        exclude:
+        - app:
+          # running yarn remove caused Segmentation fault on x86
+          - renovate-slim
+          - renovate
+          arch:
+          - x86
         app:
         - renovate-slim
         # - renovate
