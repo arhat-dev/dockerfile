@@ -42,4 +42,4 @@ buildah:push:
     before:
     - task: buildah:login(ghcr)
   matrix@file: *matrix
-  image_names@env: *image_names
+  image_names@file|env: *image_names

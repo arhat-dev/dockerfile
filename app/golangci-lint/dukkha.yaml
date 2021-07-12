@@ -38,7 +38,7 @@ buildah:build:
           https://github.com/golangci/golangci-lint.git \
           build/golangci-lint
 
-  file@env: app/golangci-lint/${MATRIX_ROOTFS}.dockerfile
+  file: app/golangci-lint/Dockerfile
   image_names@template|file|env|template: &image_names |-
     templates/image-names/include-rootfs-info/
     {{- /* multi-line join */ -}}
