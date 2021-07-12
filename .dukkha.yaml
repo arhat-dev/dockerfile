@@ -30,9 +30,9 @@ tools:
     - -it
     - --rm
     - --workdir
-    - $(pwd)
+    - ${DUKKHA_WORKING_DIR}
     - -v
-    - $(pwd):$(pwd)
+    - ${DUKKHA_WORKING_DIR}:${DUKKHA_WORKING_DIR}
     - --security-opt
     - label=disable
     - --security-opt

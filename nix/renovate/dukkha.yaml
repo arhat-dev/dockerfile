@@ -47,10 +47,10 @@ buildah:push:
   hooks: &push_hooks
     before:
     - task: buildah:login(ghcr)
-  image_names@file|env|template: *image_names
+  image_names@template|file|env|template: *image_names
 
 - name: renovate
   env: *full_env
   matrix: *matrix
   hooks: *push_hooks
-  image_names@file|env|template: *image_names
+  image_names@template|file|env|template: *image_names

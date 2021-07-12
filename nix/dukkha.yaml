@@ -32,4 +32,4 @@ buildah:push:
   hooks:
     before:
     - task: buildah:login(ghcr)
-  image_names@file|env|template: *image_names
+  image_names@template|file|env|template: *image_names
