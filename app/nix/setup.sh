@@ -82,7 +82,7 @@ install_nix() {
   # nix optimise-store
   nix-store --verify --check-contents
 
-  replace_root_user nixuser nixgroup /app
+  replace_root_user nixuser nixgroup /nixuser
 }
 
 setup_alpine() {
@@ -102,7 +102,7 @@ setup_alpine() {
   # user for container app
   addgroup -g 20000 -S nixgroup
   adduser \
-    -S -D -h /app -g "Container App" \
+    -S -D -h /nixuser -g "Container App" \
     -u 20000 -G nixgroup \
     nixuser
 }
@@ -128,7 +128,7 @@ setup_debian() {
   addgroup --gid 20000 nixgroup
   adduser \
     --disabled-password \
-    --home /app \
+    --home /nixuser \
     --gecos "Container App" \
     --uid 20000 \
     --gid 20000 \

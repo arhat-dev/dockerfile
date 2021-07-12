@@ -32,4 +32,4 @@ RUN set -ex ;\
     nix-store --delete ;\
     nix-store --verify --check-contents
 
-WORKDIR /app
+WORKDIR /nixuser

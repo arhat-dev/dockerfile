@@ -1,7 +1,7 @@
 ARG SLIM_IMAGE
 FROM ${SLIM_IMAGE}
 
-ENV PATH="/app/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:${PATH}"
+ENV PATH="/nixuser/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:${PATH}"
 
 # go
 RUN set -ex ;\
@@ -71,6 +71,3 @@ RUN set -ex ;\
 RUN set -ex ;\
     nix-env -iA \
         unstable.kubernetes-helm
-
-ENTRYPOINT ["/usr/local/bin/entrypoint"]
-CMD ["renovate"]

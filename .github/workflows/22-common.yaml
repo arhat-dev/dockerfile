@@ -10,7 +10,6 @@
 #     branches:
 #     - master
 #     paths:
-#     - app/**
 #     - scripts/**
 #     - .dukkha/**
 #     - .github/workflows/build.yaml

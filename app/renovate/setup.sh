@@ -17,4 +17,3 @@ alpine)
 esac
 
 npm install -g node-gyp
-npm i re2 --save

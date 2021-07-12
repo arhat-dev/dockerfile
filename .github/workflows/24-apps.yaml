@@ -1,4 +1,4 @@
-# name: build
+# name: apps
 #
 # # yamllint disable-line rule:truthy
 # on:

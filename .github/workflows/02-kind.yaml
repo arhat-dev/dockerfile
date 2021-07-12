@@ -1,4 +1,4 @@
-# name: build
+# name: kind
 #
 # # yamllint disable-line rule:truthy
 # on:
