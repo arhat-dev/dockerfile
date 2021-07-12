@@ -19,16 +19,6 @@ on:
 
 jobs:
 #   nix:
-#     strategy:
-#       matrix:
-#         rootfs:
-#         - alpine
-#         - debian
-#         arch:
-#         - amd64
-#         - arm64
-#         - x86
-#       fail-fast: true
 #     runs-on: ubuntu-20.04
 #     steps:
 #     - uses: actions/checkout@v2
@@ -55,44 +45,18 @@ jobs:
 #         GHCR_USER: ${{ github.actor }}
 #         GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
 #       run: |-
-#         dukkha buildah local build nix \
-#           -m rootfs=${{ matrix.rootfs }} \
-#           -m arch=${{ matrix.arch }}
-#
-#         dukkha buildah local push nix \
-#           -m rootfs=${{ matrix.rootfs }} \
-#           -m arch=${{ matrix.arch }}
+#         dukkha buildah local build nix
+#         dukkha buildah local push nix
 #
 #     - name: Inspect Images
 #       if: always()
 #       run: |-
 #         buildah images
 
-  nix-based-apps:
-    strategy:
-      matrix:
-        exclude:
-        - app:
-          # running yarn remove caused Segmentation fault on x86
-          - renovate-slim
-          - renovate
-          arch:
-          - x86
-        app:
-        - renovate-slim
-        # - renovate
-        rootfs:
-        - alpine
-        - debian
-        arch:
-        - amd64
-        - arm64
-        - x86
-      fail-fast: false
+  renovate:
     runs-on: ubuntu-20.04
-    needs:
-    - nix
-
+    # needs:
+    # - nix
     steps:
     - uses: actions/checkout@v2
     - name: Install dukkha
@@ -113,18 +77,14 @@ jobs:
         sudo apt update
         sudo apt install -y qemu-user-static
 
-    - name: Build and Push ${{ matrix.app }}
+    - name: Build and Push renovate
       env:
         GHCR_USER: ${{ github.actor }}
         GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
       run: |-
-        dukkha buildah local build ${{ matrix.app }} \
-          -m rootfs=${{ matrix.rootfs }} \
-          -m arch=${{ matrix.arch }}
-
-        dukkha buildah local push ${{ matrix.app }} \
-          -m rootfs=${{ matrix.rootfs }} \
-          -m arch=${{ matrix.arch }}
+        dukkha buildah local build renovate
+        dukkha buildah local push renovate-slim
+        dukkha buildah local push renovate
 
     - name: Inspect Images
       if: always()

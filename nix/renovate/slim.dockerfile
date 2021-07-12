@@ -1,6 +1,5 @@
 ARG MATRIX_ROOTFS
 ARG MATRIX_ARCH
-ARG VERSION
 
 FROM ghcr.io/arhat-dev/nix:2.3.14-${MATRIX_ROOTFS}-${MATRIX_ARCH}
 
@@ -14,6 +13,7 @@ RUN set -ex ;\
         stable.nodePackages.npm \
         stable.nodePackages.node-gyp \
         stable.python39 \
+        stable.python39Packages.setuptools \
         stable.gcc \
         stable.gnumake \
         stable.git
@@ -62,5 +62,7 @@ RUN set -ex ;\
     renovate-config-validator ;\
     node -e "new require('re2')('.*').exec('test')"
 
-ENTRYPOINT ["/usr/local/bin/entrypoint"]
-CMD ["renovate"]
+ENTRYPOINT ["/usr/local/bin/entrypoint", "renovate"]
+
+# user uid for kubernetes runAsNonRoot=false check
+USER 20000

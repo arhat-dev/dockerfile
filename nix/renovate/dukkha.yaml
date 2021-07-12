@@ -14,7 +14,7 @@ buildah:build:
     arch:
     - amd64
     - arm64
-    - x86
+    # - x86
   file@env: nix/renovate/slim.dockerfile
   image_names@template|file|env|template: &image_names |-
     templates/image-names/include-rootfs-info/
@@ -32,7 +32,7 @@ buildah:build:
     before:matrix:
     - task: buildah:build(renovate-slim)
 
-  file: app/renovate/full.dockerfile
+  file: nix/renovate/full.dockerfile
   image_names@template|file|env|template: *image_names
   extra_args@env|template: |-
     {{- \$slim_image_name := printf  "${IMAGE_REPO}/renovate-slim:${VERSION}-${MATRIX_ROOTFS}-${MATRIX_ARCH}" -}}
