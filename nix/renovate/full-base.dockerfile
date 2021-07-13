@@ -15,13 +15,13 @@ RUN set -ex ;\
         stable.nodePackages.npm \
         stable.python39 \
         stable.python39Packages.setuptools \
-        stable.git ;\
+        stable.git \
 # nodejs
         # stable.nodejs \ # installed
         # stable.yarn \   # installed
         # stable.nodePackages.npm \ # installed
-# not found unstable.nodePackages.pnpm \
-# not found unstable.nodePackages.lerna \
+        unstable.nodePackages.pnpm \
+        stable.nodePackages.lerna \
 # go
         stable.go \
 # docker
