@@ -20,8 +20,8 @@ RUN set -ex ;\
         # stable.nodejs \ # installed
         # stable.yarn \   # installed
         # stable.nodePackages.npm \ # installed
-        stable.nodePackages.pnpm \
-        stable.nodePackages.lerna \
+        unstable.nodePackages.pnpm \
+        unstable.nodePackages.lerna \
 # go
         stable.go \
 # docker
@@ -39,11 +39,11 @@ RUN set -ex ;\
         stable.cargo \
         stable.rustc \
 # python
-        # stable.python39 \ # installed in slim-base
+        # stable.python39 \ # installed
         stable.pipenv \
         stable.poetry \
-        stable.python39Packages.pip-tools \
 # missing stable.python39Packages.hashin
+        stable.python39Packages.pip-tools \
 # php
         stable.php \
         stable.php74Packages.composer \
