@@ -91,7 +91,7 @@ COPY --chown=sonarqube:sonarqube \
 COPY --chown=sonarqube:sonarqube \
     app/sonarqube/ce-sonar.sh ${SONARQUBE_HOME}/bin/sonar.sh
 
-RUN set -ex;
+RUN set -ex ;\
     chmod 0755 \
         ${SONARQUBE_HOME}/bin/run.sh \
         ${SONARQUBE_HOME}/bin/sonar.sh
