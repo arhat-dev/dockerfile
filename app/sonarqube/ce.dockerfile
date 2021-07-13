@@ -13,7 +13,8 @@ RUN set -ex ;\
     apt-get install -y nodejs ;\
     npm install -g yarn
 
-COPY build/sonarqube /build
+ARG APP
+COPY build/${APP} /build
 WORKDIR /build
 
 # patch ./server/sonar-web/build.gradle
@@ -30,9 +31,12 @@ RUN set -ex ;\
 ARG ES_ARCH
 ARG ES_VERSION
 ARG ES_CHECKSUM
+ARG ES_DOWNLOAD_URL_PATH
 RUN set -ex ;\
+    # tests disabled due to failure under container environment
     ./gradlew build -x test \
         --no-daemon --scan --console plain \
+        -PelasticsearchDownloadUrlPath=${ES_DOWNLOAD_URL_PATH} \
         -PelasticsearchDownloadUrlFile=elasticsearch-${ES_VERSION}-linux-${ES_ARCH}.tar.gz \
         -PelasticsearchDownloadSha512=${ES_CHECKSUM}
 
@@ -87,8 +91,15 @@ COPY --chown=sonarqube:sonarqube \
 COPY --chown=sonarqube:sonarqube \
     app/sonarqube/ce-sonar.sh ${SONARQUBE_HOME}/bin/sonar.sh
 
+RUN set -ex;
+    chmod 0755 \
+        ${SONARQUBE_HOME}/bin/run.sh \
+        ${SONARQUBE_HOME}/bin/sonar.sh
+
 WORKDIR ${SONARQUBE_HOME}
 EXPOSE 9000
+
+USER 1000
 
 ENTRYPOINT ["/opt/sonarqube/bin/run.sh"]
 CMD ["/opt/sonarqube/bin/sonar.sh"]
