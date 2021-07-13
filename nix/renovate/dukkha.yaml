@@ -50,7 +50,9 @@ buildah:build:
   file: nix/renovate/final.dockerfile
   image_names@template|file|env|template: *image_names
   extra_args@env: &final_image_args
-  - --pull-never
+  - --pull-always
+  - --build-arg
+  - VERSION=${VERSION}
   - --build-arg
   - BASE_IMAGE=${IMAGE_REPO}/${APP}-base:${VERSION}-${MATRIX_ROOTFS}-${MATRIX_ARCH}
 

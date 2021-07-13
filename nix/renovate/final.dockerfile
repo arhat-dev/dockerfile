@@ -43,8 +43,8 @@ RUN set -ex ;\
     /nixuser/bin/renovate-config-validator ;\
 # test whether renovate works
 # ref: https://github.com/renovatebot/docker-renovate-full/blob/main/Dockerfile#L113
-    renovate --version ;\
-    renovate-config-validator ;\
+    /nixuser/bin/renovate --version ;\
+    /nixuser/bin/renovate-config-validator ;\
     node -e "new require('re2')('.*').exec('test')" ;\
 # remove packages only required by renovate build
     nix-env --uninstall \
@@ -57,7 +57,7 @@ RUN set -ex ;\
 # TODO: compare optimise vs non-optimise in container
 #       currently disabled due to `Operation not permitted`
     # nix optimise-store ;\
-    nix-store --gc ;\
+    # nix-store --gc ;\
     nix-store --verify --check-contents
 
 ENV PATH "/nixuser/bin:${PATH}"

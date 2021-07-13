@@ -58,5 +58,5 @@ RUN set -ex ;\
 # TODO: compare optimise vs non-optimise in container
 #       currently disabled due to `Operation not permitted`
     # nix optimise-store ;\
-    nix-store --gc ;\
+    # nix-store --gc ;\
     nix-store --verify --check-contents
