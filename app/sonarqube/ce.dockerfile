@@ -10,7 +10,7 @@ RUN set -ex ;\
     -o /nodesource_setup.sh ;\
     bash /nodesource_setup.sh ;\
     apt-get update ;\
-    apt-get install -y nodejs ;\
+    apt-get install -y nodejs unzip ;\
     npm install -g yarn
 
 ARG APP
@@ -40,6 +40,16 @@ RUN set -ex ;\
         -PelasticsearchDownloadUrlFile=elasticsearch-${ES_VERSION}-linux-${ES_ARCH}.tar.gz \
         -PelasticsearchDownloadSha512=${ES_CHECKSUM}
 
+RUN set -ex;\
+    mkdir -p /expanded ;\
+    mv /build/sonar-application/build/distributions/sonar-application*.zip \
+        /expanded/sonarqube.zip ;\
+    cd /expanded ;\
+    unzip /expanded/sonarqube.zip ;\
+    rm -f /expanded/sonarqube.zip ;\
+    # should only have one directory
+    mv /expanded/sonarqube-* /expanded/sonarqube
+
 FROM docker.io/${DOCKERHUB_ARCH}/adoptopenjdk:${MATRIX_JRE}
 
 # reference:
@@ -49,11 +59,11 @@ ENV LANG='en_US.UTF-8' \
     LC_ALL='en_US.UTF-8'
 
 # cannot set version, will cause lib/sonar-application-9.0-${VERSION}.jar
-# not found at runtime, use value SNAPSHOT as a wrokaround
+# not found at runtime, use value 9.0-SNAPSHOT as a wrokaround
 # ARG VERSION
 ENV SONARQUBE_HOME=/opt/sonarqube \
     # SONAR_VERSION="${VERSION}" \
-    SONAR_VERSION="SNAPSHOT" \
+    SONAR_VERSION="9.0-SNAPSHOT" \
     SQ_DATA_DIR="/opt/sonarqube/data" \
     SQ_EXTENSIONS_DIR="/opt/sonarqube/extensions" \
     SQ_LOGS_DIR="/opt/sonarqube/logs" \
@@ -65,18 +75,17 @@ RUN set -ex ;\
         --expression="s?securerandom.source=file:/dev/random?securerandom.source=file:/dev/urandom?g" \
         "${JAVA_HOME}/conf/security/java.security";
 
-COPY --from=builder \
-    /build/sonar-application/build/distributions/sonar-application*.zip \
-    /opt/
+COPY --from=builder /expanded/sonarqube /opt/sonarqube
 
 WORKDIR /opt
+
+COPY --chown=sonarqube:sonarqube \
+    app/sonarqube/ce-run.sh ${SONARQUBE_HOME}/bin/run.sh
+
+COPY --chown=sonarqube:sonarqube \
+    app/sonarqube/ce-sonar.sh ${SONARQUBE_HOME}/bin/sonar.sh
+
 RUN set -eux ;\
-    apt-get update ;\
-    apt-get install unzip ;\
-    unzip /opt/sonar-application*.zip ;\
-    apt-get autoremove -y unzip ;\
-    rm -rf /var/lib/apt/lists/* /opt/sonar-application* ;\
-    mv sonarqube-* "${SONARQUBE_HOME}" ;\
     addgroup --system --gid 1000 sonarqube ;\
     adduser --system --disabled-login --uid 1000 --gid 1000 sonarqube ;\
     adduser sonarqube sonarqube ;\
@@ -86,15 +95,7 @@ RUN set -eux ;\
         "${SQ_DATA_DIR}" \
         "${SQ_EXTENSIONS_DIR}" \
         "${SQ_LOGS_DIR}" \
-        "${SQ_TEMP_DIR}"
-
-COPY --chown=sonarqube:sonarqube \
-    app/sonarqube/ce-run.sh ${SONARQUBE_HOME}/bin/run.sh
-
-COPY --chown=sonarqube:sonarqube \
-    app/sonarqube/ce-sonar.sh ${SONARQUBE_HOME}/bin/sonar.sh
-
-RUN set -ex ;\
+        "${SQ_TEMP_DIR}" ;\
     chmod 0755 \
         ${SONARQUBE_HOME}/bin/run.sh \
         ${SONARQUBE_HOME}/bin/sonar.sh
