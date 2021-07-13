@@ -1,0 +1,51 @@
+buildah:build:
+- name: elasticsearch-7
+  env: &env
+  - APP=elasticsearch-7
+  # source: https://github.com/elastic/elasticsearch.git
+  - VERSION=v7.13.3
+  hooks:
+    before:
+    - shell@env: |-
+        [ -d build/${APP} ] && exit 0
+
+        git clone --branch ${VERSION} \
+          https://github.com/elastic/elasticsearch.git \
+          build/${APP}
+
+  matrix@file: &matrix .dukkha/specs/matrix-java16-all.yml
+  file: app/elastic/elasticsearch.dockerfile
+  image_names@file|env: &image_names |-
+    templates/image-names/no-rootfs-info/env[APP:VERSION].yml
+  extra_args@env|template: |-
+    - --pull-always
+    - --ulimit
+    - nofile=1048576
+    - --os={{ .Env.MATRIX_KERNEL | getOciOS }}
+    - --arch={{ .Env.MATRIX_ARCH | getOciArch }}
+    - --variant={{ .Env.MATRIX_ARCH | getOciArchVariant }}
+    - --build-arg
+    - APP=${APP}
+    - --build-arg
+    - VERSION=${VERSION}
+    - --build-arg
+    - DOCKERHUB_ARCH={{ .Env.MATRIX_ARCH | getDockerHubArch }}
+    - --build-arg
+    - MATRIX_JRE=${MATRIX_JRE}
+    - --build-arg
+    - MATRIX_JDK=${MATRIX_JDK}
+    - --build-arg
+    {{ if eq .Env.MATRIX_ARCH "arm64" }}
+    - ES_ARCH=aarch64
+    {{ else if eq .Env.MATRIX_ARCH "amd64" }}
+    - ES_ARCH=x86_64
+    {{ end }}
+
+buildah:push:
+- name: elasticsearch
+  env: *env
+  hooks:
+    before:
+    - task: buildah:login(ghcr)
+  matrix@file: *matrix
+  image_names@file|env: *image_names
