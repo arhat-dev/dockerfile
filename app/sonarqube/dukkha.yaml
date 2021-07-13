@@ -1,0 +1,54 @@
+buildah:build:
+- name: sonarqube-ce
+  env: &env
+  - APP=sonarqube-ce
+  # source: https://github.com/SonarSource/sonarqube.git
+  - VERSION=9.0.0.45539
+  - ES_VERSION=7.13.3
+  - ES_ARM64_CHECKSUM=871c170a7584b4c52f08ad1d8c81c1119ec953185b59f6c06733a49135651c0c314e4e43245365247763ab6d03ecdd259e2d27b01ee99dac61060896b98561a6
+  - ES_AMD64_CHECKSUM=1e99fef3d61172704b657cd47556c0606a364d04e870a1544d4e3b3e395c97ba1f66d9149cde1610e68c86aa26b172e01386e3a04baf677aeba40fcc3a854031
+  hooks:
+    before:
+    - shell@env: |-
+        [ -d build/sonarqube ] && exit 0
+
+        git clone --branch ${VERSION} \
+          https://github.com/SonarSource/sonarqube.git \
+          build/sonarqube
+
+  matrix@file: &matrix .dukkha/specs/matrix-java11.yml
+  file: app/sonarqube/ce.dockerfile
+  image_names@file|env: &image_names |-
+    templates/image-names/no-rootfs-info/env[APP:VERSION].yml
+  extra_args@env|template: |-
+    - --pull-always
+    - --build-arg
+    - VERSION=${VERSION}
+    - --build-arg
+    - DOCKERHUB_ARCH={{ .Env.MATRIX_ARCH | getDockerHubArch }}
+    - --build-arg
+    - MATRIX_JRE=${MATRIX_JRE}
+    - --build-arg
+    - MATRIX_JDK=${MATRIX_JDK}
+    - --build-arg
+    - ES_VERSION=${ES_VERSION}
+    {{ if eq .Env.MATRIX_ARCH "arm64" }}
+    - --build-arg
+    - ES_ARCH=aarch64
+    - --build-arg
+    - ES_CHECKSUM=${ES_ARM64_CHECKSUM}
+    {{ else if eq .Env.MATRIX_ARCH "amd64" }}
+    - --build-arg
+    - ES_ARCH=x86_64
+    - --build-arg
+    - ES_CHECKSUM=${ES_AMD64_CHECKSUM}
+    {{ end }}
+
+buildah:push:
+- name: sonarqube-ce
+  env: *env
+  hooks:
+    before:
+    - task: buildah:login(ghcr)
+  matrix@file: *matrix
+  image_names@file|env: *image_names
