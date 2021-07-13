@@ -5,11 +5,11 @@
     {
       "fileMatch": [".*\\.yaml$"],
       "matchStrings": [
-        "# source: (?<gitRepo>.*?)\\s+- .+=(?<currentValue>.*?)\\s"
+        "# source\\((?<dataSource>.*?)\\): (?<depName>.*?)\\s+- .+=(?<currentValue>.*?)\\s"
       ],
-      "depNameTemplate": "{{gitRepo}}",
-      "lookupNameTemplate": "{{{gitRepo}}}",
-      "datasourceTemplate": "git-tags",
+      "depNameTemplate": "{{depName}}",
+      "lookupNameTemplate": "{{{depName}}}",
+      "datasourceTemplate": "{{dataSource}}",
       "versioningTemplate": "loose"
     }
   ]

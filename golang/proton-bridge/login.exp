@@ -1,0 +1,90 @@
+#!/usr/bin/expect -f
+
+set timeout 15;
+
+spawn {*}$argv ;
+
+set username "$env(PROTONMAIL_USERNAME)"
+set password "$env(PROTONMAIL_PASSWORD)"
+
+stty -echo
+
+# wait for inital prompt
+expect {
+  ">>> " {
+    # protonmail-bridge started without error, do nothing
+  }
+
+  timeout {
+    exit 2
+  }
+}
+
+send "login\r"
+expect {
+  "Username: " {
+    # login start, enter username
+  }
+
+  timeout {
+    exit 2
+  }
+}
+
+send "$username\r"
+expect {
+  "Password: " {
+    # username entered, enter password
+  }
+
+  timeout {
+    exit 2
+  }
+}
+
+# TODO: support MFA login (wait for user input)
+
+stty -echo
+sleep 1
+send "$password\r"
+stty echo
+expect {
+  "was added successfully." {
+    # login ok
+  }
+
+  "user is already connected" {
+    # already logged in before
+  }
+
+  "Server error" {
+    # login failed
+    exit 1
+  }
+
+  timeout {
+    exit 2
+  }
+}
+
+send "info\r"
+expect {
+  "Security: " {
+    # done, wait for output
+  }
+
+  timeout {
+    exit 2
+  }
+}
+
+expect {
+  ">>> " {
+    puts "Done."
+    exit 0
+  }
+
+  timeout {
+    exit 2
+  }
+}

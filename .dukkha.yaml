@@ -1,20 +1,33 @@
 include:
-- app/dukkha.yaml
+- app/*/dukkha.yaml
 - nix/dukkha.yaml
+- java/*/dukkha.yaml
+- golang/*/dukkha.yaml
+- python/*/dukkha.yaml
+- kind/dukkha.yaml
 
 bootstrap:
   env:
+  - IMAGE_REPO=ghcr.io/arhat-dev
+  # source(docker): docker.io/library/debian
   - DEBIAN_VERSION=buster
+  # source(docker): docker.io/library/alpine
   - ALPINE_VERSION=3.13
-  # source: https://github.com/golang/go
+  # source(docker): docker.io/library/golang
   - GO_VERSION=1.16
-  # source: https://github.com/rust-lang/rust
+  # source(docker): docker.io/library/rust
   - RUST_VERSION=1.53
-  # source: https://github.com/multiarch/qemu-user-static
+  # source(github-releases): https://github.com/multiarch/qemu-user-static
   - QEMU_VERSION=5.2.0-2
   # TODO: set source for ruby so renovate can work
+  # source(docker): docker.io/library/ruby
   - RUBY_VERSION=2.7
-  - IMAGE_REPO=ghcr.io/arhat-dev
+  # source(github-releases): https://github.com/krallin/tini.git
+  - TINI_VERSION=v0.19.0
+  # source(github-tags): https://github.com/NixOS/nix.git
+  - NIX_VERSION=2.3.14
+  # source(github-releases): https://github.com/elastic/elasticsearch.git
+  - ES7_VERSION=7.13.3
 
 tools:
   buildah:

@@ -5,8 +5,7 @@ buildah:build:
 - name: nix
   env: &env
   - APP=nix
-  # source: https://github.com/NixOS/nix.git
-  - VERSION=2.3.14
+  - VERSION=${NIX_VERSION}
   - DEFAULT_ROOTFS=alpine
   matrix: &matrix
     kernel:

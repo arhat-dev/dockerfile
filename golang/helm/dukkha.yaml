@@ -1,0 +1,58 @@
+# this build instruction is used in container
+golang:build:
+- name: helm
+  env: &env
+  - APP=helm
+  # source(github-releases): https://github.com/helm/helm.git
+  - VERSION=v3.6.2
+  matrix@file: &matrix golang/matrix-nocgo-all.yml
+  chdir@env: /app/build/${APP}
+  path: ./cmd/helm
+  outputs@env:
+  - /app/build/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}
+  cgo:
+    enabled: false
+  ldflags@env:
+  - -s -w
+  - -X "helm.sh/helm/v3/internal/version.version=${VERSION}"
+  # - -X "helm.sh/helm/v3/internal/version.metadata="
+  - -X "helm.sh/helm/v3/internal/version.gitCommit=$(git -C /app/build/helm rev-parse HEAD)"
+  - -X "helm.sh/helm/v3/internal/version.gitTreeState=$(test -n "`git -C /app/build/helm status --porcelain`" && printf "dirty" || printf "clean")"
+  # Update according to client-go dependency
+  #  https://github.com/helm/helm/blob/main/go.mod#L44
+  - -X "helm.sh/helm/v3/pkg/lint/rules.k8sVersionMajor=1"
+  - -X "helm.sh/helm/v3/pkg/lint/rules.k8sVersionMinor=21"
+  - -X "helm.sh/helm/v3/pkg/chartutil.k8sVersionMajor=1"
+  - -X "helm.sh/helm/v3/pkg/chartutil.k8sVersionMinor=21"
+  tags:
+  - netgo
+  extra_args:
+  - -trimpath
+  - -mod=readonly
+
+buildah:build:
+- name: helm
+  env: *env
+  matrix@file: *matrix
+  hooks:
+    before:
+    - shell@env: |-
+        [ -d build/${APP} ] && exit 0
+
+        git clone --branch ${VERSION} \
+          https://github.com/helm/helm.git \
+          build/${APP}
+
+  file: golang/nocgo.dockerfile
+  image_names@file|env: &image_names |-
+    templates/image-names/no-rootfs-info/env[APP:VERSION].yml
+  extra_args@file|env|template: templates/image-extra-args/env[APP].yml
+
+buildah:push:
+- name: helm
+  env: *env
+  hooks:
+    before:
+    - task: buildah:login(ghcr)
+  matrix@file: *matrix
+  image_names@file|env: *image_names

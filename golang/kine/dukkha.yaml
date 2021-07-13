@@ -1,0 +1,51 @@
+golang:build:
+- name: kine
+  env: &env
+  - APP=kine
+  # source(github-releases): https://github.com/k3s-io/kine.git
+  - VERSION=v0.6.1
+  matrix@file: &matrix golang/matrix-cgo-all.yml
+  chdir@env: /app/build/${APP}
+  path: ./
+  hooks:
+    after:matrix:success@env:
+    - shell: |-
+        file /app/build/${APP}.${MATRIX_KERNEL}.${MATRIX_ROOTFS}.${MATRIX_ARCH}
+  cgo:
+    # sqlite driver requires cgo
+    enabled: true
+  outputs@env:
+  - /app/build/${APP}.${MATRIX_KERNEL}.${MATRIX_ROOTFS}.${MATRIX_ARCH}
+  ldflags:
+  - -s -w
+  extra_args:
+  - -v
+  - -trimpath
+  - -mod=readonly
+
+buildah:build:
+- name: kine
+  env: *env
+  matrix@file: *matrix
+  hooks:
+    before:
+    - shell: |-
+        [ -d build/${APP} ] && exit 0
+
+        git clone -b ${VERSION} \
+          https://github.com/k3s-io/kine.git \
+          build/${APP}
+
+  file: golang/cgo.dockerfile
+  image_names@file|env: &image_names |-
+    templates/image-names/no-rootfs-info/env[APP:VERSION].yml
+  extra_args@file|env|template: templates/image-extra-args/env[APP].yml
+
+buildah:push:
+- name: kine
+  env: *env
+  hooks:
+    before:
+    - task: buildah:login(ghcr)
+  matrix@file: *matrix
+  image_names@file|env: *image_names

@@ -1,0 +1,26 @@
+include:
+# alpine
+- kernel:
+  - linux
+  rootfs:
+  - alpine
+  python:
+  - python3.8
+  arch:
+  - amd64
+  - x86
+  - arm64
+  - armv7
+  - armv6
+  - s390x
+# debian
+- kernel:
+  - linux
+  rootfs:
+  - debian
+  python:
+  - python3.8
+  arch:
+  - mips64le
+  - armv5
+  - ppc64le
