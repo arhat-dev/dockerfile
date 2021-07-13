@@ -21,7 +21,7 @@ RUN set -ex ;\
         # stable.yarn \   # installed
         # stable.nodePackages.npm \ # installed
 # not found unstable.nodePackages.pnpm \
-        unstable.nodePackages.lerna \
+# not found unstable.nodePackages.lerna \
 # go
         stable.go \
 # docker
