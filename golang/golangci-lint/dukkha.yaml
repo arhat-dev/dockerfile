@@ -3,7 +3,7 @@ golang:build:
 - name: golangci-lint
   env: &env
   - APP=golangci-lint
-  # source: https://github.com/golangci/golangci-lint.git
+  # source(github-releases): https://github.com/golangci/golangci-lint.git
   - VERSION=v1.41.1
   - DEFAULT_ROOTFS=alpine
   matrix@file: &matrix golang/matrix-cgo-all.yml

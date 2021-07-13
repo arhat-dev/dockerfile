@@ -2,7 +2,7 @@ buildah:build:
 - name: brew
   env: &env
   - APP=brew
-  # source: https://github.com/Homebrew/brew.git
+  # source(github-releases): https://github.com/Homebrew/brew.git
   - VERSION=3.2.1
   matrix: &matrix
     kernel:

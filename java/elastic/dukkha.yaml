@@ -2,7 +2,7 @@ buildah:build:
 - name: elasticsearch-7
   env: &env
   - APP=elasticsearch-7
-  # source: https://github.com/elastic/elasticsearch.git
+  # source(github-releases): https://github.com/elastic/elasticsearch.git
   - VERSION=${ES7_VERSION}
   hooks:
     before:
