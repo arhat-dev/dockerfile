@@ -48,9 +48,12 @@ ENV LANG='en_US.UTF-8' \
     LANGUAGE='en_US:en' \
     LC_ALL='en_US.UTF-8'
 
-ARG VERSION
+# cannot set version, will cause lib/sonar-application-9.0-${VERSION}.jar
+# not found at runtime, use value SNAPSHOT as a wrokaround
+# ARG VERSION
 ENV SONARQUBE_HOME=/opt/sonarqube \
-    SONAR_VERSION="${VERSION}" \
+    # SONAR_VERSION="${VERSION}" \
+    SONAR_VERSION="SNAPSHOT" \
     SQ_DATA_DIR="/opt/sonarqube/data" \
     SQ_EXTENSIONS_DIR="/opt/sonarqube/extensions" \
     SQ_LOGS_DIR="/opt/sonarqube/logs" \
