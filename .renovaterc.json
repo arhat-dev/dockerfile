@@ -3,21 +3,7 @@
   "dependencyDashboardHeader": "This issue tracks dependency version upgrades",
   "regexManagers": [
     {
-      "fileMatch": ["^\\.dukkha/apps/.+\\.yaml$"],
-      "matchStrings": [
-        "--branch (?<currentValue>.*?)\\s+\\\\?\\s+(?<gitRepo>.*?)\\s"
-      ],
-      "depNameTemplate": "{{gitRepo}}",
-      "lookupNameTemplate": "{{{gitRepo}}}",
-      "datasourceTemplate": "git-tags",
-      "versioningTemplate": "git"
-    },
-    {
-      "fileMatch": [
-        "^\\.dukkha\\.yaml$",
-        "^\\.dukkha/apps/.+\\.yaml$",
-        "^\\.github/workflows/kind\\.yaml$"
-      ],
+      "fileMatch": [".*\\.yaml$"],
       "matchStrings": [
         "# source: (?<gitRepo>.*?)\\s+- .+=(?<currentValue>.*?)\\s"
       ],

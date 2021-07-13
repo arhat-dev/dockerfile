@@ -75,16 +75,10 @@ RUN set -ex ;\
         --expression="s?securerandom.source=file:/dev/random?securerandom.source=file:/dev/urandom?g" \
         "${JAVA_HOME}/conf/security/java.security";
 
-COPY --from=builder /expanded/sonarqube /opt/sonarqube
+COPY --from=builder \
+    /expanded/sonarqube /opt/sonarqube
 
 WORKDIR /opt
-
-COPY --chown=sonarqube:sonarqube \
-    app/sonarqube/ce-run.sh ${SONARQUBE_HOME}/bin/run.sh
-
-COPY --chown=sonarqube:sonarqube \
-    app/sonarqube/ce-sonar.sh ${SONARQUBE_HOME}/bin/sonar.sh
-
 RUN set -eux ;\
     addgroup --system --gid 1000 sonarqube ;\
     adduser --system --disabled-login --uid 1000 --gid 1000 sonarqube ;\
@@ -95,7 +89,15 @@ RUN set -eux ;\
         "${SQ_DATA_DIR}" \
         "${SQ_EXTENSIONS_DIR}" \
         "${SQ_LOGS_DIR}" \
-        "${SQ_TEMP_DIR}" ;\
+        "${SQ_TEMP_DIR}"
+
+COPY --chown=sonarqube:sonarqube \
+    app/sonarqube/ce-run.sh ${SONARQUBE_HOME}/bin/run.sh
+
+COPY --chown=sonarqube:sonarqube \
+    app/sonarqube/ce-sonar.sh ${SONARQUBE_HOME}/bin/sonar.sh
+
+RUN set -ex ;\
     chmod 0755 \
         ${SONARQUBE_HOME}/bin/run.sh \
         ${SONARQUBE_HOME}/bin/sonar.sh
