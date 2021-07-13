@@ -78,8 +78,13 @@ install_nix() {
   ln -s /nix/var/nix/profiles/default/etc/profile.d/nix.sh /etc/profile.d/
 
   export PATH="/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:${PATH}"
-  nix-store --delete
+
+  # remove default nixpkgs, will be added later by nixuser
+  nix-channel --remove nixpkgs
+  nix-channel --update
+  nix-store --gc
   nix optimise-store
+  nix-store --gc
   nix-store --verify --check-contents
 
   replace_root_user nixuser nixgroup /nixuser

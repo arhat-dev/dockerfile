@@ -1,7 +1,9 @@
 buildah:build:
-- name: renovate-slim
-  env: &slim_env
-  - APP=renovate-slim
+- name: renovate-slim-base
+  env: &slim_base_env
+  - APP=renovate-slim-base
+  # source:
+  - &nix_version NIX_VERSION=2.3.14
   # source: https://github.com/renovatebot/renovate.git
   - &version VERSION=25.53.3
   - &default_rootfs DEFAULT_ROOTFS=alpine
@@ -15,42 +17,75 @@ buildah:build:
     - amd64
     - arm64
     # - x86
-  file@env: nix/renovate/slim.dockerfile
+  file@env: nix/renovate/slim-base.dockerfile
   image_names@template|file|env|template: &image_names |-
     templates/image-names/include-rootfs-info/
     {{- /* multi-line join */ -}}
     env[APP:VERSION:DEFAULT_ROOTFS].yml
-  extra_args@file|env|template: templates/image-extra-args/env[VERSION].yml
+  extra_args@env|template:
+  - --pull-always
+  - --build-arg
+  - NIX_IMAGE=${IMAGE_REPO}/nix:${NIX_VERSION}-${MATRIX_ROOTFS}-${MATRIX_ARCH}
 
-- name: renovate
-  env: &full_env
-  - APP=renovate
+- name: renovate-full-base
+  env: &full_base_env
+  - APP=renovate-full-base
+  - *nix_version
   - *version
   - *default_rootfs
   matrix: *matrix
-  hooks:
-    before:matrix:
-    - task: buildah:build(renovate-slim)
-
-  file: nix/renovate/full.dockerfile
+  file: nix/renovate/full-base.dockerfile
   image_names@template|file|env|template: *image_names
-  extra_args@env|template: |-
-    {{- \$slim_image_name := printf  "${IMAGE_REPO}/renovate-slim:${VERSION}-${MATRIX_ROOTFS}-${MATRIX_ARCH}" -}}
-    {{- \$slim_image_id := os_ReadFile (getBuildahImageIDFile \$slim_image_name) -}}
-    - --pull-never
-    - --build-arg
-    - SLIM_IMAGE={{ \$slim_image_id }}
+  extra_args@env:
+  - --pull-always
+  - --build-arg
+  - NIX_IMAGE=${IMAGE_REPO}/nix:${NIX_VERSION}-${MATRIX_ROOTFS}-${MATRIX_ARCH}
+
+- name: renovate-slim
+  env: &slim_env
+  - APP=renovate-slim
+  - *version
+  - *default_rootfs
+  matrix: *matrix
+  file: nix/renovate/final.dockerfile
+  image_names@template|file|env|template: *image_names
+  extra_args@env: &final_image_args
+  - --pull-never
+  - --build-arg
+  - BASE_IMAGE=${IMAGE_REPO}/${APP}-base:${VERSION}-${MATRIX_ROOTFS}-${MATRIX_ARCH}
+
+- name: renovate-full
+  env: &full_env
+  - APP=renovate-full
+  - *version
+  - *default_rootfs
+  matrix: *matrix
+  file: nix/renovate/final.dockerfile
+  image_names@template|file|env|template: *image_names
+  extra_args@env|template: *final_image_args
 
 buildah:push:
-- name: renovate-slim
-  env: *slim_env
+- name: renovate-slim-base
+  env: *slim_base_env
   matrix: *matrix
   hooks: &push_hooks
     before:
     - task: buildah:login(ghcr)
   image_names@template|file|env|template: *image_names
 
-- name: renovate
+- name: renovate-full-base
+  env: *full_base_env
+  matrix: *matrix
+  hooks: *push_hooks
+  image_names@template|file|env|template: *image_names
+
+- name: renovate-slim
+  env: *slim_env
+  matrix: *matrix
+  hooks: *push_hooks
+  image_names@template|file|env|template: *image_names
+
+- name: renovate-full
   env: *full_env
   matrix: *matrix
   hooks: *push_hooks
