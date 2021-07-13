@@ -20,7 +20,7 @@ RUN set -ex ;\
         # stable.nodejs \ # installed
         # stable.yarn \   # installed
         # stable.nodePackages.npm \ # installed
-        unstable.nodePackages.pnpm \
+# not found unstable.nodePackages.pnpm \
         unstable.nodePackages.lerna \
 # go
         stable.go \
