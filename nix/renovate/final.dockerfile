@@ -54,8 +54,9 @@ RUN set -ex ;\
 # cleanup
     rm /nix/var/nix/gcroots/auto/* || true ;\
     nix-store --gc ;\
-# TODO: compare optimse vs non-optimise in container
-    nix optimise-store ;\
+# TODO: compare optimise vs non-optimise in container
+#       currently disabled due to `Operation not permitted`
+    # nix optimise-store ;\
     nix-store --gc ;\
     nix-store --verify --check-contents
 
