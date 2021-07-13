@@ -10,7 +10,7 @@
       "depNameTemplate": "{{gitRepo}}",
       "lookupNameTemplate": "{{{gitRepo}}}",
       "datasourceTemplate": "git-tags",
-      "versioningTemplate": "git"
+      "versioningTemplate": "loose"
     }
   ]
 }
