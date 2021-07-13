@@ -3,7 +3,7 @@ include:
 
 buildah:build:
 - name: nix
-  env: &env
+  env@env: &env
   - APP=nix
   - VERSION=${NIX_VERSION}
   - DEFAULT_ROOTFS=alpine

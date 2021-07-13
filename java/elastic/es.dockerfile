@@ -6,7 +6,7 @@ FROM docker.io/${DOCKERHUB_ARCH}/adoptopenjdk:${MATRIX_JDK} AS builder
 
 ARG TINI_VERSION
 ARG MATRIX_ARCH
-COPY java/install-tini.sh /install-tini.sh
+COPY scripts/install-tini.sh /install-tini.sh
 RUN sh /install-tini.sh && rm -f /install-tini.sh
 
 ARG APP
