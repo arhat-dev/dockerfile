@@ -2,7 +2,7 @@ buildah:build:
 - name: spilo-base
   env: &env
   - APP=spilo
-  # source(github-releases): https://github.com/zalando/spilo
+  # source(git-tags): https://github.com/zalando/spilo
   - VERSION=2.0-p7
   matrix: &matrix
     kernel:
@@ -25,7 +25,7 @@ buildah:build:
 
   extra_args@env:
   - --build-arg
-  # source(github-releases): https://github.com/timescale/timescaledb
+  # source(git-tags): https://github.com/timescale/timescaledb
   - TIMESCALEDB=2.3.0
   - --build-arg
   - BASE_IMAGE=registry.opensource.zalan.do/library/ubuntu-18.04

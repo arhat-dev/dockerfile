@@ -2,7 +2,7 @@ buildah:build:
 - name: yamllint
   env: &env
   - APP=yamllint
-  # source(github-tags): https://github.com/adrienverge/yamllint
+  # source(git-tags): https://github.com/adrienverge/yamllint
   - VERSION=1.26.1
   matrix@file: &matrix python/matrix-3.8-all.yml
   hooks:

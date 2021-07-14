@@ -3,7 +3,7 @@ golang:build:
 - name: helm
   env: &env
   - APP=helm
-  # source(github-releases): https://github.com/helm/helm
+  # source(git-tags): https://github.com/helm/helm
   - VERSION=v3.6.2
   matrix@file: &matrix golang/matrix-nocgo-all.yml
   chdir@env: /app/build/${APP}

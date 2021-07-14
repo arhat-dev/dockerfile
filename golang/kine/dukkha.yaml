@@ -2,7 +2,7 @@ golang:build:
 - name: kine
   env: &env
   - APP=kine
-  # source(github-releases): https://github.com/k3s-io/kine
+  # source(git-tags): https://github.com/k3s-io/kine
   - VERSION=v0.6.1
   matrix@file: &matrix golang/matrix-cgo-all.yml
   chdir@env: /app/build/${APP}
