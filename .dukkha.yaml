@@ -22,11 +22,11 @@ bootstrap:
   # TODO: set source for ruby so renovate can work
   # source(docker): docker.io/library/ruby
   - RUBY_VERSION=2.7
-  # source(github-releases): https://github.com/krallin/tini.git
+  # source(github-releases): https://github.com/krallin/tini
   - TINI_VERSION=v0.19.0
-  # source(github-tags): https://github.com/NixOS/nix.git
+  # source(github-tags): https://github.com/NixOS/nix
   - NIX_VERSION=2.3.14
-  # source(github-releases): https://github.com/elastic/elasticsearch.git
+  # source(github-releases): https://github.com/elastic/elasticsearch
   - ES7_VERSION=7.13.3
 
 tools:

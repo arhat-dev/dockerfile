@@ -40,7 +40,7 @@ jobs:
       env:
         # NOTE: once updated version of kind, need to update all e2e tests
         #       require kind with the same version
-        # source(github-releases): https://github.com/kubernetes-sigs/kind.git
+        # source(github-releases): https://github.com/kubernetes-sigs/kind
         KIND_VERSION: v0.11.1
       run: |
         mkdir -p "${HOME}/bin"

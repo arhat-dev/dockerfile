@@ -2,7 +2,7 @@ buildah:build:
 - name: sonarqube
   env@env: &env
   - APP=sonarqube
-  # source(github-releases): https://github.com/SonarSource/sonarqube.git
+  # source(github-releases): https://github.com/SonarSource/sonarqube
   - VERSION=9.0.0.45539
   # use global es version
   - ES_VERSION=${ES7_VERSION}

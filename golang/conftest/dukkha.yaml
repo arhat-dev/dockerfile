@@ -3,7 +3,7 @@ golang:build:
 - name: conftest
   env: &env
   - APP=conftest
-  # source(github-releases): https://github.com/open-policy-agent/conftest.git
+  # source(github-releases): https://github.com/open-policy-agent/conftest
   - VERSION=v0.25.0
   # conftest has no 32bit support
   #

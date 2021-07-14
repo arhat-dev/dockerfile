@@ -3,7 +3,7 @@ golang:build:
 - name: editorconfig-checker
   env: &env
   - APP=editorconfig-checker
-  # source(github-releases): https://github.com/editorconfig-checker/editorconfig-checker.git
+  # source(github-releases): https://github.com/editorconfig-checker/editorconfig-checker
   - VERSION=2.3.5
   matrix@file: &matrix golang/matrix-nocgo-all.yml
   chdir@env: /app/build/${APP}

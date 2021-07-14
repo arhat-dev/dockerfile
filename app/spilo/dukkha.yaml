@@ -2,7 +2,7 @@ buildah:build:
 - name: spilo-base
   env: &env
   - APP=spilo
-  # source(github-releases): https://github.com/zalando/spilo.git
+  # source(github-releases): https://github.com/zalando/spilo
   - VERSION=2.0-p7
   matrix: &matrix
     kernel:
