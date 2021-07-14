@@ -9,7 +9,7 @@ golang:build:
   # proton-bridge doesn't have 32bit support
   #
   #   /go/pkg/mod/github.com/!proton!mail/go-rfc5322@v0.8.0/parser/rfc5322_parser.go:2756: constant 4230534781 overflows int
-  matrix@file: &matrix golang/matrix-64bit.yml
+  matrix@file: &matrix golang/matrix-nocgo-64bit-all.yml
   hooks:
     before:
     # patch to make it cgo free
