@@ -4,6 +4,7 @@ buildah:build:
   - APP=brew
   # source(git-tags): https://github.com/Homebrew/brew
   - VERSION=3.2.1
+  - DEFAULT_ROOTFS=alpine
   matrix: &matrix
     kernel:
     - linux
