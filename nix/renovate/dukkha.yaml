@@ -2,7 +2,7 @@ buildah:build:
 - name: renovate-slim-base
   env: &slim_base_env
   - APP=renovate-slim-base
-  # source(github-releases): https://github.com/renovatebot/renovate.git
+  # source(github-releases): https://github.com/renovatebot/renovate
   - &version VERSION=25.53.3
   - &default_rootfs DEFAULT_ROOTFS=alpine
   matrix: &matrix
@@ -20,7 +20,7 @@ buildah:build:
     templates/image-names/include-rootfs-info/
     {{- /* multi-line join */ -}}
     env[APP:VERSION:DEFAULT_ROOTFS].yml
-  extra_args@env|template:
+  extra_args@env:
   - --pull-always
   - --build-arg
   - NIX_IMAGE=${IMAGE_REPO}/nix:${NIX_VERSION}-${MATRIX_ROOTFS}-${MATRIX_ARCH}

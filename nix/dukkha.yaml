@@ -26,7 +26,7 @@ buildah:build:
 
 buildah:push:
 - name: nix
-  env: *env
+  env@env: *env
   matrix: *matrix
   hooks:
     before:
