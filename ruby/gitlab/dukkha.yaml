@@ -1,0 +1,44 @@
+buildah:build:
+- name: gitlab-ce
+  env: &ce_env
+  - APP=gitlab-ce
+  # source(git-tags): https://gitlab.com/gitlab-org/gitlab-foss
+  - VERSION=v14.0.5
+  matrix@file: &matrix ruby/matrix-include-rootfs-info-all.yml
+  hooks:
+    before:
+    - shell@env: |-
+        [ -d build/${APP} ] && exit 0
+
+        git clone -b ${VERSION} \
+          https://gitlab.com/gitlab-org/gitlab-foss.git \
+          build/${APP}
+
+- name: gitlab-ee
+  env: &ee_env
+  - APP=gitlab-ee
+  # source(git-tags): https://gitlab.com/gitlab-org/gitlab
+  - VERSION=v14.0.5-ee
+  matrix@file: &matrix ruby/matrix-include-rootfs-info-all.yml
+  hooks:
+    before:
+    - shell@env: |-
+        [ -d build/${APP} ] && exit 0
+
+        git clone -b ${VERSION} \
+          https://gitlab.com/gitlab-org/gitlab.git \
+          build/${APP}
+
+  file: golang/cgo.dockerfile
+  image_names@file|template: &image_names |-
+    templates/image-names/no-rootfs-info/env[APP:VERSION].yml
+  extra_args@file|env|template: templates/image-extra-args/env[APP].yml
+
+buildah:push:
+- name: gitlab-ee
+  env: *env
+  hooks:
+    before:
+    - task: buildah:login(ghcr)
+  matrix@file: *matrix
+  image_names@file|template: *image_names

@@ -1,11 +1,11 @@
 buildah:build:
 - name: sonarqube
-  env@env: &env
+  env@template: &env
   - APP=sonarqube
   # source(git-tags): https://github.com/SonarSource/sonarqube
   - VERSION=9.0.0.45539
   # use global es version
-  - ES_VERSION=${ES7_VERSION}
+  - ES_VERSION={{ .Env.ES7_VERSION | trimPrefix "v" }}
   - ES_DOWNLOAD_URL_PATH=https://artifacts.elastic.co/downloads/elasticsearch/
   # TODO: update checksums when updating es version
   - ES_ARM64_CHECKSUM=871c170a7584b4c52f08ad1d8c81c1119ec953185b59f6c06733a49135651c0c314e4e43245365247763ab6d03ecdd259e2d27b01ee99dac61060896b98561a6
@@ -21,7 +21,7 @@ buildah:build:
 
   matrix@file: &matrix java/matrix-11-amd64-arm64.yml
   file: java/sonarqube/Dockerfile
-  image_names@file|env: &image_names |-
+  image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
   extra_args@env|template: |-
     - --pull-always
@@ -60,9 +60,9 @@ buildah:build:
 
 buildah:push:
 - name: sonarqube
-  env@env: *env
+  env@template: *env
   hooks:
     before:
     - task: buildah:login(ghcr)
   matrix@file: *matrix
-  image_names@file|env: *image_names
+  image_names@file|template: *image_names

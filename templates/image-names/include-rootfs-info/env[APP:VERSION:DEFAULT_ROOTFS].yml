@@ -1,12 +1,47 @@
 # requires setting
-# task env VERSION and IMAGE_REPO
-# use @file|env|template: templates/image-names/include-rootfs-info/env[APP:VERSION:DEFAULT_ROOTFS].yml
+#   task env APP, VERSION, DEFAULT_ROOTFS
+# use @file|template: templates/image-names/include-rootfs-info/env[APP:VERSION:DEFAULT_ROOTFS].yml
 
-- image: ${IMAGE_REPO}/${APP}:${VERSION}-${MATRIX_ROOTFS}-${MATRIX_ARCH}
-  manifest: ${IMAGE_REPO}/${APP}:${VERSION}-${MATRIX_ROOTFS}
-{{ if eq .Env.MATRIX_ROOTFS "${DEFAULT_ROOTFS}" }}
-- image: ${IMAGE_REPO}/${APP}:${VERSION}-${MATRIX_ARCH}
-  manifest: ${IMAGE_REPO}/${APP}:${VERSION}
-- image: ${IMAGE_REPO}/${APP}:latest-${MATRIX_ARCH}
-  manifest: ${IMAGE_REPO}/${APP}:latest
+{{- $rootfs := .Env.MATRIX_ROOTFS -}}
+{{- $arch := .Env.MATRIX_ARCH -}}
+
+{{- $prefix := printf "%s/%s" .Env.IMAGE_REPO .Env.APP -}}
+{{- $version := trimPrefix "v" .Env.VERSION -}}
+{{- $version_parts := split "." $version -}}
+{{- $version_major := $version_parts._0 -}}
+
+{{- $version_minor := "" -}}
+{{- if gt (len $version_parts) 1 -}}
+{{- $version_minor = $version_parts._1 -}}
+{{- end }}
+
+- image: {{ $prefix }}:{{ $version }}-{{ $rootfs }}-{{ $arch }}
+  manifest: {{ $prefix }}:{{ $version }}-{{ $rootfs }}
+
+{{ if ne $version_major "0" }}
+- image: {{ $prefix }}:{{ $version_major }}-{{ $rootfs }}-{{ $arch }}
+  manifest: {{ $prefix }}:{{ $version_major }}-{{ $rootfs }}
+{{ end }}
+
+{{ if $version_minor }}
+- image: {{ $prefix }}:{{ $version_major }}.{{ $version_minor }}-{{ $rootfs }}-{{ $arch }}
+  manifest: {{ $prefix }}:{{ $version_major }}.{{ $version_minor }}-{{ $rootfs }}
+{{ end }}
+
+{{ if eq .Env.MATRIX_ROOTFS .Env.DEFAULT_ROOTFS }}
+- image: {{ $prefix }}:{{ $version }}-{{ $arch }}
+  manifest: {{ $prefix }}:{{ $version }}
+
+{{ if ne $version_major "0" }}
+- image: {{ $prefix }}:{{ $version_major }}-{{ $arch }}
+  manifest: {{ $prefix }}:{{ $version_major }}
+{{ end }}
+
+{{ if $version_minor }}
+- image: {{ $prefix }}:{{ $version_major }}.{{ $version_minor }}-{{ $arch }}
+  manifest: {{ $prefix }}:{{ $version_major }}.{{ $version_minor }}
+{{ end }}
+
+- image: {{ $prefix }}:latest-{{ $arch }}
+  manifest: {{ $prefix }}:latest
 {{- end -}}

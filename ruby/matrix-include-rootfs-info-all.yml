@@ -1,0 +1,28 @@
+include:
+# alpine
+- kernel:
+  - linux
+  rootfs:
+  - alpine
+  arch:
+  - amd64
+  - x86
+  - arm64
+  - armv7
+  - armv6
+  - s390x
+  - ppc64le
+# debian
+- kernel:
+  - linux
+  rootfs:
+  - debian
+  arch:
+  - amd64
+  - x86
+  - arm64
+  - armv7
+  - armv5
+  - s390x
+  - mips64le
+  - ppc64le

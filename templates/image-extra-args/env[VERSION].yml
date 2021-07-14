@@ -10,6 +10,10 @@
 - VERSION=${VERSION}
 - --build-arg
 - DOCKERHUB_ARCH={{ .Env.MATRIX_ARCH | getDockerHubArch }}
+- --build-arg
+- GO_VERSION=${GO_VERSION}
+- --build-arg
+- PROTOC_VERSION=${PROTOC_VERSION}
 {{ if eq .Env.MATRIX_ROOTFS "alpine" }}
 - --build-arg
 - ROOTFS_VERSION=${ALPINE_VERSION}

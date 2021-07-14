@@ -48,7 +48,7 @@ buildah:build:
     before:matrix:
     - task: buildah:build(spilo-base)
   file@env: app/${APP}/Dockerfile
-  image_names@file|env: &image_names |-
+  image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
   extra_args@template: |-
     {{- $base_image_name := printf "spilo-base:%s" .Env.MATRIX_ARCH -}}
@@ -64,4 +64,4 @@ buildah:push:
     before:
     - task: buildah:login(ghcr)
   matrix: *matrix
-  image_names@file|env: *image_names
+  image_names@file|template: *image_names

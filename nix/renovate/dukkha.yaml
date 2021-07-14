@@ -16,14 +16,16 @@ buildah:build:
     - arm64
     # - x86
   file@env: nix/renovate/slim-base.dockerfile
-  image_names@template|file|env|template: &image_names |-
+  image_names@template|file|template: &image_names |-
     templates/image-names/include-rootfs-info/
     {{- /* multi-line join */ -}}
     env[APP:VERSION:DEFAULT_ROOTFS].yml
-  extra_args@env:
-  - --pull-always
-  - --build-arg
-  - NIX_IMAGE=${IMAGE_REPO}/nix:${NIX_VERSION}-${MATRIX_ROOTFS}-${MATRIX_ARCH}
+  extra_args@env|template: &base_image_args |-
+    - --pull-always
+    - --build-arg
+    - NIX_IMAGE=${IMAGE_REPO}/nix:
+    {{- /* multi-line join */ -}}
+    {{ trimPrefix "v" .Env.NIX_VERSION }}-${MATRIX_ROOTFS}-${MATRIX_ARCH}
 
 - name: renovate-full-base
   env: &full_base_env
@@ -32,11 +34,8 @@ buildah:build:
   - *default_rootfs
   matrix: *matrix
   file: nix/renovate/full-base.dockerfile
-  image_names@template|file|env|template: *image_names
-  extra_args@env:
-  - --pull-always
-  - --build-arg
-  - NIX_IMAGE=${IMAGE_REPO}/nix:${NIX_VERSION}-${MATRIX_ROOTFS}-${MATRIX_ARCH}
+  image_names@template|file|template: *image_names
+  extra_args@env|template: *base_image_args
 
 - name: renovate-slim
   env: &slim_env
@@ -45,13 +44,15 @@ buildah:build:
   - *default_rootfs
   matrix: *matrix
   file: nix/renovate/final.dockerfile
-  image_names@template|file|env|template: *image_names
-  extra_args@env: &final_image_args
-  - --pull-always
-  - --build-arg
-  - VERSION=${VERSION}
-  - --build-arg
-  - BASE_IMAGE=${IMAGE_REPO}/${APP}-base:${VERSION}-${MATRIX_ROOTFS}-${MATRIX_ARCH}
+  image_names@template|file|template: *image_names
+  extra_args@env|template: &final_image_args |-
+    - --pull-always
+    - --build-arg
+    - VERSION=${VERSION}
+    - --build-arg
+    - BASE_IMAGE=${IMAGE_REPO}/${APP}-base:
+    {{- /* multi-line join */ -}}
+    {{ trimPrefix "v" .Env.VERSION }}-${MATRIX_ROOTFS}-${MATRIX_ARCH}
 
 - name: renovate-full
   env: &full_env
@@ -60,7 +61,7 @@ buildah:build:
   - *default_rootfs
   matrix: *matrix
   file: nix/renovate/final.dockerfile
-  image_names@template|file|env|template: *image_names
+  image_names@template|file|template: *image_names
   extra_args@env|template: *final_image_args
 
 buildah:push:
@@ -70,22 +71,22 @@ buildah:push:
   hooks: &push_hooks
     before:
     - task: buildah:login(ghcr)
-  image_names@template|file|env|template: *image_names
+  image_names@template|file|template: *image_names
 
 - name: renovate-full-base
   env: *full_base_env
   matrix: *matrix
   hooks: *push_hooks
-  image_names@template|file|env|template: *image_names
+  image_names@template|file|template: *image_names
 
 - name: renovate-slim
   env: *slim_env
   matrix: *matrix
   hooks: *push_hooks
-  image_names@template|file|env|template: *image_names
+  image_names@template|file|template: *image_names
 
 - name: renovate-full
   env: *full_env
   matrix: *matrix
   hooks: *push_hooks
-  image_names@template|file|env|template: *image_names
+  image_names@template|file|template: *image_names

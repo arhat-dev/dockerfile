@@ -1,4 +1,32 @@
-- image: ${IMAGE_REPO}/${APP}:latest-${MATRIX_ARCH}
-  manifest: ${IMAGE_REPO}/${APP}:latest
-- image: ${IMAGE_REPO}/${APP}:${VERSION}-${MATRIX_ARCH}
-  manifest: ${IMAGE_REPO}/${APP}:${VERSION}
+# requires setting
+#   task env APP, VERSION
+# use @file|template: templates/image-names/no-rootfs-info/env[APP:VERSION].yml
+
+{{- $rootfs := .Env.MATRIX_ROOTFS -}}
+{{- $arch := .Env.MATRIX_ARCH -}}
+
+{{- $prefix := printf "%s/%s" .Env.IMAGE_REPO .Env.APP -}}
+{{- $version := trimPrefix "v" .Env.VERSION -}}
+{{- $version_parts := split "." $version -}}
+{{- $version_major := $version_parts._0 -}}
+
+{{- $version_minor := "" -}}
+{{- if gt (len $version_parts) 1 -}}
+{{- $version_minor = $version_parts._1 -}}
+{{- end }}
+
+- image: {{ $prefix }}:{{ $version }}-{{ $arch }}
+  manifest: {{ $prefix }}:{{ $version }}
+
+{{ if ne $version_major "0" }}
+- image: {{ $prefix }}:{{ $version_major }}-{{ $arch }}
+  manifest: {{ $prefix }}:{{ $version_major }}
+{{ end }}
+
+{{ if $version_minor }}
+- image: {{ $prefix }}:{{ $version_major }}.{{ $version_minor }}-{{ $arch }}
+  manifest: {{ $prefix }}:{{ $version_major }}.{{ $version_minor }}
+{{ end }}
+
+- image: {{ $prefix }}:latest-{{ $arch }}
+  manifest: {{ $prefix }}:latest

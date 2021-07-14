@@ -23,7 +23,7 @@ buildah:build:
         EOF
   file@env: python/pipenv-install-done.dockerfile
   context@env: build/${APP}
-  image_names@file|env: &image_names |-
+  image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
 
   extra_args@env:
@@ -42,4 +42,4 @@ buildah:push:
     before:
     - task: buildah:login(ghcr)
   matrix@file: *matrix
-  image_names@file|env: *image_names
+  image_names@file|template: *image_names

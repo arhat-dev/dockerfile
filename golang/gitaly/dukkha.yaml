@@ -1,19 +1,31 @@
 # this build instruction is used in container
+# WORKDIR /app
 golang:build:
-- name: editorconfig-checker
+- name: gitaly
   env: &env
-  - APP=editorconfig-checker
-  # source(git-tags): https://github.com/editorconfig-checker/editorconfig-checker
-  - VERSION=2.3.5
+  - APP=gitaly
+  # source(git-tags): https://gitlab.com/gitlab-org/gitaly
+  - VERSION=v14.0.5
+  - GITALY_PACKAGE=gitlab.com/gitlab-org/gitaly/v14
+  hooks:
+    before:
+    # install protoc-gen-go and protoc-gen-go-grpc
+    - cmd: [sh, /app/golang/gitaly/install-protoc-gen.sh]
+    - shell: |-
+        //
+        mv ${GOPATH}/
   matrix@file: &matrix golang/matrix-nocgo-all.yml
   chdir@env: /app/build/${APP}
-  path: ./cmd/editorconfig-checker/
+  path: ./cmd/gitaly/
   outputs@env:
   - /app/build/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}
   cgo:
-    enabled: false
+    enabled: true
   ldflags@env:
-  - -X "main.version=${VERSION}"
+  - -s -w
+  - -X "${GITALY_PACKAGE}/internal/version.version=${VERSION}"
+  - -X "${GITALY_PACKAGE}/internal/version.buildtime=$(date +"%Y%m%d.%H%M%S")"
+  - -X "${GITALY_PACKAGE}/internal/version.moduleVersion=$(go list -m)"
   tags:
   - netgo
   extra_args:
@@ -21,7 +33,7 @@ golang:build:
   - -mod=readonly
 
 buildah:build:
-- name: editorconfig-checker
+- name: gitaly
   env: *env
   matrix@file: *matrix
   hooks:
@@ -30,16 +42,16 @@ buildah:build:
         [ -d build/${APP} ] && exit 0
 
         git clone --depth 1 --branch ${VERSION} \
-          https://github.com/editorconfig-checker/editorconfig-checker.git \
+          https://gitlab.com/gitlab-org/gitaly \
           build/${APP}
 
-  file: golang/nocgo.dockerfile
+  file: golang/Dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
   extra_args@file|env|template: templates/image-extra-args/env[APP].yml
 
 buildah:push:
-- name: editorconfig-checker
+- name: gitaly
   env: *env
   hooks:
     before:

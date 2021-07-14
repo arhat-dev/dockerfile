@@ -19,7 +19,6 @@ bootstrap:
   - RUST_VERSION=1.53
   # source(git-tags): https://github.com/multiarch/qemu-user-static
   - QEMU_VERSION=5.2.0-2
-  # TODO: set source for ruby so renovate can work
   # source(docker): docker.io/library/ruby
   - RUBY_VERSION=2.7
   # source(git-tags): https://github.com/krallin/tini
@@ -27,7 +26,9 @@ bootstrap:
   # source(git-tags): https://github.com/NixOS/nix
   - NIX_VERSION=2.3.14
   # source(git-tags): https://github.com/elastic/elasticsearch
-  - ES7_VERSION=7.13.3
+  - ES7_VERSION=v7.13.3
+  # source(git-tags): https
+  - PROTOC_VERSION=v3.17.3
 
 tools:
   buildah:

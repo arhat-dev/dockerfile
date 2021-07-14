@@ -44,7 +44,7 @@ buildah:build:
           build/${APP}
 
   file: golang/nocgo.dockerfile
-  image_names@file|env: &image_names |-
+  image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
   extra_args@file|env|template: templates/image-extra-args/env[APP].yml
 
@@ -55,4 +55,4 @@ buildah:push:
     before:
     - task: buildah:login(ghcr)
   matrix@file: *matrix
-  image_names@file|env: *image_names
+  image_names@file|template: *image_names
