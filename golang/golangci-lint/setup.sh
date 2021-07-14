@@ -12,7 +12,7 @@ debian)
   rm -rf /var/lib/apt/lists/*
   ;;
 alpine)
-  apk --no-cache add gcc musl-dev git mercurial
+  apk --no-cache add gcc musl-dev git
   ;;
 *)
   echo "Unsupported rootfs ${MATRIX_ROOTFS}"
