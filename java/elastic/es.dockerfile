@@ -70,9 +70,7 @@ COPY java/elastic/es-entrypoint.sh \
 RUN set -ex ;\
     chmod g=u /etc/passwd ;\
     chmod 0775 /usr/local/bin/docker-entrypoint.sh ;\
-    find / -xdev -perm -4000 -exec chmod ug-s {} + ;\
-    ln -sf /etc/pki/ca-trust/extracted/java/cacerts \
-        /usr/share/elasticsearch/jdk/lib/security/cacerts
+    find / -xdev -perm -4000 -exec chmod ug-s {} +
 
 EXPOSE 9200 9300
 
