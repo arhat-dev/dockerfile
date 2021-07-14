@@ -27,7 +27,7 @@ buildah:build:
     - --build-arg
     - APP=${APP}
     - --build-arg
-    - VERSION=${VERSION}
+    - VERSION={{ .Env.VERSION | trimPrefix "v" }}
     - --build-arg
     - TINI_VERSION=${TINI_VERSION}
     - --build-arg

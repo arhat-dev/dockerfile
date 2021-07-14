@@ -21,7 +21,8 @@ RUN set -eux ;\
         --no-daemon --info --console plain ;\
     mkdir -p /opt ;\
     mv build/distribution/local/elasticsearch-${VERSION}-SNAPSHOT \
-        /opt/es
+        /opt/es ;\
+    rm -rf /opt/es/jdk
 
 # override default values
 COPY java/elastic/es.log4j2.docker.properties \
@@ -38,7 +39,6 @@ RUN set -eux ;\
     mkdir -p config/jvm.options.d data logs plugins ;\
     chmod 0775 config config/jvm.options.d data logs plugins ;\
     chmod 0660 config/elasticsearch.yml config/log4j2.properties ;\
-    rm -rf ./jdk ;\
     find . -xdev -perm -4000 -exec chmod ug-s {} + && \
     find . -type f -exec chmod o+r {} +
 
