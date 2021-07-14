@@ -20,7 +20,8 @@ jobs:
     strategy:
       matrix:
         app:
-        - elasticsearch-7
+        # TODO: elasticsearch-7 cross compile always fail
+        # - elasticsearch-7
         - sonarqube
       fail-fast: false
     runs-on: ubuntu-latest
@@ -49,9 +50,7 @@ jobs:
         GHCR_USER: ${{ github.actor }}
         GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
       run: |-
-        export DUKKHA_BIN="${HOME}/bin/dukkha"
-        # require root privilege to set ulimit
-        sudo -E "${DUKKHA_BIN}" buildah local build ${{ matrix.app }}
+        dukkha buildah local build ${{ matrix.app }}
         dukkha buildah local push ${{ matrix.app }}
 
     - name: Inspect Images
