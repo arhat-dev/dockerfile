@@ -1,6 +1,6 @@
 buildah:build:
 - name: sonarqube
-  env: &env
+  env@env: &env
   - APP=sonarqube
   # source(github-releases): https://github.com/SonarSource/sonarqube.git
   - VERSION=9.0.0.45539
@@ -60,7 +60,7 @@ buildah:build:
 
 buildah:push:
 - name: sonarqube
-  env: *env
+  env@env: *env
   hooks:
     before:
     - task: buildah:login(ghcr)

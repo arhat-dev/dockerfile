@@ -41,7 +41,7 @@ buildah:build:
 
 buildah:push:
 - name: elasticsearch-7
-  env: *env
+  env@env: *env
   hooks:
     before:
     - task: buildah:login(ghcr)
