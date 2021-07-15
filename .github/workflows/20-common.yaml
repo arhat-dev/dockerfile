@@ -10,9 +10,9 @@ on:
     branches:
     - master
     paths:
-    - scripts/**
-    - .dukkha/**
+    - common/**
     - .github/workflows/*-common.yaml
+    - "*/_*/**"
   schedule:
   - cron: "0 20 * * *"
 

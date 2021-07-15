@@ -12,9 +12,10 @@ buildah:build:
     {{- $prefix := printf "%s/base-%s" .Env.IMAGE_REPO .Env.MATRIX_LANGUAGE -}}
     {{- $tag := printf "%s-%s" .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
     {{- if and (ne .Env.MATRIX_CROSS_ARCH "") (ne .Env.MATRIX_ARCH .Env.MATRIX_CROSS_ARCH) -}}
-    {{- $tag = printf "%s-%s-%s" .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH .Env.MATRIX_CROSS_ARCH -}}
+      {{- $tag = printf "%s-%s-%s" .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH .Env.MATRIX_CROSS_ARCH -}}
     {{- end }}
-    - image: {{ $prefix }}:{{ $tag }}
+
+    - image: {{ $prefix }}:{{ .Env.MATRIX_VERSION }}-{{ $tag }}
 
   extra_args@template: |-
     {{- $host_arch := "" -}}
