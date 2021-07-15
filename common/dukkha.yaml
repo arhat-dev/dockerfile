@@ -5,7 +5,7 @@ workflow:run:
   jobs:
   - name: generate-matrix-base.yml
     shell: |-
-      cat <<EOF >common/matrix-base.yml
+      cat <<EOF >scripts/dukkha/matrix-base.yml
       #
       # NOTE: this file is generate by common/dukkha.yaml
       #
@@ -13,12 +13,12 @@ workflow:run:
       include:
       EOF
       for l in ${LANGUAGES}; do
-        cat "${l}/_base/matrix.yml" >>common/matrix-base.yml
+        cat "${l}/_base/matrix.yml" >>scripts/dukkha/matrix-base.yml
       done
 
   - name: generate-matrix-container.yml
     shell: |-
-      cat <<EOF >common/matrix-container.yml
+      cat <<EOF >scripts/dukkha/matrix-container.yml
       #
       # NOTE: this file is generate by common/dukkha.yaml
       #
@@ -46,7 +46,7 @@ workflow:run:
       EOF
 
       for l in ${LANGUAGES}; do
-        cat "${l}/_base/matrix.yml" >>common/matrix-container.yml
+        cat "${l}/_base/matrix.yml" >>scripts/dukkha/matrix-container.yml
       done
 
 buildah:build:
@@ -59,7 +59,7 @@ buildah:build:
 - name: linux/base
   env: &base_env
   - IMAGE_NAME_PREFIX=base-
-  matrix@file: &matrix common/matrix-base.yml
+  matrix@file: &matrix scripts/dukkha/matrix-base.yml
   file@template: |-
     {{- if and (ne .Env.MATRIX_CROSS_ARCH "") (ne .Env.MATRIX_ARCH .Env.MATRIX_CROSS_ARCH) -}}
     common/base-cross.dockerfile
@@ -202,13 +202,70 @@ buildah:build:
 - name: linux/container
   env: &container_env
   - IMAGE_NAME_PREFIX=
-  matrix@file: &container_matrix common/matrix-container.yml
+  matrix@file: &container_matrix scripts/dukkha/matrix-container.yml
   file@env: common/container.dockerfile
   image_names@env: &container_image_names
   - image: ${IMAGE_REPO}/${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}-${MATRIX_ARCH}
     manifest: ${IMAGE_REPO}/${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}
-  extra_args:
-  - --pull-always
+  extra_args@template: |-
+    {{- $base_image := "" -}}
+    {{- if eq .Env.MATRIX_LANGUAGE "ruby" "python" -}}
+      {{- suffix := "" -}}
+      {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
+        {{- $suffix = printf "slim-%s" .Env.DEBIAN_VERSION -}}
+      {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
+        {{- $suffix = printf "alpine%s" .Env.ALPINE_VERSION -}}
+      {{- end -}}
+
+      {{- $base_image = printf "docker.io/%s/%s:%s-%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_LANGUAGE .Env.MATRIX_VERSION $suffix -}}
+
+    {{- else if eq .Env.MATRIX_LANGUAGE "nodejs" -}}
+
+      {{- suffix := "" -}}
+      {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
+        {{- $suffix = printf "%s-slim" .Env.DEBIAN_VERSION -}}
+      {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
+        {{- $suffix = printf "alpine%s" .Env.ALPINE_VERSION -}}
+      {{- end -}}
+
+      {{- $base_image = printf "docker.io/%s/node:%s-%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_VERSION $suffix -}}
+
+    {{- else if eq .Env.MATRIX_LANGUAGE "golang" "rust" -}}
+
+      {{- suffix := "" -}}
+      {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
+        {{- $suffix = printf "%s-slim" .Env.DEBIAN_VERSION -}}
+      {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
+        {{- $suffix = printf "%s" .Env.ALPINE_VERSION -}}
+      {{- end -}}
+
+      {{- $base_image = printf "docker.io/%s/%s:%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_ROOTFS $suffix -}}
+
+    {{- else if eq .Env.MATRIX_LANGUAGE "java" -}}
+
+      {{- $repo_name := printf "openjdk%s" .Env.MATRIX_VERSION -}}
+      {{- if eq .Env.MATRIX_ARCH "amd64" "s390x" "ppc64le" -}}
+        {{- $repo_name = printf "%s-openj9" $repo_name -}}
+      {{- end -}}
+
+      {{- $tag_name := "" -}}
+      {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
+        {{- $tag_name = "debianslim-jre" -}}
+      {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
+        {{- $tag_name = "alpine-jre" -}}
+      {{- end -}}
+
+      {{- $base_image = printf "docker.io/adoptopenjdk/%s:%s" $repo_name $tag_name -}}
+    {{- end -}}
+
+    {{ if eq .Env.MATRIX_LANGUAGE "java" }}
+    # adoptopenjdk sets os/arch/variant
+    - --os={{ .Env.MATRIX_KERNEL | getOciOS }}
+    - --arch={{ .Env.MATRIX_ARCH | getOciArch }}
+    - --variant={{ .Env.MATRIX_ARCH | getOciArchVariant }}
+    {{ end }}
+    - --pull-always
+    - BASE_IMAGE={{ $base_image }}
 
 buildah:push:
 - name: linux/base

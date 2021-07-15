@@ -77,7 +77,6 @@
   - debian
   arch:
   - armv7
-  - armv5
   - ppc64le
   - s390x
   cross_arch: [""]

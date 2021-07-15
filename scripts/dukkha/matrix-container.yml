@@ -1,8 +1,27 @@
 #
 # NOTE: this file is generate by common/dukkha.yaml
 #
-
-include:
+# exclude cross_arch builds since we only want target runtime
+exclude:
+- arch:
+  - amd64
+  - arm64
+  cross_arch:
+  - armv7
+  - armv6
+  - armv5
+  - ppc64le
+  - s390x
+  - x86
+  - mips64le
+- arch:
+  - arm64
+  cross_arch:
+  - amd64
+- arch:
+  - amd64
+  cross_arch:
+  - arm64
 ###############################
 #
 # GOLANG
@@ -255,7 +274,6 @@ include:
   - debian
   arch:
   - armv7
-  - armv5
   - ppc64le
   - s390x
   cross_arch: [""]

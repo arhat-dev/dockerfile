@@ -1,9 +1,0 @@
-# TODO
-
-# docker:build:
-# - name: windows/container
-#   matrix@file: &matrix .dukkha/specs/matrix-windows.yml
-#
-# docker:push:
-# - name: windows/container
-#   matrix@file: *matrix

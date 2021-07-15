@@ -1,4 +1,4 @@
-name: rust
+name: nodejs
 
 # yamllint disable-line rule:truthy
 on:
@@ -11,17 +11,19 @@ on:
     - master
     paths:
     - common/**
-    - rust/**
-    - .github/workflows/*-rust.yaml
+    - nodejs/**
+    - .github/workflows/*-nodejs.yaml
   schedule:
-  - cron: "0 0 * * *"
+  - cron: "0 14 * * *"
 
 jobs:
   common:
     strategy:
       matrix:
         version:
-        - "1.53.0"
+        - "12.22.3"
+        - "14.17.3"
+        - "16.5.0"
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
@@ -45,19 +47,27 @@ jobs:
         sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
         dukkha buildah local build linux/base \
-          -m language=rust \
+          -m language=nodejs \
           -m version=${{ matrix.version }}
 
         dukkha buildah local push linux/base \
-          -m language=rust \
+          -m language=nodejs \
           -m version=${{ matrix.version }}
 
         dukkha buildah local build linux/builder \
-          -m language=rust \
+          -m language=nodejs \
           -m version=${{ matrix.version }}
 
         dukkha buildah local push linux/builder \
-          -m language=rust \
+          -m language=nodejs \
+          -m version=${{ matrix.version }}
+
+        dukkha buildah local build linux/container \
+          -m language=nodejs \
+          -m version=${{ matrix.version }}
+
+        dukkha buildah local push linux/container \
+          -m language=nodejs \
           -m version=${{ matrix.version }}
 
     - name: Inspect Images

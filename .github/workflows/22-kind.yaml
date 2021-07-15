@@ -1,20 +1,20 @@
-# name: kind
-#
-# # yamllint disable-line rule:truthy
-# on:
-#   check_run:
-#     types:
-#     - rerequested
-#     - requested_action
-#   push:
-#     branches:
-#     - master
-#     paths:
-#     - kind/**
-#     - .github/workflows/*-kind.yaml
-#   schedule:
-#   - cron: "0 22 * * *"
-#
+name: kind
+
+# yamllint disable-line rule:truthy
+on:
+  check_run:
+    types:
+    - rerequested
+    - requested_action
+  push:
+    branches:
+    - master
+    paths:
+    - kind/**
+    - .github/workflows/*-kind.yaml
+  schedule:
+  - cron: "0 22 * * *"
+
 # jobs:
 #   kind:
 #     runs-on: ubuntu-latest

@@ -14,7 +14,7 @@ on:
     - ruby/**
     - .github/workflows/*-ruby.yaml
   schedule:
-  - cron: "0 2 * * *"
+  - cron: "0 5 * * *"
 
 jobs:
   common:
@@ -46,19 +46,27 @@ jobs:
       run: |
         sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
-        dukkha buildah local build linux/base \
+#         dukkha buildah local build linux/base \
+#           -m language=ruby \
+#           -m version=${{ matrix.version }}
+#
+#         dukkha buildah local push linux/base \
+#           -m language=ruby \
+#           -m version=${{ matrix.version }}
+#
+#         dukkha buildah local build linux/builder \
+#           -m language=ruby \
+#           -m version=${{ matrix.version }}
+#
+#         dukkha buildah local push linux/builder \
+#           -m language=ruby \
+#           -m version=${{ matrix.version }}
+
+        dukkha buildah local build linux/container \
           -m language=ruby \
           -m version=${{ matrix.version }}
 
-        dukkha buildah local push linux/base \
-          -m language=ruby \
-          -m version=${{ matrix.version }}
-
-        dukkha buildah local build linux/builder \
-          -m language=ruby \
-          -m version=${{ matrix.version }}
-
-        dukkha buildah local push linux/builder \
+        dukkha buildah local push linux/container \
           -m language=ruby \
           -m version=${{ matrix.version }}
 

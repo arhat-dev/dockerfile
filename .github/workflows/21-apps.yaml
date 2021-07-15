@@ -1,20 +1,20 @@
-# name: apps
-#
-# # yamllint disable-line rule:truthy
-# on:
-#   check_run:
-#     types:
-#     - rerequested
-#     - requested_action
-#   push:
-#     branches:
-#     - master
-#     paths:
-#     - app/**
-#     - .github/workflows/*-apps.yaml
-#   schedule:
-#   - cron: "0 22 * * *"
-#
+name: apps
+
+# yamllint disable-line rule:truthy
+on:
+  check_run:
+    types:
+    - rerequested
+    - requested_action
+  push:
+    branches:
+    - master
+    paths:
+    - app/**
+    - .github/workflows/*-apps.yaml
+  schedule:
+  - cron: "0 21 * * *"
+
 # jobs:
 #   apps:
 #     strategy:

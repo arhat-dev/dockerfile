@@ -1,4 +1,4 @@
-name: python
+name: golang
 
 # yamllint disable-line rule:truthy
 on:
@@ -11,20 +11,19 @@ on:
     - master
     paths:
     - common/**
-    - python/**
-    - .github/workflows/*-python.yaml
+    - golang/**
+    - .github/workflows/*-golang.yaml
   schedule:
-  - cron: "0 4 * * *"
+  - cron: "0 0 * * *"
 
 jobs:
   common:
     strategy:
       matrix:
         version:
-        - "3.6.14"
-        - "3.7.11"
-        - "3.8.11"
-        - "3.9.6"
+        - "1.16.6"
+        - "1.15.14"
+        - "1.17rc1"
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
@@ -47,20 +46,28 @@ jobs:
       run: |
         sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
-        dukkha buildah local build linux/base \
-          -m language=python \
+#         dukkha buildah local build linux/base \
+#           -m language=golang \
+#           -m version=${{ matrix.version }}
+#
+#         dukkha buildah local push linux/base \
+#           -m language=golang \
+#           -m version=${{ matrix.version }}
+#
+#         dukkha buildah local build linux/builder \
+#           -m language=golang \
+#           -m version=${{ matrix.version }}
+#
+#         dukkha buildah local push linux/builder \
+#           -m language=golang \
+#           -m version=${{ matrix.version }}
+
+        dukkha buildah local build linux/container \
+          -m language=golang \
           -m version=${{ matrix.version }}
 
-        dukkha buildah local push linux/base \
-          -m language=python \
-          -m version=${{ matrix.version }}
-
-        dukkha buildah local build linux/builder \
-          -m language=python \
-          -m version=${{ matrix.version }}
-
-        dukkha buildah local push linux/builder \
-          -m language=python \
+        dukkha buildah local push linux/container \
+          -m language=golang \
           -m version=${{ matrix.version }}
 
     - name: Inspect Images
@@ -72,7 +79,14 @@ jobs:
 #     strategy:
 #       matrix:
 #         app:
-#         - yamllint
+#         - proton-bridge
+#         - kubeval
+#         - helm
+#         - conftest
+#         - editorconfig-checker
+#         - golangci-lint
+#         # - kine
+#         # - litestream
 #       fail-fast: false
 #     runs-on: ubuntu-20.04
 #     steps:

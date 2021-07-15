@@ -1,4 +1,4 @@
-name: golang
+name: java
 
 # yamllint disable-line rule:truthy
 on:
@@ -11,19 +11,19 @@ on:
     - master
     paths:
     - common/**
-    - golang/**
-    - .github/workflows/*-golang.yaml
+    - java/**
+    - .github/workflows/*-java.yaml
   schedule:
-  - cron: "0 3 * * *"
+  - cron: "0 7 * * *"
 
 jobs:
   common:
     strategy:
       matrix:
         version:
-        - "1.16.6"
-        - "1.15.14"
-        - "1.17rc1"
+        - "8"
+        - "11"
+        - "16"
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
@@ -46,20 +46,28 @@ jobs:
       run: |
         sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
-        dukkha buildah local build linux/base \
-          -m language=golang \
+#         dukkha buildah local build linux/base \
+#           -m language=java \
+#           -m version=${{ matrix.version }}
+#
+#         dukkha buildah local push linux/base \
+#           -m language=java \
+#           -m version=${{ matrix.version }}
+#
+#         dukkha buildah local build linux/builder \
+#           -m language=java \
+#           -m version=${{ matrix.version }}
+#
+#         dukkha buildah local push linux/builder \
+#           -m language=java \
+#           -m version=${{ matrix.version }}
+
+        dukkha buildah local build linux/container \
+          -m language=java \
           -m version=${{ matrix.version }}
 
-        dukkha buildah local push linux/base \
-          -m language=golang \
-          -m version=${{ matrix.version }}
-
-        dukkha buildah local build linux/builder \
-          -m language=golang \
-          -m version=${{ matrix.version }}
-
-        dukkha buildah local push linux/builder \
-          -m language=golang \
+        dukkha buildah local push linux/container \
+          -m language=java \
           -m version=${{ matrix.version }}
 
     - name: Inspect Images
@@ -71,16 +79,11 @@ jobs:
 #     strategy:
 #       matrix:
 #         app:
-#         - proton-bridge
-#         - kubeval
-#         - helm
-#         - conftest
-#         - editorconfig-checker
-#         - golangci-lint
-#         # - kine
-#         # - litestream
+#         # TODO: elasticsearch-7 cross compile always fail
+#         # - elasticsearch-7
+#         - sonarqube
 #       fail-fast: false
-#     runs-on: ubuntu-20.04
+#     runs-on: ubuntu-latest
 #     steps:
 #     - uses: actions/checkout@v2
 #     - name: Install dukkha
