@@ -7,7 +7,7 @@ LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 ARG MATRIX_ROOTFS
 ARG PROGRAMMING_LANGUAGE
 
-COPY "common/setup-${MATRIX_ROOTFS}-cross.sh" /setup.sh
+COPY "common/base-cross-setup-${MATRIX_ROOTFS}.sh" /setup.sh
 COPY "${PROGRAMMING_LANGUAGE}/_base/setup-cross.sh" /setup-language.sh
 
 ARG HOST_ARCH

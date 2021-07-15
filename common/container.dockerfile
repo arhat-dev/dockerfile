@@ -16,10 +16,12 @@ COPY common/container-setup.sh \
 
 ARG MATRIX_ARCH
 
+# for tini installation
 ARG TINI_VERSION
 RUN set -eux ;\
-    sh /setup.sh "${MATRIX_ARCH}" && rm -f /setup.sh ;\
-    sh /setup-language.sh "${MATRIX_ARCH}" && rm -f /setup-language.sh ;\
+    sh /setup.sh "${MATRIX_ARCH}" ;\
+    sh /setup-language.sh "${MATRIX_ARCH}" ;\
+    rm -f /setup*.sh ;\
     chmod a+x /usr/local/bin/entrypoint
 
 # TODO: shrink the final image by copy whole rootfs to scratch
@@ -27,4 +29,4 @@ RUN set -eux ;\
 # FROM scratch
 # COPY --from=builder / /
 
-ENTRYPOINT [ "/usr/local/bin/entrypoint" ]
+ENTRYPOINT [ "/bin/tini", "--", "/usr/local/bin/entrypoint" ]
