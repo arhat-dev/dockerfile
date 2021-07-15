@@ -15,7 +15,7 @@ RUN set -ex ;\
     mkdir -p /app/build/ ;\
     mv /helm/helm /app/build/helm-linux-${ARCH}
 
-FROM ghcr.io/arhat-dev/go:alpine-${ARCH}
+FROM ghcr.io/arhat-dev/golang:alpine-${ARCH}
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
