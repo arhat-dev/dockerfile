@@ -1,31 +1,36 @@
 {{- $host_arch := "" -}}
 {{- $cross_arch := "" -}}
 {{- $triple_name := "" -}}
+
 {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
+
   {{- $host_arch = getDebianArch .Env.MATRIX_ARCH -}}
   {{- $cross_arch = getDebianArch .Env.MATRIX_CROSS_ARCH -}}
   {{- $triple_name = getDebianTripleName .Env.MATRIX_CROSS_ARCH -}}
+
 {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
+
   {{- $host_arch = getAlpineArch .Env.MATRIX_ARCH -}}
   {{- $cross_arch = getAlpineArch .Env.MATRIX_CROSS_ARCH -}}
   {{- $triple_name = getAlpineTripleName .Env.MATRIX_CROSS_ARCH -}}
+
 {{- end -}}
 
-{{- $rootfs_with_version := "" -}}
+{{- $suffix := "" -}}
 {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
-  {{- $rootfs_with_version = .Env.DEBIAN_VERSION -}}
+  {{- $suffix = .Env.DEBIAN_VERSION -}}
 {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
-  {{- $rootfs_with_version = printf "alpine%s" .Env.ALPINE_VERSION -}}
+  {{- $suffix = printf "alpine%s" .Env.ALPINE_VERSION -}}
 {{- end -}}
 
 {{- $base_image := "" -}}
 {{- if eq .Env.MATRIX_LANGUAGE "golang" "python" "rust" "ruby" -}}
 
-  {{- $base_image = printf "docker.io/%s/%s:%s-%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_LANGUAGE .Env.MATRIX_VERSION $rootfs_with_version -}}
+  {{- $base_image = printf "docker.io/%s/%s:%s-%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_LANGUAGE .Env.MATRIX_VERSION $suffix -}}
 
 {{- else if eq .Env.MATRIX_LANGUAGE "nodejs" -}}
 
-  {{- $base_image = printf "docker.io/%s/node:%s-%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_VERSION $rootfs_with_version -}}
+  {{- $base_image = printf "docker.io/%s/node:%s-%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_VERSION $suffix -}}
 
 {{- else if eq .Env.MATRIX_LANGUAGE "java" -}}
 

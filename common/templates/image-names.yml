@@ -21,16 +21,21 @@
 {{- $version_minor = $version_parts._1 -}}
 {{- end }}
 
+# always add full version image name
+- image: {{ $prefix }}:{{ $version }}-{{ $image_suffix }}
+{{ if $manifest_suffix }}
+  manifest: {{ $prefix }}:{{ $version }}-{{ $manifest_suffix }}
+{{/* not an image for cross compiling, add pseudo image suffix for usage consistency */}}
+- image: {{ $prefix }}:{{ $version }}-{{ $image_suffix }}-{{ .Env.MATRIX_ARCH }}
+{{ end }}
+
 {{ if $version_minor }}
 - image: {{ $prefix }}:{{ $version_major }}.{{ $version_minor }}-{{ $image_suffix }}
 {{ if $manifest_suffix }}
   manifest: {{ $prefix }}:{{ $version_major }}.{{ $version_minor }}-{{ $manifest_suffix }}
+{{/* not an image for cross compiling, add pseudo image suffix for usage consistency */}}
+- image: {{ $prefix }}:{{ $version_major }}.{{ $version_minor }}-{{ $image_suffix }}-{{ .Env.MATRIX_ARCH }}
 {{ end }}
-{{ end }}
-
-- image: {{ $prefix }}:{{ $version }}-{{ $image_suffix }}
-{{ if $manifest_suffix }}
-  manifest: {{ $prefix }}:{{ $version }}-{{ $manifest_suffix }}
 {{ end }}
 
 {{ if eq .Env.MATRIX_VERSION .Env.MATRIX_LATEST }}
@@ -38,6 +43,8 @@
 - image: {{ $prefix }}:{{ $version_major }}-{{ $image_suffix }}
 {{ if $manifest_suffix }}
   manifest: {{ $prefix }}:{{ $version_major }}-{{ $manifest_suffix }}
+{{/* not an image for cross compiling, add pseudo image suffix for usage consistency */}}
+- image: {{ $prefix }}:{{ $version_major }}-{{ $image_suffix }}-{{ .Env.MATRIX_ARCH }}
 {{ end }}
 {{ end }}
 {{ end }}
@@ -46,5 +53,7 @@
 {{ if eq .Env.MATRIX_VERSION .Env.MATRIX_LATEST }}
 - image: {{ $prefix }}:latest-{{ $image_suffix }}
   manifest: {{ $prefix }}:latest-{{ $manifest_suffix }}
+{{/* not an image for cross compiling, add pseudo image suffix for usage consistency */}}
+- image: {{ $prefix }}:latest-{{ $image_suffix }}-{{ .Env.MATRIX_ARCH }}
 {{ end }}
 {{ end }}

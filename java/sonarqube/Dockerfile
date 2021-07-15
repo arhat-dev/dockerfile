@@ -48,8 +48,8 @@ RUN set -ex;\
     # should only have one directory
     mv /expanded/sonarqube-* /expanded/sonarqube
 
-COPY java/sonarqube/run.sh java/sonarqube/sonar.sh \
-    expanded/sonarqube/bin
+COPY java/sonarqube/run.sh java/sonarqube/sonar.sh
+    /expanded/sonarqube/bin
 
 FROM ghcr.io/arhat-dev/java:11-debian-${MATRIX_ARCH}
 
