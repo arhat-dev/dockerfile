@@ -67,3 +67,7 @@
 
 - --build-arg
 - MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
+
+# for java
+- --build-arg
+- TINI_VERSION={{ .Env.TINI_VERSION }}
