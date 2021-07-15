@@ -25,6 +25,17 @@ RUN set -eux ;\
     # mv build/distribution/local/opendj-${VERSION}-SNAPSHOT \
     #     /opt/opendj ;\
 
+COPY "build/${APP}/opendj-packages/opendj-docker/bootstrap/" \
+    /opt/opendj/bootstrap/
+
+COPY "build/${APP}/opendj-packages/opendj-docker/run.sh" \
+    /opt/opendj/run.sh
+
+RUN set -eux ;\
+    chmod +x /opt/opendj/run.sh \
+        /opt/opendj/bootstrap/setup.sh \
+        /opt/opendj/bootstrap/replicate.sh
+
 FROM ghcr.io/arhat-dev/java:8-debian-${MATRIX_ARCH}
 
 ENV LANG='en_US.UTF-8' \
@@ -51,23 +62,15 @@ ENV ADD_BASE_ENTRY="${ADD_BASE_ENTRY}" \
     OPENDJ_REPLICATION_TYPE="${OPENDJ_REPLICATION_TYPE}" \
     OPENDJ_USER="opendj"
 
-COPY --from=builder /opt/opendj /opt/opendj
-
-COPY "build/${APP}/opendj-packages/opendj-docker/bootstrap/" \
-    /opt/opendj/bootstrap/
-
-COPY "build/${APP}/opendj-packages/opendj-docker/run.sh" \
-    /opt/opendj/run.sh
-
 RUN set -eux ;\
     groupadd "${OPENDJ_USER}" ;\
-    useradd -m -r -u 1001 -g "${OPENDJ_USER}" "${OPENDJ_USER}" ;\
-    install -d -o "${OPENDJ_USER}" /opt/opendj/data ;\
-    chown -R "${OPENDJ_USER}:${OPENDJ_USER}" /opt/opendj ;\
-    chmod -R g=u /opt/opendj ;\
-    chmod +x /opt/opendj/run.sh \
-     /opt/opendj/bootstrap/setup.sh \
-     /opt/opendj/bootstrap/replicate.sh
+    useradd -m -r -u 1001 -g "${OPENDJ_USER}" "${OPENDJ_USER}"
+
+COPY --chown="${OPENDJ_USER}:${OPENDJ_USER}" \
+    --from=builder /opt/opendj /opt/opendj
+
+RUN set -eux ;\
+    install -d -o "${OPENDJ_USER}" /opt/opendj/data
 
 ENV PORT=1389 \
     LDAPS_PORT=1636

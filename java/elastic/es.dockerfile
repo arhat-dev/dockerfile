@@ -13,7 +13,7 @@ RUN set -eux ;\
     ./gradlew localDistro -x test \
         --no-daemon --info --console plain ;\
     mkdir -p /opt ;\
-    mv build/distribution/local/elasticsearch-${VERSION}-SNAPSHOT \
+    mv "build/distribution/local/elasticsearch-${VERSION}-SNAPSHOT" \
         /opt/es ;\
     rm -rf /opt/es/jdk
 
@@ -45,6 +45,8 @@ ENV ELASTIC_CONTAINER=true
 ENV PATH="/usr/share/elasticsearch/bin:${PATH}"
 
 COPY --from=builder /opt/es /usr/share/elasticsearch
+COPY java/elastic/es-entrypoint.sh \
+    /usr/local/bin/entrypoint
 
 RUN set -ex ;\
     addgroup --gid 1000 elasticsearch ;\
@@ -54,18 +56,13 @@ RUN set -ex ;\
     adduser elasticsearch root ;\
     adduser elasticsearch elasticsearch ;\
     chmod 0775 /usr/share/elasticsearch ;\
-    chown -R 1000:0 /usr/share/elasticsearch
-
-COPY java/elastic/es-entrypoint.sh \
-    /usr/local/bin/docker-entrypoint.sh
-
-RUN set -ex ;\
+    chown -R 1000:0 /usr/share/elasticsearch ;\
     chmod g=u /etc/passwd ;\
-    chmod 0775 /usr/local/bin/docker-entrypoint.sh ;\
+    chmod 0775 /usr/local/bin/entrypoint ;\
     find / -xdev -perm -4000 -exec chmod ug-s {} +
 
 EXPOSE 9200 9300
 
-ENTRYPOINT ["/bin/tini", "--", "/usr/local/bin/docker-entrypoint.sh"]
+ENTRYPOINT ["/bin/tini", "--", "/usr/local/bin/entrypoint"]
 # Dummy overridable parameter parsed by entrypoint
 CMD ["eswrapper"]

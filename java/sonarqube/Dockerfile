@@ -48,6 +48,9 @@ RUN set -ex;\
     # should only have one directory
     mv /expanded/sonarqube-* /expanded/sonarqube
 
+COPY java/sonarqube/run.sh java/sonarqube/sonar.sh \
+    expanded/sonarqube/bin
+
 FROM ghcr.io/arhat-dev/java:11-debian-${MATRIX_ARCH}
 
 # reference:
@@ -59,13 +62,13 @@ ENV LANG='en_US.UTF-8' \
 # cannot set version, will cause lib/sonar-application-9.0-${VERSION}.jar
 # not found at runtime, use value 9.0-SNAPSHOT as a wrokaround
 # ARG VERSION
-ENV SONARQUBE_HOME=/opt/sonarqube \
-    # SONAR_VERSION="${VERSION}" \
-    SONAR_VERSION="9.0-SNAPSHOT" \
-    SQ_DATA_DIR="/opt/sonarqube/data" \
-    SQ_EXTENSIONS_DIR="/opt/sonarqube/extensions" \
-    SQ_LOGS_DIR="/opt/sonarqube/logs" \
-    SQ_TEMP_DIR="/opt/sonarqube/temp"
+ENV SONARQUBE_HOME=/opt/sonarqube
+# SONAR_VERSION="${VERSION}" \
+ENV SONAR_VERSION="9.0-SNAPSHOT" \
+    SQ_DATA_DIR="${SONARQUBE_HOME}/data" \
+    SQ_EXTENSIONS_DIR="${SONARQUBE_HOME}/extensions" \
+    SQ_LOGS_DIR="${SONARQUBE_HOME}/logs" \
+    SQ_TEMP_DIR="${SONARQUBE_HOME}/temp"
 
 RUN set -ex ;\
     echo "networkaddress.cache.ttl=5" >> "${JAVA_HOME}/conf/security/java.security"; \
@@ -73,7 +76,7 @@ RUN set -ex ;\
         --expression="s?securerandom.source=file:/dev/random?securerandom.source=file:/dev/urandom?g" \
         "${JAVA_HOME}/conf/security/java.security";
 
-COPY --from=builder /expanded/sonarqube /opt/sonarqube
+COPY --from=builder /expanded/sonarqube "${SONARQUBE_HOME}"
 
 WORKDIR /opt
 RUN set -eux ;\
@@ -83,19 +86,10 @@ RUN set -eux ;\
     chown -R sonarqube:sonarqube "${SONARQUBE_HOME}" ;\
     # this 777 will be replaced by 700 at runtime (allows semi-arbitrary "--user" values)
     chmod -R 777 "${SQ_DATA_DIR}" "${SQ_EXTENSIONS_DIR}" \
-        "${SQ_LOGS_DIR}" "${SQ_TEMP_DIR}"
+        "${SQ_LOGS_DIR}" "${SQ_TEMP_DIR}" ;\
+    chmod 0755 "${SONARQUBE_HOME}/bin/run.sh" "${SONARQUBE_HOME}/bin/sonar.sh"
 
-COPY --chown=sonarqube:sonarqube \
-    java/sonarqube/run.sh \
-    java/sonarqube/sonar.sh \
-    ${SONARQUBE_HOME}/bin
-
-RUN set -ex ;\
-    chmod 0755 \
-        ${SONARQUBE_HOME}/bin/run.sh \
-        ${SONARQUBE_HOME}/bin/sonar.sh
-
-WORKDIR ${SONARQUBE_HOME}
+WORKDIR "${SONARQUBE_HOME}"
 EXPOSE 9000
 
 # use number for kubernetes runAsNonRoot=true check

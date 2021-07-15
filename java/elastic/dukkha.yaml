@@ -18,9 +18,6 @@ buildah:build:
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
   extra_args@env|template:
   - --pull-always
-  # - --os={{ .Env.MATRIX_KERNEL | getOciOS }}
-  # - --arch={{ .Env.MATRIX_ARCH | getOciArch }}
-  # - --variant={{ .Env.MATRIX_ARCH | getOciArchVariant }}
   - --ulimit
   - nofile=1048576
   - --build-arg
