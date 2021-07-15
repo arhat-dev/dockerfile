@@ -26,8 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - &install_dukkha
-      name: Install dukkha
+    - name: Install dukkha
       run: |-
         mkdir -p "${HOME}/bin"
         echo "${HOME}/bin" >> $GITHUB_PATH
@@ -69,7 +68,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - *install_dukkha
+    - name: Install dukkha
+      run: |-
+        mkdir -p "${HOME}/bin"
+        echo "${HOME}/bin" >> $GITHUB_PATH
+
+        docker pull ghcr.io/arhat-dev/dukkha:latest
+        ctr_id=$(docker create ghcr.io/arhat-dev/dukkha:latest : 2>/dev/null)
+        docker cp ${ctr_id}:/dukkha "${HOME}/bin/dukkha"
+
+        chmod +x "${HOME}/bin/dukkha"
+
     - name: Build and Push Images
       env:
         GHCR_USER: ${{ github.actor }}
@@ -102,7 +111,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - *install_dukkha
+    - name: Install dukkha
+      run: |-
+        mkdir -p "${HOME}/bin"
+        echo "${HOME}/bin" >> $GITHUB_PATH
+
+        docker pull ghcr.io/arhat-dev/dukkha:latest
+        ctr_id=$(docker create ghcr.io/arhat-dev/dukkha:latest : 2>/dev/null)
+        docker cp ${ctr_id}:/dukkha "${HOME}/bin/dukkha"
+
+        chmod +x "${HOME}/bin/dukkha"
+
     - name: Build and Push Images
       env:
         GHCR_USER: ${{ github.actor }}
@@ -132,7 +151,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - *install_dukkha
+    - name: Install dukkha
+      run: |-
+        mkdir -p "${HOME}/bin"
+        echo "${HOME}/bin" >> $GITHUB_PATH
+
+        docker pull ghcr.io/arhat-dev/dukkha:latest
+        ctr_id=$(docker create ghcr.io/arhat-dev/dukkha:latest : 2>/dev/null)
+        docker cp ${ctr_id}:/dukkha "${HOME}/bin/dukkha"
+
+        chmod +x "${HOME}/bin/dukkha"
+
     - name: Build and Push Images
       env:
         GHCR_USER: ${{ github.actor }}
@@ -164,7 +193,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - *install_dukkha
+    - name: Install dukkha
+      run: |-
+        mkdir -p "${HOME}/bin"
+        echo "${HOME}/bin" >> $GITHUB_PATH
+
+        docker pull ghcr.io/arhat-dev/dukkha:latest
+        ctr_id=$(docker create ghcr.io/arhat-dev/dukkha:latest : 2>/dev/null)
+        docker cp ${ctr_id}:/dukkha "${HOME}/bin/dukkha"
+
+        chmod +x "${HOME}/bin/dukkha"
+
     - name: Build and Push Images
       env:
         GHCR_USER: ${{ github.actor }}
@@ -195,7 +234,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - *install_dukkha
+    - name: Install dukkha
+      run: |-
+        mkdir -p "${HOME}/bin"
+        echo "${HOME}/bin" >> $GITHUB_PATH
+
+        docker pull ghcr.io/arhat-dev/dukkha:latest
+        ctr_id=$(docker create ghcr.io/arhat-dev/dukkha:latest : 2>/dev/null)
+        docker cp ${ctr_id}:/dukkha "${HOME}/bin/dukkha"
+
+        chmod +x "${HOME}/bin/dukkha"
+
     - name: Build and Push Images
       env:
         GHCR_USER: ${{ github.actor }}
