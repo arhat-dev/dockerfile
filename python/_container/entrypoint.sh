@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e
+set -eux
 
 # shellcheck disable=SC1091
 . /app/.venv/bin/activate

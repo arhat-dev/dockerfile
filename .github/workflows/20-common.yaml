@@ -20,13 +20,28 @@ jobs:
   common:
     strategy:
       matrix:
-        language:
-        - go
-        - python3.6
-        - python3.7
-        - python3.8
-        - python3.9
-        - rust
+        include:
+        - language:
+          - go
+          version:
+          - "1.16"
+        - language:
+          - java
+          version:
+          - "8"
+          - "11"
+          - "16"
+        - language:
+          - python
+          version:
+          - "3.6"
+          - "3.7"
+          - "3.8"
+          - "3.9"
+        - language:
+          - rust
+          version:
+          - "1.53"
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
@@ -48,9 +63,14 @@ jobs:
         GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
       run: |
         sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
-        dukkha workflow local run \
-          build-common-images \
-          -m language=${{ matrix.language }}
+
+        dukkha buildah local build linux/base \
+          -m language=${{ matrix.language }} \
+          -m version=${{ matrix.version }}
+
+        dukkha buildah local push linux/base \
+          -m language=${{ matrix.language }} \
+          -m version=${{ matrix.version }}
 
     - name: Inspect Images
       if: always()

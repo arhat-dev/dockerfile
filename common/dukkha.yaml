@@ -3,9 +3,9 @@ buildah:build:
   matrix@file: &matrix common/matrix-linux.yml
   file@template|env: |-
     {{- if and (ne .Env.MATRIX_CROSS_ARCH "") (ne .Env.MATRIX_ARCH .Env.MATRIX_CROSS_ARCH) -}}
-    ${MATRIX_LANGUAGE}/_base/${MATRIX_ROOTFS}-cross.dockerfile
+    common/base-cross.dockerfile
     {{- else -}}
-    ${MATRIX_LANGUAGE}/_base/other.dockerfile
+    common/base.dockerfile
     {{- end -}}
 
   image_names@template: &base_image_names |-
@@ -21,38 +21,56 @@ buildah:build:
     {{- $cross_arch := "" -}}
     {{- $triple_name := "" -}}
     {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
-
-    {{- $host_arch = getDebianArch .Env.MATRIX_ARCH -}}
-    {{- $cross_arch = getDebianArch .Env.MATRIX_CROSS_ARCH -}}
-    {{- $triple_name = getDebianTripleName .Env.MATRIX_CROSS_ARCH -}}
-
+      {{- $host_arch = getDebianArch .Env.MATRIX_ARCH -}}
+      {{- $cross_arch = getDebianArch .Env.MATRIX_CROSS_ARCH -}}
+      {{- $triple_name = getDebianTripleName .Env.MATRIX_CROSS_ARCH -}}
     {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
-
-    {{- $host_arch = getAlpineArch .Env.MATRIX_ARCH -}}
-    {{- $cross_arch = getAlpineArch .Env.MATRIX_CROSS_ARCH -}}
-    {{- $triple_name = getAlpineTripleName .Env.MATRIX_CROSS_ARCH -}}
-
+      {{- $host_arch = getAlpineArch .Env.MATRIX_ARCH -}}
+      {{- $cross_arch = getAlpineArch .Env.MATRIX_CROSS_ARCH -}}
+      {{- $triple_name = getAlpineTripleName .Env.MATRIX_CROSS_ARCH -}}
     {{- end -}}
 
     {{- $rootfs_with_version := "" -}}
     {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
-    {{- $rootfs_with_version = .Env.DEBIAN_VERSION -}}
+      {{- $rootfs_with_version = .Env.DEBIAN_VERSION -}}
     {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
-    {{- $rootfs_with_version = printf "alpine%s" .Env.ALPINE_VERSION -}}
-    {{- end }}
+      {{- $rootfs_with_version = printf "alpine%s" .Env.ALPINE_VERSION -}}
+    {{- end -}}
 
+    {{- $base_image := "" -}}
+    {{- if eq .Env.MATRIX_LANGUAGE "golang" "python" "rust" -}}
+      {{ $base_image = printf "docker.io/%s/%s:%s-%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_LANGUAGE .Env.MATRIX_VERSION $rootfs_with_version }}
+    {{- else if eq .Env.MATRIX_LANGUAGE "java" -}}
+      {{- $repo_name := printf "openjdk%s" .Env.MATRIX_VERSION -}}
+      {{- if eq .Env.MATRIX_ARCH "amd64" "s390x" "ppc64le" -}}
+        {{- $repo_name = printf "%s-openj9" $repo_name -}}
+      {{- end -}}
+
+      {{- $tag_name := "" -}}
+      {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
+        {{- $tag_name = "debianslim-slim" -}}
+      {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
+        {{- $tag_name = "alpine-slim" -}}
+      {{- end -}}
+
+      {{ $base_image = printf "docker.io/adoptopenjdk/%s:%s" $repo_name $tag_name }}
+    {{- end -}}
+    {{ if eq .Env.MATRIX_LANGUAGE "java" }}
+    # adoptopenjdk sets os/arch/variant
+    - --os={{ .Env.MATRIX_KERNEL | getOciOS }}
+    - --arch={{ .Env.MATRIX_ARCH | getOciArch }}
+    - --variant={{ .Env.MATRIX_ARCH | getOciArchVariant }}
+    {{ end }}
     - --pull-always
     - --no-cache
+    - --build-arg
+    - BASE_IMAGE={{ $base_image }}
     - --build-arg
     - QEMU_ARCH={{ getQemuArch .Env.MATRIX_ARCH }}
     - --build-arg
     - QEMU_VERSION={{ .Env.QEMU_VERSION }}
     - --build-arg
-    - GO_VERSION={{ .Env.GO_VERSION }}
-    - --build-arg
-    - DOCKERHUB_ARCH={{ getDockerHubArch .Env.MATRIX_ARCH }}
-    - --build-arg
-    - ROOTFS_WITH_VERSION={{ $rootfs_with_version }}
+    - PROGRAMMING_LANGUAGE={{ .Env.MATRIX_LANGUAGE }}
     - --build-arg
     - MATRIX_ROOTFS={{ .Env.MATRIX_ROOTFS }}
     - --build-arg
@@ -63,6 +81,8 @@ buildah:build:
     - CROSS_TRIPLE_NAME={{ $triple_name }}
     - --build-arg
     - MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
+    - --build-arg
+    - MATRIX_CROSS_ARCH={{ .Env.MATRIX_CROSS_ARCH }}
 
 buildah:push:
 - name: linux/base

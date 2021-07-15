@@ -7,6 +7,9 @@ FROM ${BASE_IMAGE}
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
 COPY --from=dukkha /dukkha /usr/local/bin/dukkha
+
+ARG PROGRAMMING_LANGUAGE
+COPY "${PROGRAMMING_LANGUAGE}/_builder/build.sh" /build.sh
 RUN chmod +x /usr/local/bin/dukkha
 
 WORKDIR /app
