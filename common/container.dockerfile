@@ -19,6 +19,9 @@ RUN set -eux ;\
     sh /setup.sh "${MATRIX_ARCH}" && rm -f /setup.sh ;\
     chmod a+x /usr/local/bin/entrypoint
 
-FROM scratch
-COPY --from=builder / /
+# TODO: shrink the final image by copy whole rootfs to scratch
+#       need to find a way to keep all environment variables
+# FROM scratch
+# COPY --from=builder / /
+
 ENTRYPOINT [ "/usr/local/bin/entrypoint" ]
