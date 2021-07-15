@@ -2,4 +2,4 @@
 
 set -eux
 
-echo "Done."
+# TODO: install maven3

@@ -68,9 +68,28 @@ if [ "${host_arch}" = "amd64" ]; then
   esac
 fi
 
-apt-get install -y --no-install-recommends \
+case "${host_arch}" in
+amd64)
+  apt-get install -y --no-install-recommends \
+    "gcc-${cross_triple_name}" \
+    "g++-${cross_triple_name}" \
+    "linux-libc-dev-${cross_arch}-cross"
+  ;;
+arm64)
+  case "${cross_arch}" in
+  i386 | arm*)
+    # toolchain for arm64 in buster is limited to arm and x86
+    # (more available in bullseye)
+    apt-get install -y --no-install-recommends \
       "gcc-${cross_triple_name}" \
       "g++-${cross_triple_name}" \
       "linux-libc-dev-${cross_arch}-cross"
+    ;;
+  *)
+    :
+    ;;
+  esac
+  ;;
+esac
 
 rm -rf /var/lib/apt/lists/*

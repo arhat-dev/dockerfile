@@ -45,8 +45,10 @@ buildah:build:
     {{- end -}}
 
     {{- $base_image := "" -}}
-    {{- if eq .Env.MATRIX_LANGUAGE "golang" "python" "rust" "ruby" "nodejs" -}}
-      {{ $base_image = printf "docker.io/%s/%s:%s-%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_LANGUAGE .Env.MATRIX_VERSION $rootfs_with_version }}
+    {{- if eq .Env.MATRIX_LANGUAGE "golang" "python" "rust" "ruby" -}}
+      {{- $base_image = printf "docker.io/%s/%s:%s-%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_LANGUAGE .Env.MATRIX_VERSION $rootfs_with_version -}}
+    {{- else if eq .Env.MATRIX_LANGUAGE "java" -}}
+      {{- $base_image = printf "docker.io/%s/node:%s-%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_VERSION $rootfs_with_version -}}
     {{- else if eq .Env.MATRIX_LANGUAGE "java" -}}
       {{- $repo_name := printf "openjdk%s" .Env.MATRIX_VERSION -}}
       {{- if eq .Env.MATRIX_ARCH "amd64" "s390x" "ppc64le" -}}
@@ -60,7 +62,7 @@ buildah:build:
         {{- $tag_name = "alpine-slim" -}}
       {{- end -}}
 
-      {{ $base_image = printf "docker.io/adoptopenjdk/%s:%s" $repo_name $tag_name }}
+      {{- $base_image = printf "docker.io/adoptopenjdk/%s:%s" $repo_name $tag_name -}}
     {{- end -}}
     {{ if eq .Env.MATRIX_LANGUAGE "java" }}
     # adoptopenjdk sets os/arch/variant
@@ -90,6 +92,9 @@ buildah:build:
     - MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
     - --build-arg
     - MATRIX_CROSS_ARCH={{ .Env.MATRIX_CROSS_ARCH }}
+    # for java
+    - --build-arg
+    - MAVEN3_VERSION={{ .Env.MAVEN3_VERSION }}
 
 ################################
 #

@@ -13,6 +13,9 @@ LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 ARG MATRIX_ROOTFS
 ARG PROGRAMMING_LANGUAGE
 
+# for java
+ARG MAVEN3_VERSION
+
 COPY "common/setup-${MATRIX_ROOTFS}.sh" /setup.sh
 COPY "${PROGRAMMING_LANGUAGE}/_base/setup.sh" /setup-language.sh
 

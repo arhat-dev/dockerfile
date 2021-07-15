@@ -28,8 +28,10 @@ bootstrap:
   - NIX_VERSION=2.3.14
   # source(git-tags): https://github.com/elastic/elasticsearch
   - ES7_VERSION=v7.13.3
-  # source(git-tags): https
+  # source(git-tags): https://github.com/protocolbuffers/protobuf
   - PROTOC_VERSION=v3.17.3
+  # source(git-tags): https://github.com/apache/maven
+  - MAVEN3_VERSION=3.8.1
 
 tools:
   buildah:
