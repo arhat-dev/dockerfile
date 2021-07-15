@@ -4,18 +4,6 @@ include:
   arch:
   - amd64
   - ppc64le
-  # support for s390x is rare
-  # - s390x
-  jre:
-  - 11-jre-openj9
-  jdk:
-  - 11-jdk-openj9
-- kernel:
-  - linux
-  arch:
   - arm64
   - armv7
-  jre:
-  - 11-jre-hotspot
-  jdk:
-  - 11-jdk-hotspot
+  - s390x

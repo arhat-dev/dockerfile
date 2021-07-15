@@ -1,13 +1,6 @@
-ARG DOCKERHUB_ARCH
-ARG MATRIX_JDK
-ARG MATRIX_JRE
-
-FROM docker.io/${DOCKERHUB_ARCH}/adoptopenjdk:${MATRIX_JDK} AS builder
-
-ARG TINI_VERSION
 ARG MATRIX_ARCH
-COPY scripts/install-tini.sh /install-tini.sh
-RUN sh /install-tini.sh && rm -f /install-tini.sh
+
+FROM ghcr.io/arhat-dev/builder-java:11-debian-${MATRIX_ARCH} AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN set -ex ;\
@@ -55,7 +48,7 @@ RUN set -ex;\
     # should only have one directory
     mv /expanded/sonarqube-* /expanded/sonarqube
 
-FROM docker.io/${DOCKERHUB_ARCH}/adoptopenjdk:${MATRIX_JRE}
+FROM ghcr.io/arhat-dev/java:11-debian-${MATRIX_ARCH}
 
 # reference:
 # https://github.com/SonarSource/docker-sonarqube/blob/master/9/community/Dockerfile

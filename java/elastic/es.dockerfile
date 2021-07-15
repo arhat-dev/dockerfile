@@ -1,13 +1,6 @@
-ARG DOCKERHUB_ARCH
-ARG MATRIX_JDK
-ARG MATRIX_JRE
-
-FROM docker.io/${DOCKERHUB_ARCH}/adoptopenjdk:${MATRIX_JDK} AS builder
-
-ARG TINI_VERSION
 ARG MATRIX_ARCH
-COPY scripts/install-tini.sh /install-tini.sh
-RUN sh /install-tini.sh && rm -f /install-tini.sh
+
+FROM ghcr.io/arhat-dev/builder-java:16-debian-${MATRIX_ARCH} AS builder
 
 ARG APP
 COPY build/${APP} /es
@@ -42,7 +35,7 @@ RUN set -eux ;\
     find . -xdev -perm -4000 -exec chmod ug-s {} + && \
     find . -type f -exec chmod o+r {} +
 
-FROM docker.io/${DOCKERHUB_ARCH}/adoptopenjdk:${MATRIX_JRE}
+FROM ghcr.io/arhat-dev/java:16-debian-${MATRIX_ARCH}
 
 ENV LANG='en_US.UTF-8' \
     LANGUAGE='en_US:en' \

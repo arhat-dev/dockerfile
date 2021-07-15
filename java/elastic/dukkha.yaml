@@ -16,27 +16,19 @@ buildah:build:
   file: java/elastic/es.dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
-  extra_args@env|template: |-
-    - --pull-always
-    - --os={{ .Env.MATRIX_KERNEL | getOciOS }}
-    - --arch={{ .Env.MATRIX_ARCH | getOciArch }}
-    - --variant={{ .Env.MATRIX_ARCH | getOciArchVariant }}
-    - --ulimit
-    - nofile=1048576
-    - --build-arg
-    - APP=${APP}
-    - --build-arg
-    - VERSION={{ .Env.VERSION | trimPrefix "v" }}
-    - --build-arg
-    - TINI_VERSION=${TINI_VERSION}
-    - --build-arg
-    - DOCKERHUB_ARCH={{ .Env.MATRIX_ARCH | getDockerHubArch }}
-    - --build-arg
-    - MATRIX_JRE=${MATRIX_JRE}
-    - --build-arg
-    - MATRIX_JDK=${MATRIX_JDK}
-    - --build-arg
-    - MATRIX_ARCH=${MATRIX_ARCH}
+  extra_args@env|template:
+  - --pull-always
+  # - --os={{ .Env.MATRIX_KERNEL | getOciOS }}
+  # - --arch={{ .Env.MATRIX_ARCH | getOciArch }}
+  # - --variant={{ .Env.MATRIX_ARCH | getOciArchVariant }}
+  - --ulimit
+  - nofile=1048576
+  - --build-arg
+  - APP=${APP}
+  - --build-arg
+  - VERSION={{ .Env.VERSION | trimPrefix "v" }}
+  - --build-arg
+  - MATRIX_ARCH=${MATRIX_ARCH}
 
 buildah:push:
 - name: elasticsearch-7

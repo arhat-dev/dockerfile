@@ -1,20 +1,6 @@
-ARG DOCKERHUB_ARCH
-ARG MATRIX_JDK
-ARG MATRIX_JRE
-
-FROM docker.io/${DOCKERHUB_ARCH}/adoptopenjdk:${MATRIX_JDK} AS builder
-
-# install tini and maven3
-COPY scripts/install-tini.sh scripts/install-maven3.sh /
-
-ARG TINI_VERSION
-ARG MAVEN3_VERSION
 ARG MATRIX_ARCH
-RUN set -eux ;\
-    sh /install-tini.sh && rm -f /install-tini.sh ;\
-    sh /install-maven3.sh "/usr/local/maven3" && rm -f /install-maven3.sh ;\
-    apt-get update ;\
-    DEBIAN_FRONTEND=noninteractive apt-get install -y git
+
+FROM ghcr.io/arhat-dev/builder-java:8-debian-${MATRIX_ARCH} AS builder
 
 ENV PATH="/usr/local/maven3/bin:${PATH}"
 
@@ -39,7 +25,7 @@ RUN set -eux ;\
     # mv build/distribution/local/opendj-${VERSION}-SNAPSHOT \
     #     /opt/opendj ;\
 
-FROM docker.io/${DOCKERHUB_ARCH}/adoptopenjdk:${MATRIX_JRE}
+FROM ghcr.io/arhat-dev/java:8-debian-${MATRIX_ARCH}
 
 ENV LANG='en_US.UTF-8' \
     LANGUAGE='en_US:en' \
