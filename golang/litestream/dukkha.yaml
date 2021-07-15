@@ -9,7 +9,7 @@ golang:build:
   chdir@env: /app/build/${APP}
   path: ./cmd/litestream
   outputs@env:
-  - /app/build/${APP}.${MATRIX_KERNEL}.${MATRIX_ROOTFS}.${MATRIX_ARCH}
+  - /app/build/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}
   cgo:
     enabled: true
   ldflags@env:

@@ -12,8 +12,12 @@ FROM ghcr.io/arhat-dev/golang:1.16-${MATRIX_ROOTFS}-${MATRIX_ARCH}
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
+ARG APP
+ARG MATRIX_KERNEL
 ARG MATRIX_ARCH
-COPY --from=builder /app/build/proton-bridge.linux.${MATRIX_ARCH} /proton-bridge
+COPY --from=builder \
+    "/app/build/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}" \
+    /proton-bridge
 
 ARG MATRIX_ROOTFS
 COPY golang/proton-bridge/setup.sh /setup.sh

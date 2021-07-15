@@ -6,7 +6,7 @@ golang:build:
   # source(git-tags): https://github.com/golangci/golangci-lint
   - VERSION=v1.41.1
   - DEFAULT_ROOTFS=alpine
-  matrix@file: &matrix golang/matrix-cgo-all.yml
+  matrix@file: &matrix golang/matrix-all.yml
   chdir@env: /app/build/${APP}
   path: ./cmd/golangci-lint/
   outputs@env:
@@ -31,10 +31,10 @@ buildah:build:
   matrix@file: *matrix
   hooks:
     before:
-    - shell: |-
+    - shell@env: |-
         [ -d build/golangci-lint ] && exit 0
 
-        git clone --branch v1.41.1 \
+        git clone --depth 1 --branch ${VERSION} \
           https://github.com/golangci/golangci-lint.git \
           build/golangci-lint
 

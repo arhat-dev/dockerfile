@@ -1,3 +1,4 @@
+# cgo-all: using cgo, no rootfs info
 include:
 # debian for gnu libc
 - kernel:
@@ -6,24 +7,26 @@ include:
   - debian
   arch:
   - amd64
+  - arm64
+  - armv7
   - armv5
-  - armv7
-  - arm64
   - ppc64le
+  - s390x
+  - x86
   - mips64le
-  - x86
-  - s390x
-# alpine for musl libc
-- kernel:
-  - linux
-  rootfs:
-  - alpine
-  arch:
-  - amd64
-  - arm64
-  - armv6
-  - armv7
-  - x86
-  - s390x
-  # TODO: add ppc64le after #11 resolved
-  # - ppc64le
+  # - armv6 # debian has no armv6 image
+
+# # alpine for musl libc
+# - kernel:
+#   - linux
+#   rootfs:
+#   - alpine
+#   arch:
+#   - amd64
+#   - arm64
+#   - armv6
+#   - armv7
+#   - x86
+#   - s390x
+#   # TODO: add ppc64le after #11 resolved
+#   # - ppc64le

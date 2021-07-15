@@ -12,12 +12,15 @@
 - --build-arg
 - MATRIX_ARCH=${MATRIX_ARCH}
 
-- --build-arg
-- DOCKERHUB_ARCH={{ .Env.MATRIX_ARCH | getDockerHubArch }}
-
 # for golangci-lint
 - --build-arg
 - GO_VERSION={{ .Env.GO_VERSION }}
 
 - --build-arg
 - PROTOC_VERSION={{ .Env.PROTOC_VERSION }}
+
+- --build-arg
+- HOST_ARCH={{ .Env.HOST_ARCH }}
+
+- --build-arg
+- MATRIX_KERNEL={{ .Env.MATRIX_KERNEL }}

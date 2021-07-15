@@ -1,3 +1,5 @@
+# nocgo-all: not using cgo, no rootfs info, all arch
+
 include:
 # alpine
 - kernel:
@@ -11,6 +13,7 @@ include:
   - armv7
   - armv6
   - s390x
+
 # debian
 - kernel:
   - linux

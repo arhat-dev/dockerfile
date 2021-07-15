@@ -1,14 +1,19 @@
-# like nocgo-all but only have 64bit platform support
+# all: all arch for all rootfs
+# update according
 include:
 - kernel:
   - linux
   rootfs:
   - debian
   arch:
-  - mips64le
-  # TODO: switch to alpine/ppc64le after #11 resolved
+  - amd64
+  - arm64
+  - armv7
+  - armv5
   - ppc64le
-
+  - s390x
+  - x86
+  - mips64le
 - kernel:
   - linux
   rootfs:
@@ -16,4 +21,7 @@ include:
   arch:
   - amd64
   - arm64
+  - armv6
+  - armv7
+  - x86
   - s390x

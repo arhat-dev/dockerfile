@@ -1,17 +1,5 @@
-ARG APP
-ARG MATRIX_ARCH
-
-# values like arm64v8
-ARG DOCKERHUB_ARCH
-
-# 1.16
-ARG GO_VERSION
-
-# buster or alpine
-ARG ROOTFS_NAME
-
-# debian or alpine
 ARG MATRIX_ROOTFS
+ARG MATRIX_ARCH
 
 FROM ghcr.io/arhat-dev/builder-golang:1.16-alpine AS builder
 
@@ -20,13 +8,13 @@ ARG MATRIX_ROOTFS
 ARG MATRIX_ARCH
 
 COPY . /app
-RUN dukkha golang local build ${APP} \
+RUN dukkha golang local build "${APP}" \
     -m rootfs=${MATRIX_ROOTFS} \
     -m kernel=linux \
     -m arch=${MATRIX_ARCH}
 
 # ref: https://github.com/golangci/golangci-lint/blob/master/build/Dockerfile
-FROM docker.io/${DOCKERHUB_ARCH}/golang:${GO_VERSION}-${ROOTFS_NAME}
+FROM ghcr.io/arhat-dev/base-golang:1.16-${MATRIX_ROOTFS}-${MATRIX_ARCH}
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
