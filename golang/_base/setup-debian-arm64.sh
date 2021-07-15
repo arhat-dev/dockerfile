@@ -5,9 +5,9 @@ set -ex
 # MIRROR_SITE="${MIRROR_SITE}"
 
 # add multiarchs
+dpkg --add-architecture amd64
 dpkg --add-architecture armhf
 dpkg --add-architecture armel
-dpkg --add-architecture arm64
 dpkg --add-architecture i386
 dpkg --add-architecture mips
 dpkg --add-architecture mipsel
@@ -38,8 +38,9 @@ apt-get update
 # arm cross compiler
 apt-get install -y --no-install-recommends \
     gcc-arm-linux-gnueabi g++-arm-linux-gnueabi linux-libc-dev-armel-cross \
-    gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf linux-libc-dev-armhf-cross \
-    gcc-aarch64-linux-gnu g++-aarch64-linux-gnu linux-libc-dev-arm64-cross
+    gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf linux-libc-dev-armhf-cross
+
+# NOTE: native: gcc-aarch64-linux-gnu g++-aarch64-linux-gnu linux-libc-dev-arm64-cross
 
 # mips cross compiler
 apt-get install -y --no-install-recommends \

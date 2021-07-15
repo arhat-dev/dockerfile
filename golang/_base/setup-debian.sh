@@ -14,7 +14,9 @@ fi
 # apt install -y apt-transport-https
 # sed -i 's/http:/https:/g' /etc/apt/sources.list
 
-apt update
-apt upgrade -y
-apt install -y --no-install-recommends \
-  git make curl build-essential wget
+export DEBIAN_FRONTEND=noninteractive
+
+apt-get update
+apt-get upgrade -y
+apt-get install -y --no-install-recommends \
+  git make curl build-essential wget ca-certificates

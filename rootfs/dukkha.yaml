@@ -1,0 +1,25 @@
+buildah:build:
+- name: rootfs/alpine
+  matrix@env:
+    include:
+    - rootfs:
+      - alpine
+      version:
+      - "3.13"
+      tag:
+      - "3.13"
+      arch:
+      - amd64
+      - arm64
+      - armv7
+      - armv6
+    - rootfs:
+      - debian
+      version:
+      - buster-slim
+      tag:
+      - "10"
+  file: rootfs/Dockerfile
+  image_names:
+  - image: ${IMAGE_REPO}/${MATRIX_ROOTFS}:-${MATRIX_ARCH}
+    manifest: ${IMAGE_REPO}/${MATRIX_ROOTFS}:${MATRIX_TAG}

@@ -1,4 +1,5 @@
 include:
+- common/dukkha.yaml
 - app/*/dukkha.yaml
 - nix/dukkha.yaml
 - java/*/dukkha.yaml
@@ -47,10 +48,11 @@ tools:
     - ${DUKKHA_WORKING_DIR}
     - -v
     - ${DUKKHA_WORKING_DIR}:${DUKKHA_WORKING_DIR}
-    - --security-opt
-    - label=disable
-    - --security-opt
-    - seccomp=unconfined
+    - --privileged
+    # - --security-opt
+    # - label=disable
+    # - --security-opt
+    # - seccomp=unconfined
     - -v
     - buildah-dockerfile:/var/lib/containers
     - --device

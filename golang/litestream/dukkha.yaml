@@ -28,11 +28,9 @@ buildah:build:
   hooks:
     before:
     - shell@env: |-
-        if [ -d build/${APP} ]; then
-          exit 0
-        fi
+        [ -d build/${APP} ] && exit 0
 
-        git clone -b ${VERSION} \
+        git clone --depth 1 -b ${VERSION} \
           https://github.com/benbjohnson/litestream.git \
           build/${APP}
 

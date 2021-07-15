@@ -1,0 +1,140 @@
+include:
+# alpine has no cross compiling support
+- language:
+  - golang
+  - python3.6
+  - python3.7
+  - python3.8
+  - python3.9
+  kernel:
+  - linux
+  rootfs:
+  - alpine
+  arch:
+  # alpine has no armv5 and mips64le support
+  - amd64
+  - arm64
+  - armv7
+  - armv6
+  - s390x
+  - x86
+  # ERROR: patch-2.7.6-r6: package mentioned in index not found (try 'apk update')
+  # TODO: fix this and close #11
+  # - ppc64le
+  cross_arch: [""]
+
+# debian amd64 based cross
+- language:
+  - golang
+  - python3.6
+  - python3.7
+  - python3.8
+  - python3.9
+  kernel:
+  - linux
+  rootfs:
+  - debian
+  arch:
+  # debian has no armv6 support
+  - amd64
+  cross_arch: &debian_golang_cross_arch
+  - amd64 # including self to build non cross image
+  - arm64
+  - armv7
+  - armv5
+  - ppc64le
+  - s390x
+  - x86
+  - mips64le
+
+# debian arm64 based cross
+- language:
+  - golang
+  - python3.6
+  - python3.7
+  - python3.8
+  - python3.9
+  kernel:
+  - linux
+  rootfs:
+  - debian
+  arch:
+  # debian has no armv6 support
+  - arm64
+  cross_arch:
+  # - amd64 # not supported
+  - arm64
+  - armv7
+  - armv5
+  - ppc64le
+  - s390x
+  - x86
+  - mips64le
+
+# debian no cross (while ppc64le does have cross toolchain)
+- language:
+  - golang
+  - python3.6
+  - python3.7
+  - python3.8
+  - python3.9
+  kernel:
+  - linux
+  rootfs:
+  - debian
+  arch:
+  # debian has no armv6 support
+  - armv7
+  - armv5
+  - ppc64le
+  - s390x
+  - x86
+  - mips64le
+  cross_arch: [""]
+
+# alpine has no cross compiling
+- language:
+  - rust
+  kernel:
+  - linux
+  rootfs:
+  - alpine
+  arch:
+  - amd64
+  - arm64
+  cross_arch: [""]
+
+- language:
+  - rust
+  kernel:
+  - linux
+  rootfs:
+  - debian
+  arch:
+  - amd64
+  cross_arch: &debian_rust_cross_arch
+  - amd64
+  - arm64
+  - armv7
+  - x86
+
+- language:
+  - rust
+  kernel:
+  - linux
+  rootfs:
+  - debian
+  - alpine
+  arch:
+  - arm64
+  cross_arch: *debian_rust_cross_arch
+
+- language:
+  - rust
+  kernel:
+  - linux
+  rootfs:
+  - debian
+  arch:
+  - armv7
+  - x86

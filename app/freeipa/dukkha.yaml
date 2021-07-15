@@ -1,0 +1,49 @@
+buildah:build:
+- name: freeipa
+  env@template: &env
+  - APP=freeipa
+  # source(git-tags): https://pagure.io/freeipa.git
+  - VERSION=4.9.6
+  hooks:
+    before:
+    - shell@env: |-
+        [ -d "build/${APP}" ] && exit 0
+
+        git clone --recursive --branch ${VERSION} \
+          https://pagure.io/freeipa.git \
+          "build/${APP}"
+
+  matrix@file: &matrix java/matrix-11-amd64-arm64.yml
+  file: java/freeipa/Dockerfile.fedora-34
+  image_names@file|template: &image_names |-
+    templates/image-names/no-rootfs-info/env[APP:VERSION].yml
+  extra_args@env|template: |-
+    - --pull-always
+    - --os={{ .Env.MATRIX_KERNEL | getOciOS }}
+    - --arch={{ .Env.MATRIX_ARCH | getOciArch }}
+    - --variant={{ .Env.MATRIX_ARCH | getOciArchVariant }}
+    - --build-arg
+    - APP=${APP}
+    - --build-arg
+    - VERSION=${VERSION}
+    - --build-arg
+    - TINI_VERSION=${TINI_VERSION}
+    - --build-arg
+    - MATRIX_ARCH=${MATRIX_ARCH}
+    - --build-arg
+    - DOCKERHUB_ARCH={{ .Env.MATRIX_ARCH | getDockerHubArch }}
+    - --build-arg
+    - MATRIX_JRE=${MATRIX_JRE}
+    - --build-arg
+    - MATRIX_JDK=${MATRIX_JDK}
+    - --build-arg
+    - MAVEN3_VERSION=${MAVEN3_VERSION}
+
+buildah:push:
+- name: freeipa
+  env@template: *env
+  hooks:
+    before:
+    - task: buildah:login(ghcr)
+  matrix@file: *matrix
+  image_names@file|template: *image_names

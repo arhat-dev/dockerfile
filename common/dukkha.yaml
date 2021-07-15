@@ -1,0 +1,73 @@
+buildah:build:
+- name: linux/base
+  matrix@file: &matrix common/matrix-linux.yml
+  file@template|env: |-
+    {{- if and (ne .Env.MATRIX_CROSS_ARCH "") (ne .Env.MATRIX_ARCH .Env.MATRIX_CROSS_ARCH) -}}
+    ${MATRIX_LANGUAGE}/_base/${MATRIX_ROOTFS}-cross.dockerfile
+    {{- else -}}
+    ${MATRIX_LANGUAGE}/_base/other.dockerfile
+    {{- end -}}
+
+  image_names@template: &base_image_names |-
+    {{- $prefix := printf "%s/base-%s" .Env.IMAGE_REPO .Env.MATRIX_LANGUAGE -}}
+    {{- $tag := printf "%s-%s" .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
+    {{- if and (ne .Env.MATRIX_CROSS_ARCH "") (ne .Env.MATRIX_ARCH .Env.MATRIX_CROSS_ARCH) -}}
+    {{- $tag = printf "%s-%s-%s" .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH .Env.MATRIX_CROSS_ARCH -}}
+    {{- end }}
+    - image: {{ $prefix }}:{{ $tag }}
+
+  extra_args@template: |-
+    {{- $host_arch := "" -}}
+    {{- $cross_arch := "" -}}
+    {{- $triple_name := "" -}}
+    {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
+
+    {{- $host_arch = getDebianArch .Env.MATRIX_ARCH -}}
+    {{- $cross_arch = getDebianArch .Env.MATRIX_CROSS_ARCH -}}
+    {{- $triple_name = getDebianTripleName .Env.MATRIX_CROSS_ARCH -}}
+
+    {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
+
+    {{- $host_arch = getAlpineArch .Env.MATRIX_ARCH -}}
+    {{- $cross_arch = getAlpineArch .Env.MATRIX_CROSS_ARCH -}}
+    {{- $triple_name = getAlpineTripleName .Env.MATRIX_CROSS_ARCH -}}
+
+    {{- end -}}
+
+    {{- $rootfs_with_version := "" -}}
+    {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
+    {{- $rootfs_with_version = .Env.DEBIAN_VERSION -}}
+    {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
+    {{- $rootfs_with_version = printf "alpine%s" .Env.ALPINE_VERSION -}}
+    {{- end }}
+
+    - --pull-always
+    - --no-cache
+    - --build-arg
+    - QEMU_ARCH={{ getQemuArch .Env.MATRIX_ARCH }}
+    - --build-arg
+    - QEMU_VERSION={{ .Env.QEMU_VERSION }}
+    - --build-arg
+    - GO_VERSION={{ .Env.GO_VERSION }}
+    - --build-arg
+    - DOCKERHUB_ARCH={{ getDockerHubArch .Env.MATRIX_ARCH }}
+    - --build-arg
+    - ROOTFS_WITH_VERSION={{ $rootfs_with_version }}
+    - --build-arg
+    - MATRIX_ROOTFS={{ .Env.MATRIX_ROOTFS }}
+    - --build-arg
+    - HOST_ARCH={{ $host_arch }}
+    - --build-arg
+    - CROSS_ARCH={{ $cross_arch }}
+    - --build-arg
+    - CROSS_TRIPLE_NAME={{ $triple_name }}
+    - --build-arg
+    - MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
+
+buildah:push:
+- name: linux/base
+  hooks:
+    before:
+    - task: buildah:login(ghcr)
+  matrix@file: *matrix
+  image_names@template: *base_image_names
