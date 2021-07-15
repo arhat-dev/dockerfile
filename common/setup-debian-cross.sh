@@ -45,29 +45,32 @@ apt-get install -y --no-install-recommends \
   wget \
   ca-certificates
 
-case "${cross_arch}" in
-armhf)
-  # add arm cross compiler from linaro
-  curl --retry 10 -o arm-none-linux-gnueabihf.tar.xz -sSfL \
-    https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-a/10.2-2020.11/binrel/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf.tar.xz
-  tar xf arm-none-linux-gnueabihf.tar.xz
-  mv gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf /opt/arm-none-linux-gnueabihf
-  rm -rf arm-none-linux-gnueabihf.tar.xz
-  ;;
-arm64)
-  # add arm64 cross compiler from linaro
-  curl --retry 10 -o aarch64-none-linux-gnu.tar.xz -sSfL \
-    https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-a/10.2-2020.11/binrel/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu.tar.xz
-  tar xf aarch64-none-linux-gnu.tar.xz
-  mv gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu /opt/aarch64-none-linux-gnu
-  rm -rf aarch64-none-linux-gnu.tar.xz
-  ;;
-*)
-  apt-get install -y --no-install-recommends \
-    "gcc-${cross_triple_name}" \
-    "g++-${cross_triple_name}" \
-    "linux-libc-dev-${cross_arch}-cross"
-  ;;
-esac
+# Install cross compiler
+
+if [ "${host_arch}" = "amd64" ]; then
+  case "${cross_arch}" in
+  armhf)
+    # add arm cross compiler from linaro
+    curl --retry 10 -o arm-none-linux-gnueabihf.tar.xz -sSfL \
+      https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-a/10.2-2020.11/binrel/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf.tar.xz
+    tar xf arm-none-linux-gnueabihf.tar.xz
+    mv gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf /opt/arm-none-linux-gnueabihf
+    rm -rf arm-none-linux-gnueabihf.tar.xz
+    ;;
+  arm64)
+    # add arm64 cross compiler from linaro
+    curl --retry 10 -o aarch64-none-linux-gnu.tar.xz -sSfL \
+      https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-a/10.2-2020.11/binrel/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu.tar.xz
+    tar xf aarch64-none-linux-gnu.tar.xz
+    mv gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu /opt/aarch64-none-linux-gnu
+    rm -rf aarch64-none-linux-gnu.tar.xz
+    ;;
+  esac
+fi
+
+apt-get install -y --no-install-recommends \
+      "gcc-${cross_triple_name}" \
+      "g++-${cross_triple_name}" \
+      "linux-libc-dev-${cross_arch}-cross"
 
 rm -rf /var/lib/apt/lists/*

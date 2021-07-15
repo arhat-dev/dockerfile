@@ -1,7 +1,13 @@
 buildah:build:
+################################
+#
+# Base
+#
+################################
+
 - name: linux/base
-  matrix@file: &matrix common/matrix-linux.yml
-  file@template|env: |-
+  matrix@file: &matrix common/matrix-base.yml
+  file@template: |-
     {{- if and (ne .Env.MATRIX_CROSS_ARCH "") (ne .Env.MATRIX_ARCH .Env.MATRIX_CROSS_ARCH) -}}
     common/base-cross.dockerfile
     {{- else -}}
@@ -39,7 +45,7 @@ buildah:build:
     {{- end -}}
 
     {{- $base_image := "" -}}
-    {{- if eq .Env.MATRIX_LANGUAGE "golang" "python" "rust" -}}
+    {{- if eq .Env.MATRIX_LANGUAGE "golang" "python" "rust" "ruby" "nodejs" -}}
       {{ $base_image = printf "docker.io/%s/%s:%s-%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_LANGUAGE .Env.MATRIX_VERSION $rootfs_with_version }}
     {{- else if eq .Env.MATRIX_LANGUAGE "java" -}}
       {{- $repo_name := printf "openjdk%s" .Env.MATRIX_VERSION -}}
@@ -66,10 +72,10 @@ buildah:build:
     - --no-cache
     - --build-arg
     - BASE_IMAGE={{ $base_image }}
-    - --build-arg
-    - QEMU_ARCH={{ getQemuArch .Env.MATRIX_ARCH }}
-    - --build-arg
-    - QEMU_VERSION={{ .Env.QEMU_VERSION }}
+    # - --build-arg
+    # - QEMU_ARCH={{ getQemuArch .Env.MATRIX_ARCH }}
+    # - --build-arg
+    # - QEMU_VERSION={{ .Env.QEMU_VERSION }}
     - --build-arg
     - PROGRAMMING_LANGUAGE={{ .Env.MATRIX_LANGUAGE }}
     - --build-arg
@@ -85,6 +91,70 @@ buildah:build:
     - --build-arg
     - MATRIX_CROSS_ARCH={{ .Env.MATRIX_CROSS_ARCH }}
 
+################################
+#
+# Builder
+#
+################################
+
+- name: linux/builder-prepare-dukkha
+  matrix@file: *matrix
+  file: common/builder.dockerfile
+  image_names@env:
+  - image: local-dukkha:${MATRIX_ARCH}
+  extra_args@env:
+  - --target=dukkha
+  - --pull-always
+  - --build-arg
+  - DUKKHA_IMAGE=ghcr.io/arhat-dev/dukkha:latest-${MATRIX_ARCH}
+  - --build-arg
+  - BASE_IMAGE=scratch
+
+- name: linux/builder
+  matrix@file: *matrix
+  hooks:
+    before:matrix:
+    - task: buildah:build(linux/builder-prepare-dukkha)
+  file: common/builder.dockerfile
+  image_names@template: &builder_image_names |-
+    {{- $prefix := printf "%s/builder-%s" .Env.IMAGE_REPO .Env.MATRIX_LANGUAGE -}}
+    {{- $tag := printf "%s-%s" .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
+    {{- $manifest_tag := .Env.MATRIX_ROOTFS -}}
+    {{- if and (ne .Env.MATRIX_CROSS_ARCH "") (ne .Env.MATRIX_ARCH .Env.MATRIX_CROSS_ARCH) -}}
+      {{- $tag = printf "%s-%s-%s" .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH .Env.MATRIX_CROSS_ARCH -}}
+      {{- $manifest_tag = "" -}}
+    {{- end }}
+
+    - image: {{ $prefix }}:{{ $tag }}
+      {{- if $manifest_tag }}
+      manifest: {{ $prefix }}:{{ $manifest_tag }}
+      {{- end -}}
+
+  extra_args@template: |-
+    {{- $prefix := printf "%s/base-%s" .Env.IMAGE_REPO .Env.MATRIX_LANGUAGE -}}
+    {{- $tag := printf "%s-%s" .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
+    {{- if and (ne .Env.MATRIX_CROSS_ARCH "") (ne .Env.MATRIX_ARCH .Env.MATRIX_CROSS_ARCH) -}}
+      {{- $tag = printf "%s-%s-%s" .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH .Env.MATRIX_CROSS_ARCH -}}
+    {{- end -}}
+
+    {{- $base_image_name := printf "%s:%s-%s" $prefix .Env.MATRIX_VERSION $tag -}}
+    {{- $base_image_id := os_ReadFile (getBuildahImageIDFile $base_image_name) -}}
+
+    {{- $dukkha_image_name := printf "local-dukkha:%s" .Env.MATRIX_ARCH -}}
+    {{- $dukkha_image_id := os_ReadFile (getBuildahImageIDFile $dukkha_image_name) -}}
+
+    - --pull-never
+    - --build-arg
+    - DUKKHA_IMAGE={{ $dukkha_image_id }}
+    - --build-arg
+    - BASE_IMAGE={{ $base_image_id }}
+
+################################
+#
+# Container
+#
+################################
+
 buildah:push:
 - name: linux/base
   hooks:
@@ -92,3 +162,10 @@ buildah:push:
     - task: buildah:login(ghcr)
   matrix@file: *matrix
   image_names@template: *base_image_names
+
+- name: linux/builder
+  hooks:
+    before:
+    - task: buildah:login(ghcr)
+  matrix@file: *matrix
+  image_names@template: *builder_image_names
