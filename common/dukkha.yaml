@@ -109,6 +109,8 @@ buildah:build:
   - DUKKHA_IMAGE=ghcr.io/arhat-dev/dukkha:latest-${MATRIX_ARCH}
   - --build-arg
   - BASE_IMAGE=scratch
+  - --build-arg
+  - PROGRAMMING_LANGUAGE={{ .Env.MATRIX_LANGUAGE }}
 
 - name: linux/builder
   env:

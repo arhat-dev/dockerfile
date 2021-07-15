@@ -1,4 +1,4 @@
-name: python
+name: java
 
 # yamllint disable-line rule:truthy
 on:
@@ -11,20 +11,19 @@ on:
     - master
     paths:
     - common/**
-    - python/**
-    - .github/workflows/*-python.yaml
+    - java/**
+    - .github/workflows/*-java.yaml
   schedule:
-  - cron: "0 4 * * *"
+  - cron: "0 5 * * *"
 
 jobs:
   common:
     strategy:
       matrix:
         version:
-        - "3.6.14"
-        - "3.7.11"
-        - "3.8.11"
-        - "3.9.6"
+        - "8"
+        - "11"
+        - "16"
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
@@ -48,19 +47,19 @@ jobs:
         sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
         dukkha buildah local build linux/base \
-          -m language=python \
+          -m language=java \
           -m version=${{ matrix.version }}
 
         dukkha buildah local push linux/base \
-          -m language=python \
+          -m language=java \
           -m version=${{ matrix.version }}
 
         dukkha buildah local build linux/builder \
-          -m language=python \
+          -m language=java \
           -m version=${{ matrix.version }}
 
         dukkha buildah local push linux/builder \
-          -m language=python \
+          -m language=java \
           -m version=${{ matrix.version }}
 
     - name: Inspect Images
@@ -72,9 +71,11 @@ jobs:
 #     strategy:
 #       matrix:
 #         app:
-#         - yamllint
+#         # TODO: elasticsearch-7 cross compile always fail
+#         # - elasticsearch-7
+#         - sonarqube
 #       fail-fast: false
-#     runs-on: ubuntu-20.04
+#     runs-on: ubuntu-latest
 #     steps:
 #     - uses: actions/checkout@v2
 #     - name: Install dukkha
