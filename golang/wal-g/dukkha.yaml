@@ -1,0 +1,118 @@
+# this build instruction is used in container
+golang:build:
+- name: wal-g
+  env: &env
+  - APP=wal-g
+  # source(git-tags): https://github.com/wal-g/wal-g
+  - VERSION=v1.0
+  matrix:
+    include:
+    - kernel:
+      - linux
+      arch:
+      - amd64
+      - arm64
+      rootfs:
+      - debian
+      db:
+      - fdb
+      - mongo
+      - mysql
+      - pg
+      - redis
+      - sqlserver
+  hooks:
+    before:
+    - shell@env: |-
+        set -eux
+
+        # ulimit -a
+        # ulimit -l unlimited
+
+        cd "/app/build/${APP}"
+
+        make link_external_deps
+
+  chdir@env: /app/build/${APP}
+  path@env: ./cmd/${MATRIX_DB}
+  outputs@env:
+  - /app/build/${APP}.${MATRIX_DB}.${MATRIX_KERNEL}.${MATRIX_ROOTFS}.${MATRIX_ARCH}
+  cgo:
+    enabled: true
+    ldflags: []
+  ldflags@env:
+  - -s -w
+  # - -X "github.com/wal-g/wal-g/cmd/${MATRIX_DB}.buildDate=$(date -u +%Y.%m.%d_%H:%M:%S)"
+  # - -X "github.com/wal-g/wal-g/cmd/${MATRIX_DB}.gitRevision=$(git -C /app/build/wal-g rev-parse --short HEAD)"
+  # - -X "github.com/wal-g/wal-g/cmd/${MATRIX_DB}.walgVersion=$(git -C /app/build/wal-g tag -l --points-at HEAD)"
+  tags:
+  - netgo
+  - brotli
+  - libsodium
+  - lzo
+  extra_args:
+  - -trimpath
+  - -mod=vendor
+
+buildah:build:
+- name: wal-g
+  env: *env
+  matrix: &matrix
+    kernel:
+    - linux
+    arch:
+    - amd64
+    - arm64
+    rootfs:
+    - debian
+  hooks:
+    before:
+    - shell@env: |-
+        [ -d "build/${APP}" ] && exit 0
+
+        git clone --recursive --depth 1 -b ${VERSION} \
+          https://github.com/wal-g/wal-g.git \
+          "build/${APP}"
+
+        cd "build/${APP}"
+        GOPROXY=direct GOSUMDB=off go mod vendor -v
+
+        sed_cmd="sed"
+        if command -v gsed ; then
+          sed_cmd="gsed"
+        fi
+
+        # https://github.com/wal-g/wal-g/blob/master/Makefile#L228
+        \${sed_cmd} -i 's|\(#cgo LDFLAGS:\) .*|\1 -Wl,-Bstatic -llzo2 -Wl,-Bdynamic|' \
+          vendor/github.com/cyberdelia/lzo/lzo.go
+
+  file: golang/wal-g/Dockerfile
+  image_names@file|template: &image_names |-
+    templates/image-names/no-rootfs-info/env[APP:VERSION].yml
+  extra_args@env:
+  - --pull-always
+  - --cap-add
+  - CAP_SYS_RESOURCE
+  - --ulimit
+  - memlock=16384
+  - --security-opt
+  - label=disable
+  - --security-opt
+  - seccomp=unconfined
+  - --build-arg
+  - APP=${APP}
+  - --build-arg
+  - MATRIX_ROOTFS=${MATRIX_ROOTFS}
+  - --build-arg
+  - MATRIX_ARCH=${MATRIX_ARCH}
+  - --build-arg
+  - HOST_ARCH=${HOST_ARCH}
+
+buildah:push:
+- name: wal-g
+  env: *env
+  hooks:
+    before:
+    - task: buildah:login(ghcr)
+  matrix@file: *matrix
+  image_names@file|template: *image_names
