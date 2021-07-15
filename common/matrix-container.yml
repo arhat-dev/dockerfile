@@ -1,3 +1,27 @@
+#
+# NOTE: this file is generate by common/dukkha.yaml
+#
+# exclude cross_arch builds since we only want target runtime
+exclude:
+- arch:
+  - amd64
+  - arm64
+  cross_arch:
+  - armv7
+  - armv6
+  - armv5
+  - ppc64le
+  - s390x
+  - x86
+  - mips64le
+- arch:
+  - arm64
+  cross_arch:
+  - amd64
+- arch:
+  - amd64
+  cross_arch:
+  - arm64
 # alpine has no cross compiling support
 
 include:
@@ -10,12 +34,10 @@ include:
 - language:
   - python
   version: &__python_version
-  - "3.6.14"
-  - "3.7.11"
-  - "3.8.11"
-  - "3.9.6"
-  latest: &__python_latest
-  - "3.9.6"
+  - "3.6"
+  - "3.7"
+  - "3.8"
+  - "3.9"
   kernel:
   - linux
   rootfs:
@@ -37,7 +59,6 @@ include:
 - language:
   - python
   version: *__python_version
-  latest: *__python_latest
   kernel:
   - linux
   rootfs:
@@ -59,7 +80,6 @@ include:
 - language:
   - python
   version: *__python_version
-  latest: *__python_latest
   kernel:
   - linux
   rootfs:
@@ -81,7 +101,6 @@ include:
 - language:
   - python
   version: *__python_version
-  latest: *__python_latest
   kernel:
   - linux
   rootfs:
@@ -105,11 +124,7 @@ include:
 - language:
   - golang
   version: &__golang_version
-  - "1.16.6"
-  - "1.15.14"
-  - "1.17rc1"
-  latest: &__golang_latest
-  - "1.16.6"
+  - "1.16"
   kernel:
   - linux
   rootfs:
@@ -131,7 +146,6 @@ include:
 - language:
   - golang
   version: *__golang_version
-  latest: *__golang_latest
   kernel:
   - linux
   rootfs:
@@ -153,7 +167,6 @@ include:
 - language:
   - golang
   version: *__golang_version
-  latest: *__golang_latest
   kernel:
   - linux
   rootfs:
@@ -175,7 +188,6 @@ include:
 - language:
   - golang
   version: *__golang_version
-  latest: *__golang_latest
   kernel:
   - linux
   rootfs:
@@ -200,9 +212,7 @@ include:
 - language:
   - rust
   version: &__rust_version
-  - "1.53.0"
-  latest: &__rust_latest
-  - "1.53.0"
+  - "1.53"
   kernel:
   - linux
   rootfs:
@@ -215,7 +225,6 @@ include:
 - language:
   - rust
   version: *__rust_version
-  latest: *__rust_latest
   kernel:
   - linux
   rootfs:
@@ -231,7 +240,6 @@ include:
 - language:
   - rust
   version: *__rust_version
-  latest: *__rust_latest
   kernel:
   - linux
   rootfs:
@@ -248,7 +256,6 @@ include:
 - language:
   - rust
   version: *__rust_version
-  latest: *__rust_latest
   kernel:
   - linux
   rootfs:
@@ -269,8 +276,6 @@ include:
   - "8"
   - "11"
   - "16"
-  latest: &__java_latest
-  - "11"
   kernel:
   - linux
   rootfs:
@@ -283,7 +288,6 @@ include:
 - language:
   - java
   version: *__java_version
-  latest: *__java_latest
   kernel:
   - linux
   rootfs:
@@ -305,7 +309,6 @@ include:
 - language:
   - java
   version: *__java_version
-  latest: *__java_latest
   kernel:
   - linux
   rootfs:
@@ -327,7 +330,6 @@ include:
 - language:
   - java
   version: *__java_version
-  latest: *__java_latest
   kernel:
   - linux
   rootfs:
@@ -347,11 +349,8 @@ include:
 - language:
   - ruby
   version: &__ruby_version
-  - "2.7.4"
-  - "3.0.2"
-  - "2.6.8"
-  latest: &__ruby_latest
-  - "2.7.4"
+  - "2.7"
+  - "3.0"
   kernel:
   - linux
   rootfs:
@@ -373,7 +372,6 @@ include:
 - language:
   - ruby
   version: *__ruby_version
-  latest: *__ruby_latest
   kernel:
   - linux
   rootfs:
@@ -395,7 +393,6 @@ include:
 - language:
   - ruby
   version: *__ruby_version
-  latest: *__ruby_latest
   kernel:
   - linux
   rootfs:
@@ -417,7 +414,6 @@ include:
 - language:
   - ruby
   version: *__ruby_version
-  latest: *__ruby_latest
   kernel:
   - linux
   rootfs:
@@ -444,8 +440,6 @@ include:
   - "12.22"
   - "14.17"
   - "16.5"
-  latest: &__nodejs_latest
-  - "16.5"
   kernel:
   - linux
   rootfs:
@@ -465,7 +459,6 @@ include:
 - language:
   - nodejs
   version: *__nodejs_version
-  latest: *__nodejs_latest
   kernel:
   - linux
   rootfs:
@@ -484,7 +477,6 @@ include:
 - language:
   - nodejs
   version: *__nodejs_version
-  latest: *__nodejs_latest
   kernel:
   - linux
   rootfs:
@@ -504,7 +496,6 @@ include:
 - language:
   - nodejs
   version: *__nodejs_version
-  latest: *__nodejs_latest
   kernel:
   - linux
   rootfs:

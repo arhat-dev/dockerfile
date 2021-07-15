@@ -6,6 +6,8 @@ buildah:build:
 ################################
 
 - name: linux/base
+  env:
+  - IMAGE_NAME_PREFIX=base-
   matrix@file: &matrix common/matrix-base.yml
   file@template: |-
     {{- if and (ne .Env.MATRIX_CROSS_ARCH "") (ne .Env.MATRIX_ARCH .Env.MATRIX_CROSS_ARCH) -}}
@@ -14,14 +16,7 @@ buildah:build:
     common/base.dockerfile
     {{- end -}}
 
-  image_names@template: &base_image_names |-
-    {{- $prefix := printf "%s/base-%s" .Env.IMAGE_REPO .Env.MATRIX_LANGUAGE -}}
-    {{- $tag := printf "%s-%s" .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
-    {{- if and (ne .Env.MATRIX_CROSS_ARCH "") (ne .Env.MATRIX_ARCH .Env.MATRIX_CROSS_ARCH) -}}
-      {{- $tag = printf "%s-%s-%s" .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH .Env.MATRIX_CROSS_ARCH -}}
-    {{- end }}
-
-    - image: {{ $prefix }}:{{ .Env.MATRIX_VERSION }}-{{ $tag }}
+  image_names@file|template|env: &base_image_names common/templates/image-names.yml
 
   extra_args@template: |-
     {{- $host_arch := "" -}}
@@ -47,7 +42,7 @@ buildah:build:
     {{- $base_image := "" -}}
     {{- if eq .Env.MATRIX_LANGUAGE "golang" "python" "rust" "ruby" -}}
       {{- $base_image = printf "docker.io/%s/%s:%s-%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_LANGUAGE .Env.MATRIX_VERSION $rootfs_with_version -}}
-    {{- else if eq .Env.MATRIX_LANGUAGE "java" -}}
+    {{- else if eq .Env.MATRIX_LANGUAGE "nodejs" -}}
       {{- $base_image = printf "docker.io/%s/node:%s-%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_VERSION $rootfs_with_version -}}
     {{- else if eq .Env.MATRIX_LANGUAGE "java" -}}
       {{- $repo_name := printf "openjdk%s" .Env.MATRIX_VERSION -}}
@@ -116,24 +111,14 @@ buildah:build:
   - BASE_IMAGE=scratch
 
 - name: linux/builder
+  env:
+  - IMAGE_NAME_PREFIX=builder-
   matrix@file: *matrix
   hooks:
     before:matrix:
     - task: buildah:build(linux/builder-prepare-dukkha)
   file: common/builder.dockerfile
-  image_names@template: &builder_image_names |-
-    {{- $prefix := printf "%s/builder-%s" .Env.IMAGE_REPO .Env.MATRIX_LANGUAGE -}}
-    {{- $tag := printf "%s-%s" .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
-    {{- $manifest_tag := .Env.MATRIX_ROOTFS -}}
-    {{- if and (ne .Env.MATRIX_CROSS_ARCH "") (ne .Env.MATRIX_ARCH .Env.MATRIX_CROSS_ARCH) -}}
-      {{- $tag = printf "%s-%s-%s" .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH .Env.MATRIX_CROSS_ARCH -}}
-      {{- $manifest_tag = "" -}}
-    {{- end }}
-
-    - image: {{ $prefix }}:{{ $tag }}
-      {{- if $manifest_tag }}
-      manifest: {{ $prefix }}:{{ $manifest_tag }}
-      {{- end -}}
+  image_names@file|template|env: &builder_image_names common/templates/image-names.yml
 
   extra_args@template: |-
     {{- $prefix := printf "%s/base-%s" .Env.IMAGE_REPO .Env.MATRIX_LANGUAGE -}}
@@ -153,12 +138,57 @@ buildah:build:
     - DUKKHA_IMAGE={{ $dukkha_image_id }}
     - --build-arg
     - BASE_IMAGE={{ $base_image_id }}
+    - --build-arg
+    - PROGRAMMING_LANGUAGE={{ .Env.MATRIX_LANGUAGE }}
 
 ################################
 #
 # Container
 #
 ################################
+- name: linux/container
+  env:
+  - IMAGE_NAME_PREFIX=
+  matrix@file: common/matrix-container.yml
+  hooks:
+    before:
+    - shell: |-
+        cat <<EOF >common/matrix-container.yml
+        #
+        # NOTE: this file is generate by common/dukkha.yaml
+        #
+        # exclude cross_arch builds since we only want target runtime
+        exclude:
+        - arch:
+          - amd64
+          - arm64
+          cross_arch:
+          - armv7
+          - armv6
+          - armv5
+          - ppc64le
+          - s390x
+          - x86
+          - mips64le
+        - arch:
+          - arm64
+          cross_arch:
+          - amd64
+        - arch:
+          - amd64
+          cross_arch:
+          - arm64
+        EOF
+
+        cat common/matrix-base.yml >>common/matrix-container.yml
+
+  file@env: common/container.dockerfile
+  image_names@env: &image_names
+  - image: ${IMAGE_REPO}/${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}-${MATRIX_ARCH}
+    manifest: ${IMAGE_REPO}/${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}
+
+  extra_args:
+  - --pull-always
 
 buildah:push:
 - name: linux/base
@@ -166,11 +196,11 @@ buildah:push:
     before:
     - task: buildah:login(ghcr)
   matrix@file: *matrix
-  image_names@template: *base_image_names
+  image_names@file|template: *base_image_names
 
 - name: linux/builder
   hooks:
     before:
     - task: buildah:login(ghcr)
   matrix@file: *matrix
-  image_names@template: *builder_image_names
+  image_names@file|template: *builder_image_names

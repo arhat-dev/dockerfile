@@ -1,0 +1,50 @@
+#
+# usage:
+#   1. Set task specific env IMAGE_TYPE
+#   2. @file|template|env: common/templates/image-names.yml
+#
+
+{{- $prefix := printf "%s/${IMAGE_NAME_PREFIX}%s" .Env.IMAGE_REPO .Env.MATRIX_LANGUAGE -}}
+{{- $tag := printf "%s-%s" .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
+{{- $manifest_tag := .Env.MATRIX_ROOTFS -}}
+{{- if and (ne .Env.MATRIX_CROSS_ARCH "") (ne .Env.MATRIX_ARCH .Env.MATRIX_CROSS_ARCH) -}}
+  {{- $tag = printf "%s-%s-%s" .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH .Env.MATRIX_CROSS_ARCH -}}
+  {{- $manifest_tag = "" -}}
+{{- end }}
+
+{{- $version := trimPrefix "v" .Env.MATRIX_VERSION -}}
+{{- $version_parts := split "." $version -}}
+{{- $version_major := $version_parts._0 -}}
+
+{{- $version_minor := "" -}}
+{{- if gt (len $version_parts) 1 -}}
+{{- $version_minor = $version_parts._1 -}}
+{{- end }}
+
+{{ if eq .Env.MATRIX_VERSION .Env.MATRIX_LATEST }}
+{{ if ne $version_major "0" }}
+- image: {{ $prefix }}:{{ $version_major }}-{{ $tag }}
+{{ if $manifest_tag }}
+  manifest: {{ $prefix }}:{{ $version_major }}-{{ $manifest_tag }}
+{{ end }}
+{{ end }}
+{{ end }}
+
+{{ if $version_minor }}
+- image: {{ $prefix }}:{{ $version_major }}.{{ $version_minor }}-{{ $tag }}
+{{ if $manifest_tag }}
+  manifest: {{ $prefix }}:{{ $version_major }}.{{ $version_minor }}-{{ $manifest_tag }}
+{{ end }}
+{{ end }}
+
+- image: {{ $prefix }}:{{ $version }}-{{ $tag }}
+{{ if $manifest_tag }}
+  manifest: {{ $prefix }}:{{ $version }}-{{ $manifest_tag }}
+{{ end }}
+
+{{ if $manifest_tag }}
+{{ if eq .Env.MATRIX_VERSION .Env.MATRIX_LATEST }}
+- image: {{ $prefix }}:latest-{{ $tag }}
+  manifest: {{ $prefix }}:latest-{{ $manifest_tag }}
+{{ end }}
+{{ end }}
