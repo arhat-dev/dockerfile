@@ -85,8 +85,10 @@ jobs:
         - conftest
         - editorconfig-checker
         - golangci-lint
+        # cgo build
         - kine
         - litestream
+        - wal-g
       fail-fast: false
     needs:
     - common
@@ -110,6 +112,11 @@ jobs:
 
         sudo apt update
         sudo apt install -y qemu-user-static
+
+    - name: Install Protoc
+      uses: arduino/setup-protoc@v1
+      with:
+        version: '3.x'
 
     - name: Build and Push ${{ matrix.app }}
       env:
