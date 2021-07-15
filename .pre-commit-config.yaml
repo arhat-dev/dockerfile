@@ -10,5 +10,19 @@ repos:
   - id: trailing-whitespace
   - id: end-of-file-fixer
   - id: check-yaml
+    exclude: |-
+      (?x)^(
+        .*templates/.*
+      )$
     args:
     - --allow-multiple-documents
+
+- repo: local
+  hooks:
+  - id: update-matrix
+    name: Update Common Image Build Matrix
+    entry: dukkha workflow local run generate-matrix
+    language: system
+    pass_filenames: false
+    # uncomment the following line to only run after git pull
+    # stages: [post-merge]

@@ -48,4 +48,3 @@ s390x)
   rustup target add s390x-unknown-linux-gnu
   ;;
 esac
-

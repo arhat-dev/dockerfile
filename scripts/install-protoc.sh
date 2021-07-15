@@ -25,4 +25,3 @@ esac
 filename="protoc-${PROTOC_VERSION}-linux-${protoc_arch}"
 base_url="https://github.com/protocolbuffers/protobuf/releases/download/${PROTOC_VERSION}"
 download_url="${base_url}/${filename}.zip"
-

@@ -1,7 +1,7 @@
 buildah:build:
-- name: gitlab-ce
-  env: &ce_env
-  - APP=gitlab-ce
+- name: gitlab
+  env: &env
+  - APP=gitlab
   # source(git-tags): https://gitlab.com/gitlab-org/gitlab-foss
   - VERSION=v14.0.5
   matrix@file: &matrix ruby/matrix-include-rootfs-info-all.yml
@@ -19,7 +19,7 @@ buildah:build:
   - APP=gitlab-ee
   # source(git-tags): https://gitlab.com/gitlab-org/gitlab
   - VERSION=v14.0.5-ee
-  matrix@file: &matrix ruby/matrix-include-rootfs-info-all.yml
+  matrix@file: *matrix
   hooks:
     before:
     - shell@env: |-

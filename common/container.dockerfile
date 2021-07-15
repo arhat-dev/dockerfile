@@ -1,4 +1,6 @@
-FROM docker.io/${dockerhub_arch}/python:${py_ver}-${suffix}
+ARG BASE_IMAGE
+
+FROM BASE_IMAGE
 
 WORKDIR /app
 

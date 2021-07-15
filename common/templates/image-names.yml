@@ -21,15 +21,6 @@
 {{- $version_minor = $version_parts._1 -}}
 {{- end }}
 
-{{ if eq .Env.MATRIX_VERSION .Env.MATRIX_LATEST }}
-{{ if ne $version_major "0" }}
-- image: {{ $prefix }}:{{ $version_major }}-{{ $tag }}
-{{ if $manifest_tag }}
-  manifest: {{ $prefix }}:{{ $version_major }}-{{ $manifest_tag }}
-{{ end }}
-{{ end }}
-{{ end }}
-
 {{ if $version_minor }}
 - image: {{ $prefix }}:{{ $version_major }}.{{ $version_minor }}-{{ $tag }}
 {{ if $manifest_tag }}
@@ -40,6 +31,15 @@
 - image: {{ $prefix }}:{{ $version }}-{{ $tag }}
 {{ if $manifest_tag }}
   manifest: {{ $prefix }}:{{ $version }}-{{ $manifest_tag }}
+{{ end }}
+
+{{ if eq .Env.MATRIX_VERSION .Env.MATRIX_LATEST }}
+{{ if ne $version_major "0" }}
+- image: {{ $prefix }}:{{ $version_major }}-{{ $tag }}
+{{ if $manifest_tag }}
+  manifest: {{ $prefix }}:{{ $version_major }}-{{ $manifest_tag }}
+{{ end }}
+{{ end }}
 {{ end }}
 
 {{ if $manifest_tag }}

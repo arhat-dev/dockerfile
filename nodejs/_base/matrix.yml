@@ -1,0 +1,83 @@
+###############################
+#
+# NODEJS
+#
+###############################
+
+- language:
+  - nodejs
+  version: &__nodejs_version
+  - "12.22.3"
+  - "14.17.3"
+  - "16.5.0"
+  latest: &__nodejs_latest
+  - "16.5.0"
+  kernel:
+  - linux
+  rootfs:
+  - alpine
+  arch:
+  - amd64
+  - arm64
+  - armv7
+  - armv6
+  - s390x
+  # ERROR: patch-2.7.6-r6: package mentioned in index not found (try 'apk update')
+  # TODO: fix this and close #11
+  # - ppc64le
+  cross_arch: [""]
+
+# debian amd64 based cross
+- language:
+  - nodejs
+  version: *__nodejs_version
+  latest: *__nodejs_latest
+  kernel:
+  - linux
+  rootfs:
+  - debian
+  arch:
+  # debian has no armv6 support
+  - amd64
+  cross_arch:
+  - amd64 # include self to build non cross image
+  - arm64
+  - armv7
+  - ppc64le
+  - s390x
+
+# debian arm64 based cross
+- language:
+  - nodejs
+  version: *__nodejs_version
+  latest: *__nodejs_latest
+  kernel:
+  - linux
+  rootfs:
+  - debian
+  arch:
+  # debian has no armv6 support
+  - arm64
+  cross_arch:
+  # - amd64 # not supported
+  - arm64 # include self to build non cross image
+  - armv7
+  - armv5
+  - ppc64le
+  - s390x
+
+# debian no cross (while ppc64le does have cross toolchain)
+- language:
+  - nodejs
+  version: *__nodejs_version
+  latest: *__nodejs_latest
+  kernel:
+  - linux
+  rootfs:
+  - debian
+  arch:
+  - armv7
+  - armv5
+  - ppc64le
+  - s390x
+  cross_arch: [""]

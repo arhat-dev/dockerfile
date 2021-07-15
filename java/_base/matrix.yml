@@ -1,0 +1,80 @@
+###############################
+#
+# JAVA
+#
+###############################
+
+- language:
+  - java
+  version: &__java_version
+  - "8"
+  - "11"
+  - "16"
+  latest: &__java_latest
+  - "11"
+  kernel:
+  - linux
+  rootfs:
+  - alpine
+  arch:
+  - amd64
+  cross_arch: [""]
+
+# debian amd64 based cross
+- language:
+  - java
+  version: *__java_version
+  latest: *__java_latest
+  kernel:
+  - linux
+  rootfs:
+  - debian
+  arch:
+  # debian has no armv6 support
+  - amd64
+  cross_arch:
+  - amd64 # include self to build non cross image
+  - arm64
+  - armv7
+  - armv5
+  - ppc64le
+  - s390x
+  - x86
+  - mips64le
+
+# debian arm64 based cross
+- language:
+  - java
+  version: *__java_version
+  latest: *__java_latest
+  kernel:
+  - linux
+  rootfs:
+  - debian
+  arch:
+  # debian has no armv6 support
+  - arm64
+  cross_arch:
+  # - amd64 # not supported
+  - arm64 # include self to build non cross image
+  - armv7
+  - armv5
+  - ppc64le
+  - s390x
+  - x86
+  - mips64le
+
+# debian no cross (while ppc64le does have cross toolchain)
+- language:
+  - java
+  version: *__java_version
+  latest: *__java_latest
+  kernel:
+  - linux
+  rootfs:
+  - debian
+  arch:
+  - armv7
+  - ppc64le
+  - s390x
+  cross_arch: [""]

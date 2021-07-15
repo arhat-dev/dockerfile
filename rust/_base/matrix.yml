@@ -1,0 +1,67 @@
+###############################
+#
+# RUST
+#
+###############################
+
+# alpine has no cross compiling
+- language:
+  - rust
+  version: &__rust_version
+  - "1.53.0"
+  latest: &__rust_latest
+  - "1.53.0"
+  kernel:
+  - linux
+  rootfs:
+  - alpine
+  arch:
+  - amd64
+  - arm64
+  cross_arch: [""]
+
+- language:
+  - rust
+  version: *__rust_version
+  latest: *__rust_latest
+  kernel:
+  - linux
+  rootfs:
+  - debian
+  arch:
+  - amd64
+  cross_arch:
+  - amd64
+  - arm64
+  - armv7
+  - x86
+
+- language:
+  - rust
+  version: *__rust_version
+  latest: *__rust_latest
+  kernel:
+  - linux
+  rootfs:
+  - debian
+  arch:
+  - arm64
+  cross_arch:
+  # - amd64 # not supported
+  - arm64
+  - armv7
+  - x86
+
+# debian no cross
+- language:
+  - rust
+  version: *__rust_version
+  latest: *__rust_latest
+  kernel:
+  - linux
+  rootfs:
+  - debian
+  arch:
+  - armv7
+  - x86
+  cross_arch: [""]

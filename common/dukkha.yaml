@@ -1,3 +1,54 @@
+workflow:run:
+- name: generate-matrix
+  env:
+  - LANGUAGES=golang java nodejs python ruby rust
+  jobs:
+  - name: generate-matrix-base.yml
+    shell: |-
+      cat <<EOF >common/matrix-base.yml
+      #
+      # NOTE: this file is generate by common/dukkha.yaml
+      #
+
+      include:
+      EOF
+      for l in ${LANGUAGES}; do
+        cat "${l}/_base/matrix.yml" >>common/matrix-base.yml
+      done
+
+  - name: generate-matrix-container.yml
+    shell: |-
+      cat <<EOF >common/matrix-container.yml
+      #
+      # NOTE: this file is generate by common/dukkha.yaml
+      #
+      # exclude cross_arch builds since we only want target runtime
+      exclude:
+      - arch:
+        - amd64
+        - arm64
+        cross_arch:
+        - armv7
+        - armv6
+        - armv5
+        - ppc64le
+        - s390x
+        - x86
+        - mips64le
+      - arch:
+        - arm64
+        cross_arch:
+        - amd64
+      - arch:
+        - amd64
+        cross_arch:
+        - arm64
+      EOF
+
+      for l in ${LANGUAGES}; do
+        cat "${l}/_base/matrix.yml" >>common/matrix-container.yml
+      done
+
 buildah:build:
 ################################
 #
@@ -6,7 +57,7 @@ buildah:build:
 ################################
 
 - name: linux/base
-  env:
+  env: &base_env
   - IMAGE_NAME_PREFIX=base-
   matrix@file: &matrix common/matrix-base.yml
   file@template: |-
@@ -113,7 +164,7 @@ buildah:build:
   - PROGRAMMING_LANGUAGE={{ .Env.MATRIX_LANGUAGE }}
 
 - name: linux/builder
-  env:
+  env: &builder_env
   - IMAGE_NAME_PREFIX=builder-
   matrix@file: *matrix
   hooks:
@@ -149,60 +200,37 @@ buildah:build:
 #
 ################################
 - name: linux/container
-  env:
+  env: &container_env
   - IMAGE_NAME_PREFIX=
-  matrix@file: common/matrix-container.yml
-  hooks:
-    before:
-    - shell: |-
-        cat <<EOF >common/matrix-container.yml
-        #
-        # NOTE: this file is generate by common/dukkha.yaml
-        #
-        # exclude cross_arch builds since we only want target runtime
-        exclude:
-        - arch:
-          - amd64
-          - arm64
-          cross_arch:
-          - armv7
-          - armv6
-          - armv5
-          - ppc64le
-          - s390x
-          - x86
-          - mips64le
-        - arch:
-          - arm64
-          cross_arch:
-          - amd64
-        - arch:
-          - amd64
-          cross_arch:
-          - arm64
-        EOF
-
-        cat common/matrix-base.yml >>common/matrix-container.yml
-
+  matrix@file: &container_matrix common/matrix-container.yml
   file@env: common/container.dockerfile
-  image_names@env: &image_names
+  image_names@env: &container_image_names
   - image: ${IMAGE_REPO}/${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}-${MATRIX_ARCH}
     manifest: ${IMAGE_REPO}/${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}
-
   extra_args:
   - --pull-always
 
 buildah:push:
 - name: linux/base
+  env: *base_env
   hooks:
     before:
     - task: buildah:login(ghcr)
   matrix@file: *matrix
-  image_names@file|template: *base_image_names
+  image_names@file|template|env: *base_image_names
 
 - name: linux/builder
+  env: *builder_env
   hooks:
     before:
     - task: buildah:login(ghcr)
   matrix@file: *matrix
-  image_names@file|template: *builder_image_names
+  image_names@file|template|env: *builder_image_names
+
+- name: linux/container
+  env: *container_env
+  hooks:
+    before:
+    - task: buildah:login(ghcr)
+  matrix@file: *container_matrix
+  image_names@env: *container_image_names
