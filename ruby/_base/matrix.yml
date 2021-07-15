@@ -22,7 +22,7 @@
   - arm64
   # - armv7 # THEY LISTED BUT NO SUCH IMAGE
   # - armv6
-  - s390x
+  # - s390x
   - x86
   # ERROR: patch-2.7.6-r6: package mentioned in index not found (try 'apk update')
   # TODO: fix this and close #11
