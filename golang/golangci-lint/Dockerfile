@@ -13,7 +13,7 @@ ARG ROOTFS_NAME
 # debian or alpine
 ARG MATRIX_ROOTFS
 
-FROM ghcr.io/arhat-dev/builder-golang:${MATRIX_ROOTFS} AS builder
+FROM ghcr.io/arhat-dev/builder-golang:1.16-alpine AS builder
 
 ARG APP
 ARG MATRIX_ROOTFS

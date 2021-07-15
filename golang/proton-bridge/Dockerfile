@@ -1,14 +1,14 @@
 ARG MATRIX_ARCH
 ARG MATRIX_ROOTFS
 
-FROM ghcr.io/arhat-dev/builder-golang:alpine AS builder
+FROM ghcr.io/arhat-dev/builder-golang:1.16-alpine AS builder
 
 COPY . /app
 
 ARG MATRIX_ARCH
 RUN dukkha golang local build proton-bridge -m arch=${MATRIX_ARCH}
 
-FROM ghcr.io/arhat-dev/golang:${MATRIX_ROOTFS}-${MATRIX_ARCH}
+FROM ghcr.io/arhat-dev/golang:1.16-${MATRIX_ROOTFS}-${MATRIX_ARCH}
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 

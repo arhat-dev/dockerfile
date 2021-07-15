@@ -17,37 +17,17 @@ workflow:run:
       done
 
   - name: generate-matrix-container.yml
-    shell: |-
-      cat <<EOF >scripts/dukkha/matrix-container.yml
-      #
-      # NOTE: this file is generate by common/dukkha.yaml
-      #
-      # exclude cross_arch builds since we only want target runtime
-      exclude:
-      - arch:
-        - amd64
-        - arm64
-        cross_arch:
-        - armv7
-        - armv6
-        - armv5
-        - ppc64le
-        - s390x
-        - x86
-        - mips64le
-      - arch:
-        - arm64
-        cross_arch:
-        - amd64
-      - arch:
-        - amd64
-        cross_arch:
-        - arm64
-      EOF
+    shell@template: |-
+      {{- $target := (filepath_Join "scripts" "dukkha" "matrix-container.yml") -}}
+      {{- $_ := os_WriteFile $target ("include:\n" | toBytes) -}}
+      {{- range $_, $lang := .Env.LANGUAGES | splitList " " -}}
+        {{- $file := (filepath_Join $lang "_base" "matrix.yml") -}}
+        {{- $mat := os_ReadFile $file -}}
+        {{- $mat = yq ".[] |= del(.cross_arch)" $mat -}}
+        {{- $_ := appendFile $target ($mat | toBytes) -}}
+      {{- end -}}
 
-      for l in ${LANGUAGES}; do
-        cat "${l}/_base/matrix.yml" >>scripts/dukkha/matrix-container.yml
-      done
+      echo "Done."
 
 buildah:build:
 ################################
@@ -68,79 +48,7 @@ buildah:build:
     {{- end -}}
 
   image_names@file|template|env: &base_image_names common/templates/image-names.yml
-
-  extra_args@template: |-
-    {{- $host_arch := "" -}}
-    {{- $cross_arch := "" -}}
-    {{- $triple_name := "" -}}
-    {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
-      {{- $host_arch = getDebianArch .Env.MATRIX_ARCH -}}
-      {{- $cross_arch = getDebianArch .Env.MATRIX_CROSS_ARCH -}}
-      {{- $triple_name = getDebianTripleName .Env.MATRIX_CROSS_ARCH -}}
-    {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
-      {{- $host_arch = getAlpineArch .Env.MATRIX_ARCH -}}
-      {{- $cross_arch = getAlpineArch .Env.MATRIX_CROSS_ARCH -}}
-      {{- $triple_name = getAlpineTripleName .Env.MATRIX_CROSS_ARCH -}}
-    {{- end -}}
-
-    {{- $rootfs_with_version := "" -}}
-    {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
-      {{- $rootfs_with_version = .Env.DEBIAN_VERSION -}}
-    {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
-      {{- $rootfs_with_version = printf "alpine%s" .Env.ALPINE_VERSION -}}
-    {{- end -}}
-
-    {{- $base_image := "" -}}
-    {{- if eq .Env.MATRIX_LANGUAGE "golang" "python" "rust" "ruby" -}}
-      {{- $base_image = printf "docker.io/%s/%s:%s-%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_LANGUAGE .Env.MATRIX_VERSION $rootfs_with_version -}}
-    {{- else if eq .Env.MATRIX_LANGUAGE "nodejs" -}}
-      {{- $base_image = printf "docker.io/%s/node:%s-%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_VERSION $rootfs_with_version -}}
-    {{- else if eq .Env.MATRIX_LANGUAGE "java" -}}
-      {{- $repo_name := printf "openjdk%s" .Env.MATRIX_VERSION -}}
-      {{- if eq .Env.MATRIX_ARCH "amd64" "s390x" "ppc64le" -}}
-        {{- $repo_name = printf "%s-openj9" $repo_name -}}
-      {{- end -}}
-
-      {{- $tag_name := "" -}}
-      {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
-        {{- $tag_name = "debianslim-slim" -}}
-      {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
-        {{- $tag_name = "alpine-slim" -}}
-      {{- end -}}
-
-      {{- $base_image = printf "docker.io/adoptopenjdk/%s:%s" $repo_name $tag_name -}}
-    {{- end -}}
-    {{ if eq .Env.MATRIX_LANGUAGE "java" }}
-    # adoptopenjdk sets os/arch/variant
-    - --os={{ .Env.MATRIX_KERNEL | getOciOS }}
-    - --arch={{ .Env.MATRIX_ARCH | getOciArch }}
-    - --variant={{ .Env.MATRIX_ARCH | getOciArchVariant }}
-    {{ end }}
-    - --pull-always
-    - --no-cache
-    - --build-arg
-    - BASE_IMAGE={{ $base_image }}
-    # - --build-arg
-    # - QEMU_ARCH={{ getQemuArch .Env.MATRIX_ARCH }}
-    # - --build-arg
-    # - QEMU_VERSION={{ .Env.QEMU_VERSION }}
-    - --build-arg
-    - PROGRAMMING_LANGUAGE={{ .Env.MATRIX_LANGUAGE }}
-    - --build-arg
-    - MATRIX_ROOTFS={{ .Env.MATRIX_ROOTFS }}
-    - --build-arg
-    - HOST_ARCH={{ $host_arch }}
-    - --build-arg
-    - CROSS_ARCH={{ $cross_arch }}
-    - --build-arg
-    - CROSS_TRIPLE_NAME={{ $triple_name }}
-    - --build-arg
-    - MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
-    - --build-arg
-    - MATRIX_CROSS_ARCH={{ .Env.MATRIX_CROSS_ARCH }}
-    # for java
-    - --build-arg
-    - MAVEN3_VERSION={{ .Env.MAVEN3_VERSION }}
+  extra_args@file|template: common/templates/base-extra-args.yml
 
 ################################
 #
@@ -160,6 +68,7 @@ buildah:build:
   - DUKKHA_IMAGE=ghcr.io/arhat-dev/dukkha:latest-${MATRIX_ARCH}
   - --build-arg
   - BASE_IMAGE=scratch
+  # not used, just to turn off warning message
   - --build-arg
   - PROGRAMMING_LANGUAGE={{ .Env.MATRIX_LANGUAGE }}
 
@@ -184,13 +93,16 @@ buildah:build:
     {{- $base_image_id := os_ReadFile (getBuildahImageIDFile $base_image_name) -}}
 
     {{- $dukkha_image_name := printf "local-dukkha:%s" .Env.MATRIX_ARCH -}}
-    {{- $dukkha_image_id := os_ReadFile (getBuildahImageIDFile $dukkha_image_name) -}}
+    {{- $dukkha_image_id := os_ReadFile (getBuildahImageIDFile $dukkha_image_name) }}
 
     - --pull-never
+
     - --build-arg
     - DUKKHA_IMAGE={{ $dukkha_image_id }}
+
     - --build-arg
     - BASE_IMAGE={{ $base_image_id }}
+
     - --build-arg
     - PROGRAMMING_LANGUAGE={{ .Env.MATRIX_LANGUAGE }}
 
@@ -204,68 +116,8 @@ buildah:build:
   - IMAGE_NAME_PREFIX=
   matrix@file: &container_matrix scripts/dukkha/matrix-container.yml
   file@env: common/container.dockerfile
-  image_names@env: &container_image_names
-  - image: ${IMAGE_REPO}/${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}-${MATRIX_ARCH}
-    manifest: ${IMAGE_REPO}/${MATRIX_LANGUAGE}:${MATRIX_ROOTFS}
-  extra_args@template: |-
-    {{- $base_image := "" -}}
-    {{- if eq .Env.MATRIX_LANGUAGE "ruby" "python" -}}
-      {{- suffix := "" -}}
-      {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
-        {{- $suffix = printf "slim-%s" .Env.DEBIAN_VERSION -}}
-      {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
-        {{- $suffix = printf "alpine%s" .Env.ALPINE_VERSION -}}
-      {{- end -}}
-
-      {{- $base_image = printf "docker.io/%s/%s:%s-%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_LANGUAGE .Env.MATRIX_VERSION $suffix -}}
-
-    {{- else if eq .Env.MATRIX_LANGUAGE "nodejs" -}}
-
-      {{- suffix := "" -}}
-      {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
-        {{- $suffix = printf "%s-slim" .Env.DEBIAN_VERSION -}}
-      {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
-        {{- $suffix = printf "alpine%s" .Env.ALPINE_VERSION -}}
-      {{- end -}}
-
-      {{- $base_image = printf "docker.io/%s/node:%s-%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_VERSION $suffix -}}
-
-    {{- else if eq .Env.MATRIX_LANGUAGE "golang" "rust" -}}
-
-      {{- suffix := "" -}}
-      {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
-        {{- $suffix = printf "%s-slim" .Env.DEBIAN_VERSION -}}
-      {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
-        {{- $suffix = printf "%s" .Env.ALPINE_VERSION -}}
-      {{- end -}}
-
-      {{- $base_image = printf "docker.io/%s/%s:%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_ROOTFS $suffix -}}
-
-    {{- else if eq .Env.MATRIX_LANGUAGE "java" -}}
-
-      {{- $repo_name := printf "openjdk%s" .Env.MATRIX_VERSION -}}
-      {{- if eq .Env.MATRIX_ARCH "amd64" "s390x" "ppc64le" -}}
-        {{- $repo_name = printf "%s-openj9" $repo_name -}}
-      {{- end -}}
-
-      {{- $tag_name := "" -}}
-      {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
-        {{- $tag_name = "debianslim-jre" -}}
-      {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
-        {{- $tag_name = "alpine-jre" -}}
-      {{- end -}}
-
-      {{- $base_image = printf "docker.io/adoptopenjdk/%s:%s" $repo_name $tag_name -}}
-    {{- end -}}
-
-    {{ if eq .Env.MATRIX_LANGUAGE "java" }}
-    # adoptopenjdk sets os/arch/variant
-    - --os={{ .Env.MATRIX_KERNEL | getOciOS }}
-    - --arch={{ .Env.MATRIX_ARCH | getOciArch }}
-    - --variant={{ .Env.MATRIX_ARCH | getOciArchVariant }}
-    {{ end }}
-    - --pull-always
-    - BASE_IMAGE={{ $base_image }}
+  image_names@file|template: &container_image_names common/templates/container-image-names.yml
+  extra_args@file|template: common/templates/container-extra-args.yml
 
 buildah:push:
 - name: linux/base
@@ -290,4 +142,4 @@ buildah:push:
     before:
     - task: buildah:login(ghcr)
   matrix@file: *container_matrix
-  image_names@env: *container_image_names
+  image_names@file|template: *container_image_names

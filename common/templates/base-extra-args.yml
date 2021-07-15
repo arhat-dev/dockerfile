@@ -1,0 +1,89 @@
+{{- $host_arch := "" -}}
+{{- $cross_arch := "" -}}
+{{- $triple_name := "" -}}
+{{- if eq .Env.MATRIX_ROOTFS "debian" -}}
+  {{- $host_arch = getDebianArch .Env.MATRIX_ARCH -}}
+  {{- $cross_arch = getDebianArch .Env.MATRIX_CROSS_ARCH -}}
+  {{- $triple_name = getDebianTripleName .Env.MATRIX_CROSS_ARCH -}}
+{{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
+  {{- $host_arch = getAlpineArch .Env.MATRIX_ARCH -}}
+  {{- $cross_arch = getAlpineArch .Env.MATRIX_CROSS_ARCH -}}
+  {{- $triple_name = getAlpineTripleName .Env.MATRIX_CROSS_ARCH -}}
+{{- end -}}
+
+{{- $rootfs_with_version := "" -}}
+{{- if eq .Env.MATRIX_ROOTFS "debian" -}}
+  {{- $rootfs_with_version = .Env.DEBIAN_VERSION -}}
+{{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
+  {{- $rootfs_with_version = printf "alpine%s" .Env.ALPINE_VERSION -}}
+{{- end -}}
+
+{{- $base_image := "" -}}
+{{- if eq .Env.MATRIX_LANGUAGE "golang" "python" "rust" "ruby" -}}
+
+  {{- $base_image = printf "docker.io/%s/%s:%s-%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_LANGUAGE .Env.MATRIX_VERSION $rootfs_with_version -}}
+
+{{- else if eq .Env.MATRIX_LANGUAGE "nodejs" -}}
+
+  {{- $base_image = printf "docker.io/%s/node:%s-%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_VERSION $rootfs_with_version -}}
+
+{{- else if eq .Env.MATRIX_LANGUAGE "java" -}}
+
+  {{- $repo_name := printf "openjdk%s" .Env.MATRIX_VERSION -}}
+  {{- if eq .Env.MATRIX_ARCH "amd64" "s390x" "ppc64le" -}}
+    {{- $repo_name = printf "%s-openj9" $repo_name -}}
+  {{- end -}}
+
+  {{- $tag_name := "" -}}
+  {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
+    {{- $tag_name = "debianslim-slim" -}}
+  {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
+    {{- $tag_name = "alpine-slim" -}}
+  {{- end -}}
+
+  {{- $base_image = printf "docker.io/adoptopenjdk/%s:%s" $repo_name $tag_name -}}
+
+{{- end -}}
+
+{{ if eq .Env.MATRIX_LANGUAGE "java" }}
+# adoptopenjdk sets os/arch/variant
+- --os={{ .Env.MATRIX_KERNEL | getDockerOS }}
+- --arch={{ .Env.MATRIX_ARCH | getDockerArch }}
+- --variant={{ .Env.MATRIX_ARCH | getDockerArchVariant }}
+{{ end }}
+
+- --pull-always
+- --no-cache
+
+- --build-arg
+- BASE_IMAGE={{ $base_image }}
+
+# - --build-arg
+# - QEMU_ARCH={{ getQemuArch .Env.MATRIX_ARCH }}
+# - --build-arg
+# - QEMU_VERSION={{ .Env.QEMU_VERSION }}
+
+- --build-arg
+- PROGRAMMING_LANGUAGE={{ .Env.MATRIX_LANGUAGE }}
+
+- --build-arg
+- MATRIX_ROOTFS={{ .Env.MATRIX_ROOTFS }}
+
+- --build-arg
+- HOST_ARCH={{ $host_arch }}
+
+- --build-arg
+- CROSS_ARCH={{ $cross_arch }}
+
+- --build-arg
+- CROSS_TRIPLE_NAME={{ $triple_name }}
+
+- --build-arg
+- MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
+
+- --build-arg
+- MATRIX_CROSS_ARCH={{ .Env.MATRIX_CROSS_ARCH }}
+
+# for java
+- --build-arg
+- MAVEN3_VERSION={{ .Env.MAVEN3_VERSION }}

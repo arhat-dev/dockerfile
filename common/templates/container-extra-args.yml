@@ -1,0 +1,69 @@
+{{- $base_image := "" -}}
+
+{{- if eq .Env.MATRIX_LANGUAGE "ruby" "python" -}}
+
+  {{- $suffix := "" -}}
+  {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
+    {{- $suffix = printf "slim-%s" .Env.DEBIAN_VERSION -}}
+  {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
+    {{- $suffix = printf "alpine%s" .Env.ALPINE_VERSION -}}
+  {{- end -}}
+
+  {{- $base_image = printf "docker.io/%s/%s:%s-%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_LANGUAGE .Env.MATRIX_VERSION $suffix -}}
+
+{{- else if eq .Env.MATRIX_LANGUAGE "nodejs" -}}
+
+  {{- $suffix := "" -}}
+  {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
+    {{- $suffix = printf "%s-slim" .Env.DEBIAN_VERSION -}}
+  {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
+    {{- $suffix = printf "alpine%s" .Env.ALPINE_VERSION -}}
+  {{- end -}}
+
+  {{- $base_image = printf "docker.io/%s/node:%s-%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_VERSION $suffix -}}
+
+{{- else if eq .Env.MATRIX_LANGUAGE "golang" "rust" -}}
+
+  {{- $suffix := "" -}}
+  {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
+    {{- $suffix = printf "%s-slim" .Env.DEBIAN_VERSION -}}
+  {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
+    {{- $suffix = printf "%s" .Env.ALPINE_VERSION -}}
+  {{- end -}}
+
+  {{- $base_image = printf "docker.io/%s/%s:%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_ROOTFS $suffix -}}
+
+{{- else if eq .Env.MATRIX_LANGUAGE "java" -}}
+
+  {{- $repo_name := printf "openjdk%s" .Env.MATRIX_VERSION -}}
+  {{- if eq .Env.MATRIX_ARCH "amd64" "s390x" "ppc64le" -}}
+    {{- $repo_name = printf "%s-openj9" $repo_name -}}
+  {{- end -}}
+
+  {{- $tag_name := "" -}}
+  {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
+    {{- $tag_name = "debianslim-jre" -}}
+  {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
+    {{- $tag_name = "alpine-jre" -}}
+  {{- end -}}
+
+  {{- $base_image = printf "docker.io/adoptopenjdk/%s:%s" $repo_name $tag_name -}}
+{{- end }}
+
+{{ if eq .Env.MATRIX_LANGUAGE "java" }}
+# adoptopenjdk sets os/arch/variant
+- --os={{ .Env.MATRIX_KERNEL | getDockerOS }}
+- --arch={{ .Env.MATRIX_ARCH | getDockerArch }}
+- --variant={{ .Env.MATRIX_ARCH | getDockerArchVariant }}
+{{ end }}
+
+- --pull-always
+
+- --build-arg
+- BASE_IMAGE={{ $base_image }}
+
+- --build-arg
+- PROGRAMMING_LANGUAGE={{ .Env.MATRIX_LANGUAGE }}
+
+- --build-arg
+- MATRIX_ARCH={{ .Env.MATRIX_ARCH }}

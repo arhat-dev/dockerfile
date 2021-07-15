@@ -1,16 +1,12 @@
 #
 # usage:
 #   1. Set task specific env IMAGE_TYPE
-#   2. @file|template|env: common/templates/image-names.yml
+#   2. @file|template: common/templates/image-names.yml
 #
 
-{{- $prefix := printf "%s/${IMAGE_NAME_PREFIX}%s" .Env.IMAGE_REPO .Env.MATRIX_LANGUAGE -}}
+{{- $prefix := printf "%s/%s" .Env.IMAGE_REPO .Env.MATRIX_LANGUAGE -}}
 {{- $image_suffix := printf "%s-%s" .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
 {{- $manifest_suffix := .Env.MATRIX_ROOTFS -}}
-{{- if and (ne .Env.MATRIX_CROSS_ARCH "") (ne .Env.MATRIX_ARCH .Env.MATRIX_CROSS_ARCH) -}}
-  {{- $image_suffix = printf "%s-%s-%s" .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH .Env.MATRIX_CROSS_ARCH -}}
-  {{- $manifest_suffix = "" -}}
-{{- end }}
 
 {{- $version := trimPrefix "v" .Env.MATRIX_VERSION -}}
 {{- $version_parts := split "." $version -}}
@@ -21,30 +17,24 @@
 {{- $version_minor = $version_parts._1 -}}
 {{- end }}
 
+# always add full version name
+- image: {{ $prefix }}:{{ $version }}-{{ $image_suffix }}
+  manifest: {{ $prefix }}:{{ $version }}-{{ $manifest_suffix }}
+
 {{ if $version_minor }}
 - image: {{ $prefix }}:{{ $version_major }}.{{ $version_minor }}-{{ $image_suffix }}
-{{ if $manifest_suffix }}
   manifest: {{ $prefix }}:{{ $version_major }}.{{ $version_minor }}-{{ $manifest_suffix }}
 {{ end }}
-{{ end }}
-
-- image: {{ $prefix }}:{{ $version }}-{{ $image_suffix }}
-{{ if $manifest_suffix }}
-  manifest: {{ $prefix }}:{{ $version }}-{{ $manifest_suffix }}
-{{ end }}
 
 {{ if eq .Env.MATRIX_VERSION .Env.MATRIX_LATEST }}
-{{ if ne $version_major "0" }}
-- image: {{ $prefix }}:{{ $version_major }}-{{ $image_suffix }}
-{{ if $manifest_suffix }}
-  manifest: {{ $prefix }}:{{ $version_major }}-{{ $manifest_suffix }}
-{{ end }}
-{{ end }}
-{{ end }}
 
-{{ if $manifest_suffix }}
-{{ if eq .Env.MATRIX_VERSION .Env.MATRIX_LATEST }}
 - image: {{ $prefix }}:latest-{{ $image_suffix }}
   manifest: {{ $prefix }}:latest-{{ $manifest_suffix }}
+
+{{ if ne $version_major "0" }}
+
+- image: {{ $prefix }}:{{ $version_major }}-{{ $image_suffix }}
+  manifest: {{ $prefix }}:{{ $version_major }}-{{ $manifest_suffix }}
+
 {{ end }}
 {{ end }}
