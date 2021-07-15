@@ -2,8 +2,6 @@ ARG NIX_IMAGE
 
 FROM ${NIX_IMAGE}
 
-ENV PATH="/nixuser/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:${PATH}"
-
 # nodejs
 # also used to build renovate
 RUN set -ex ;\

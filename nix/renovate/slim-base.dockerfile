@@ -2,8 +2,6 @@ ARG NIX_IMAGE
 
 FROM ${NIX_IMAGE}
 
-ENV PATH="/nixuser/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:${PATH}"
-
 RUN set -ex ;\
     nix-env -iA \
 # TODO: keep required packages in sync with full-base

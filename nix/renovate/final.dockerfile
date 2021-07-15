@@ -1,18 +1,19 @@
 ARG BASE_IMAGE
 
-FROM ${BASE_IMAGE}
+FROM ${BASE_IMAGE} AS builder
 
-COPY --chmod=0775 nix/app-entrypoint.sh /usr/local/bin/entrypoint
+COPY nix/app-entrypoint.sh /usr/local/bin/entrypoint
 
 WORKDIR /nixuser
 
 ARG VERSION
 RUN set -ex ;\
+    chmod a+x /usr/local/bin/entrypoint ;\
     nix-env -iA \
 # re2 requires node-gyp to recompile for arm64
 # and node-gyp requires
 #   python3 (already installed in base image)
-#   make and c toolchain
+#   make and c/c++ toolchain
         stable.nodePackages.node-gyp \
         stable.gcc \
         stable.gnumake ;\
@@ -60,11 +61,24 @@ RUN set -ex ;\
     # nix-store --gc ;\
     nix-store --verify --check-contents
 
-ENV PATH "/nixuser/bin:${PATH}"
+# TODO: find a better way to cleanup
+FROM scratch
+
+COPY --from=builder / /
+
+ENV PATH="/nix/var/nix/profiles/default/sbin:${PATH}" \
+    PATH="/nix/var/nix/profiles/default/bin:${PATH}" \
+    PATH="/nixuser/bin:/nixuser/.nix-profile/bin:${PATH}"
+
+ENV USER="nixuser" \
+    ENV="/etc/profile" \
+    NIX_PATH="/nix/var/nix/profiles/per-user/${USER}/channels" \
+    GIT_SSL_CAINFO="/etc/ssl/certs/ca-certificates.crt" \
+    NIX_SSL_CERT_FILE="/etc/ssl/certs/ca-certificates.crt"
 
 ENTRYPOINT ["/usr/local/bin/entrypoint", "renovate"]
 
-# user uid for kubernetes runAsNonRoot=true check
+# use user uid for kubernetes runAsNonRoot=true check
 USER 20000
 
 WORKDIR /nixuser/renovate
