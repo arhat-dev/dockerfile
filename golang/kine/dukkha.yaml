@@ -12,8 +12,18 @@ golang:build:
     enabled: true
   outputs@env:
   - /app/build/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}
-  ldflags:
+  ldflags@env:
   - -s -w
+  - -extldflags=-static
+  # ref: https://github.com/k3s-io/kine/blob/master/scripts/build
+  - -X github.com/k3s-io/kine.Version=${VERSION}
+  - -X github.com/k3s-io/kine.GitCommit=$(git -C /app/build/${APP} rev-parse --short HEAD)
+  tags:
+  - netgo
+  - osusergo
+  - sqlite_omit_load_extension
+  # just in case it requires tzdata
+  - timetzdata
   extra_args:
   - -v
   - -trimpath

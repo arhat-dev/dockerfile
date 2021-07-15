@@ -14,9 +14,14 @@ golang:build:
     enabled: true
   ldflags@env:
   - -s -w
+  - -extldflags=-static
   - -X "main.Version=${VERSION}"
   tags:
   - netgo
+  - osusergo
+  - sqlite_omit_load_extension
+  # just in case it requires tzdata
+  - timetzdata
   extra_args:
   - -trimpath
   - -mod=readonly

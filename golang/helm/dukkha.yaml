@@ -16,8 +16,8 @@ golang:build:
   - -s -w
   - -X "helm.sh/helm/v3/internal/version.version=${VERSION}"
   # - -X "helm.sh/helm/v3/internal/version.metadata="
-  - -X "helm.sh/helm/v3/internal/version.gitCommit=$(git -C /app/build/helm rev-parse HEAD)"
-  - -X "helm.sh/helm/v3/internal/version.gitTreeState=$(test -n "`git -C /app/build/helm status --porcelain`" && printf "dirty" || printf "clean")"
+  - -X "helm.sh/helm/v3/internal/version.gitCommit=$(git -C /app/build/${APP} rev-parse HEAD)"
+  - -X "helm.sh/helm/v3/internal/version.gitTreeState=$(test -n "`git -C /app/build/${APP} status --porcelain`" && printf "dirty" || printf "clean")"
   # Update according to client-go dependency
   #  https://github.com/helm/helm/blob/main/go.mod#L44
   - -X "helm.sh/helm/v3/pkg/lint/rules.k8sVersionMajor=1"

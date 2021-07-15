@@ -12,7 +12,7 @@ RUN dukkha golang local build \
   -m kernel=linux \
   -m arch=${MATRIX_ARCH}
 
-FROM ghcr.io/arhat-dev/golang:1.16-debian-${MATRIX_ARCH}
+FROM scratch
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 

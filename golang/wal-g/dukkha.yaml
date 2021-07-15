@@ -5,6 +5,10 @@ golang:build:
   - APP=wal-g
   # source(git-tags): https://github.com/wal-g/wal-g
   - VERSION=v1.0
+  # TODO: one of libsodium tests always fail
+  #       ../../build-aux/test-driver: line 107: 50245 Killed
+  - USE_LIBSODIUM=1
+  - USE_LZO=1
   matrix:
     include:
     - kernel:
@@ -12,6 +16,7 @@ golang:build:
       arch:
       - amd64
       - arm64
+      - x86
       rootfs:
       - debian
       db:
@@ -26,7 +31,7 @@ golang:build:
     - shell@env: |-
         set -eux
 
-        # ulimit -a
+        ulimit -a
         # ulimit -l unlimited
 
         cd "/app/build/${APP}"
@@ -42,11 +47,13 @@ golang:build:
     ldflags: []
   ldflags@env:
   - -s -w
-  # - -X "github.com/wal-g/wal-g/cmd/${MATRIX_DB}.buildDate=$(date -u +%Y.%m.%d_%H:%M:%S)"
-  # - -X "github.com/wal-g/wal-g/cmd/${MATRIX_DB}.gitRevision=$(git -C /app/build/wal-g rev-parse --short HEAD)"
-  # - -X "github.com/wal-g/wal-g/cmd/${MATRIX_DB}.walgVersion=$(git -C /app/build/wal-g tag -l --points-at HEAD)"
+  - -extldflags=-static
+  - -X "github.com/wal-g/wal-g/cmd/${MATRIX_DB}.buildDate=$(date -u +%Y.%m.%d_%H:%M:%S)"
+  - -X "github.com/wal-g/wal-g/cmd/${MATRIX_DB}.gitRevision=$(git -C /app/build/${APP} rev-parse --short HEAD)"
+  - -X "github.com/wal-g/wal-g/cmd/${MATRIX_DB}.walgVersion=$(git -C /app/build/${APP} tag -l --points-at HEAD)"
   tags:
   - netgo
+  - osusergo
   - brotli
   - libsodium
   - lzo
@@ -63,6 +70,7 @@ buildah:build:
     arch:
     - amd64
     - arm64
+    - x86
     rootfs:
     - debian
   hooks:
@@ -94,7 +102,7 @@ buildah:build:
   - --cap-add
   - CAP_SYS_RESOURCE
   - --ulimit
-  - memlock=16384
+  - memlock=16384,nofile=1048576
   - --security-opt
   - label=disable
   - --security-opt
