@@ -24,8 +24,7 @@ buildah:build:
     - --pull-always
     - --build-arg
     - NIX_IMAGE=${IMAGE_REPO}/nix:
-    {{- /* multi-line join */ -}}
-    {{ trimPrefix "v" .Env.NIX_VERSION }}-${MATRIX_ROOTFS}-${MATRIX_ARCH}
+    {{- trimPrefix "v" .Env.NIX_VERSION -}}-${MATRIX_ROOTFS}-${MATRIX_ARCH}
 
 - name: renovate-full-base
   env: &full_base_env
@@ -51,8 +50,7 @@ buildah:build:
     - VERSION=${VERSION}
     - --build-arg
     - BASE_IMAGE=${IMAGE_REPO}/${APP}-base:
-    {{- /* multi-line join */ -}}
-    {{ trimPrefix "v" .Env.VERSION }}-${MATRIX_ROOTFS}-${MATRIX_ARCH}
+    {{- trimPrefix "v" .Env.VERSION }}-${MATRIX_ROOTFS}-${MATRIX_ARCH}
 
 - name: renovate-full
   env: &full_env

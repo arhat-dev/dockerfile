@@ -1,14 +1,12 @@
 ARG DOCKERHUB_ARCH
-ARG ROOTFS_VERSION
 ARG MATRIX_ROOTFS
+ARG ROOTFS_VERSION
 
 FROM docker.io/${DOCKERHUB_ARCH}/${MATRIX_ROOTFS}:${ROOTFS_VERSION} AS builder
 
 ARG VERSION
 ARG MATRIX_ROOTFS
 ARG MATRIX_ARCH
-
-LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
 COPY nix/setup.sh /setup.sh
 RUN sh /setup.sh && rm -f /setup.sh
@@ -23,7 +21,7 @@ ENV USER="nixuser" \
 
 ENV PATH="/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:${PATH}"
 
-USER 20000
+USER nixuser
 
 RUN set -eux ;\
     nix-channel --add \
@@ -31,6 +29,7 @@ RUN set -eux ;\
     nix-channel --add \
       https://channels.nixos.org/nixos-21.05-small stable ;\
     nix-channel --update ;\
+    nix-env -iA stable.tini ;\
     rm /nix/var/nix/gcroots/auto/* || true ;\
     nix-store --gc ;\
     nix optimise-store ;\
@@ -39,6 +38,8 @@ RUN set -eux ;\
 FROM scratch
 
 COPY --from=builder / /
+
+LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
 ENV PATH="/nix/var/nix/profiles/default/sbin:${PATH}" \
     PATH="/nix/var/nix/profiles/default/bin:${PATH}" \

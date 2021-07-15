@@ -2,6 +2,8 @@ ARG NIX_IMAGE
 
 FROM ${NIX_IMAGE}
 
+LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
+
 RUN set -ex ;\
     nix-env -iA \
 # TODO: keep required packages in sync with full-base

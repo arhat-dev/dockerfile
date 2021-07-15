@@ -2,6 +2,8 @@ ARG NIX_IMAGE
 
 FROM ${NIX_IMAGE}
 
+LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
+
 # nodejs
 # also used to build renovate
 RUN set -ex ;\

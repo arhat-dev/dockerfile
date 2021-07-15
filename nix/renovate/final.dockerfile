@@ -2,13 +2,10 @@ ARG BASE_IMAGE
 
 FROM ${BASE_IMAGE} AS builder
 
-COPY nix/app-entrypoint.sh /usr/local/bin/entrypoint
-
 WORKDIR /nixuser
 
 ARG VERSION
 RUN set -ex ;\
-    chmod a+x /usr/local/bin/entrypoint ;\
     nix-env -iA \
 # re2 requires node-gyp to recompile for arm64
 # and node-gyp requires
@@ -16,14 +13,17 @@ RUN set -ex ;\
 #   make and c/c++ toolchain
         stable.nodePackages.node-gyp \
         stable.gcc \
-        stable.gnumake ;\
-    git clone --depth 1 --branch "${VERSION}" \
+        stable.gnumake
+
+RUN git clone --depth 1 --branch "${VERSION}" \
         https://github.com/renovatebot/renovate.git \
-        renovate ;\
-    cd /nixuser/renovate ;\
+        renovate
+
+WORKDIR /nixuser/renovate
+
 # configure yarn and npm
 # ref: https://github.com/renovatebot/renovate/blob/main/.github/workflows/build.yml
-    yarn config set version-git-tag false ;\
+RUN yarn config set version-git-tag false ;\
     npm config set scripts-prepend-node-path true ;\
 # build renovate from source
 # ref: https://github.com/renovatebot/renovate/blob/main/.github/workflows/release-npm.yml
@@ -32,8 +32,9 @@ RUN set -ex ;\
     yarn install --dev ;\
     yarn build ;\
     yarn cache clean --all ;\
-    rm -rf /nixuser/.cache ;\
-    chmod +x dist/*.js ;\
+    rm -rf /nixuser/.cache
+
+RUN chmod +x dist/*.js ;\
 # create symlinks for renovate
     mkdir -p /nixuser/bin ;\
     ln -s \
@@ -46,9 +47,10 @@ RUN set -ex ;\
 # ref: https://github.com/renovatebot/docker-renovate-full/blob/main/Dockerfile#L113
     /nixuser/bin/renovate --version ;\
     /nixuser/bin/renovate-config-validator ;\
-    node -e "new require('re2')('.*').exec('test')" ;\
+    node -e "new require('re2')('.*').exec('test')"
+
 # remove packages only required by renovate build
-    nix-env --uninstall \
+RUN nix-env --uninstall \
         stable.nodePackages.node-gyp \
         stable.gcc \
         stable.gnumake ;\
@@ -64,6 +66,8 @@ RUN set -ex ;\
 # TODO: find a better way to cleanup
 FROM scratch
 
+LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
+
 COPY --from=builder / /
 
 ENV PATH="/nix/var/nix/profiles/default/sbin:${PATH}" \
@@ -76,7 +80,7 @@ ENV USER="nixuser" \
     GIT_SSL_CAINFO="/etc/ssl/certs/ca-certificates.crt" \
     NIX_SSL_CERT_FILE="/etc/ssl/certs/ca-certificates.crt"
 
-ENTRYPOINT ["/usr/local/bin/entrypoint", "renovate"]
+ENTRYPOINT ["/nixuser/.nix-profile/bin/tini", "--", "/nixuser/bin/renovate"]
 
 # use user uid for kubernetes runAsNonRoot=true check
 USER 20000
