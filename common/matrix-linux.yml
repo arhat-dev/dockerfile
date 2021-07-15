@@ -187,6 +187,8 @@ include:
 # alpine has no cross compiling
 - language:
   - rust
+  version: &__rust_version
+  - "1.53"
   kernel:
   - linux
   rootfs:
@@ -198,15 +200,14 @@ include:
 
 - language:
   - rust
-  version: &__rust_version
-  - "1.53"
+  version: *__rust_version
   kernel:
   - linux
   rootfs:
   - debian
   arch:
   - amd64
-  cross_arch: &__debian_rust_cross_arch
+  cross_arch:
   - amd64
   - arm64
   - armv7
@@ -222,7 +223,11 @@ include:
   - alpine
   arch:
   - arm64
-  cross_arch: *__debian_rust_cross_arch
+  cross_arch:
+  # - amd64 # not supported
+  - arm64
+  - armv7
+  - x86
 
 - language:
   - rust
