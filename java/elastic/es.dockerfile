@@ -45,7 +45,6 @@ ENV ELASTIC_CONTAINER=true
 ENV PATH="/usr/share/elasticsearch/bin:${PATH}"
 
 COPY --from=builder /opt/es /usr/share/elasticsearch
-COPY --from=builder --chown=0:0 /bin/tini /bin/tini
 
 RUN set -ex ;\
     addgroup --gid 1000 elasticsearch ;\

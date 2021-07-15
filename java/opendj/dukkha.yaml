@@ -29,17 +29,7 @@ buildah:build:
     - --build-arg
     - VERSION=${VERSION}
     - --build-arg
-    - TINI_VERSION=${TINI_VERSION}
-    - --build-arg
     - MATRIX_ARCH=${MATRIX_ARCH}
-    - --build-arg
-    - DOCKERHUB_ARCH={{ .Env.MATRIX_ARCH | getDockerHubArch }}
-    - --build-arg
-    - MATRIX_JRE=${MATRIX_JRE}
-    - --build-arg
-    - MATRIX_JDK=${MATRIX_JDK}
-    - --build-arg
-    - MAVEN3_VERSION=${MAVEN3_VERSION}
 
 buildah:push:
 - name: opendj

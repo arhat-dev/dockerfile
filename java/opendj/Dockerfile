@@ -59,8 +59,6 @@ COPY "build/${APP}/opendj-packages/opendj-docker/bootstrap/" \
 COPY "build/${APP}/opendj-packages/opendj-docker/run.sh" \
     /opt/opendj/run.sh
 
-COPY --from=builder --chown=0:0 /bin/tini /bin/tini
-
 RUN set -eux ;\
     groupadd "${OPENDJ_USER}" ;\
     useradd -m -r -u 1001 -g "${OPENDJ_USER}" "${OPENDJ_USER}" ;\

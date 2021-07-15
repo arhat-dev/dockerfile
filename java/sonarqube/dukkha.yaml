@@ -33,8 +33,6 @@ buildah:build:
     - --build-arg
     - VERSION=${VERSION}
     - --build-arg
-    - TINI_VERSION=${TINI_VERSION}
-    - --build-arg
     - MATRIX_ARCH=${MATRIX_ARCH}
     - --build-arg
     - ES_VERSION=${ES_VERSION}

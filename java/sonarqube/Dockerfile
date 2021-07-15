@@ -74,7 +74,6 @@ RUN set -ex ;\
         "${JAVA_HOME}/conf/security/java.security";
 
 COPY --from=builder /expanded/sonarqube /opt/sonarqube
-COPY --from=builder --chown=0:0 /bin/tini /bin/tini
 
 WORKDIR /opt
 RUN set -eux ;\
