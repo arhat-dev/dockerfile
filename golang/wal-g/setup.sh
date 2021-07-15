@@ -2,18 +2,17 @@
 
 set -eux
 
-case "${MATRIX_ROOTFS}" in
+# wal-g build script will download libsodium
+
+case "${MATRIX_ROOTFS:-"debian"}" in
 debian)
   export DEBIAN_FRONTEND=noninteractive
   apt-get update
-  apt-get install -y \
-    cmake=3.13.4-1 \
-    libsodium-dev=1.0.17-1 \
-    liblzo2-dev=2.10-0.1
+  apt-get install -y cmake "liblzo2-dev:${DEBIAN_ARCH}"
 
   rm -rf /var/lib/apt/lists/*
   ;;
 alpine)
-  apk add --no-cache cmake libsodium-dev
+  apk add --no-cache cmake lzo-dev
   ;;
 esac

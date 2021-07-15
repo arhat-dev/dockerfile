@@ -5,30 +5,30 @@ golang:build:
   - APP=wal-g
   # source(git-tags): https://github.com/wal-g/wal-g
   - VERSION=v1.0
-  # TODO: one of libsodium tests always fail
-  #       ../../build-aux/test-driver: line 107: 50245 Killed
   - USE_LIBSODIUM=1
   - USE_LZO=1
   matrix:
-    include:
-    - kernel:
-      - linux
-      arch:
-      - amd64
-      - arm64
-      - x86
-      rootfs:
-      - debian
-      db:
-      - fdb
-      - mongo
-      - mysql
-      - pg
-      - redis
-      - sqlserver
+    kernel:
+    - linux
+    arch: &arch
+    - amd64
+    - arm64
+    - armv7
+    - armv5
+    - ppc64le
+    - s390x
+    - x86
+    - mips64le
+    db:
+    - fdb
+    - mongo
+    - mysql
+    - pg
+    - redis
+    - sqlserver
   hooks:
     before:
-    - shell@env: |-
+    - shell@template|env: |-
         set -eux
 
         ulimit -a
@@ -36,12 +36,17 @@ golang:build:
 
         cd "/app/build/${APP}"
 
+        {{ if ne .Env.HOST_ARCH .Env.MATRIX_ARCH }}
+        export CC={{ .Env.MATRIX_ARCH | getDebianTripleName }}-gcc
+        export CXX={{ .Env.MATRIX_ARCH | getDebianTripleName }}-g++
+        {{- end }}
+
         make link_external_deps
 
   chdir@env: /app/build/${APP}
   path@env: ./cmd/${MATRIX_DB}
   outputs@env:
-  - /app/build/${APP}.${MATRIX_DB}.${MATRIX_KERNEL}.${MATRIX_ROOTFS}.${MATRIX_ARCH}
+  - /app/build/${APP}.${MATRIX_DB}.${MATRIX_KERNEL}.${MATRIX_ARCH}
   cgo:
     enabled: true
     ldflags: []
@@ -67,12 +72,7 @@ buildah:build:
   matrix: &matrix
     kernel:
     - linux
-    arch:
-    - amd64
-    - arm64
-    - x86
-    rootfs:
-    - debian
+    arch: *arch
   hooks:
     before:
     - shell@env: |-
@@ -97,7 +97,7 @@ buildah:build:
   file: golang/wal-g/Dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
-  extra_args@env:
+  extra_args@template:
   - --pull-always
   - --cap-add
   - CAP_SYS_RESOURCE
@@ -108,13 +108,13 @@ buildah:build:
   - --security-opt
   - seccomp=unconfined
   - --build-arg
-  - APP=${APP}
+  - APP={{ .Env.APP }}
   - --build-arg
-  - MATRIX_ROOTFS=${MATRIX_ROOTFS}
+  - MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
   - --build-arg
-  - MATRIX_ARCH=${MATRIX_ARCH}
+  - HOST_ARCH={{ .Env.HOST_ARCH }}
   - --build-arg
-  - HOST_ARCH=${HOST_ARCH}
+  - DEBIAN_ARCH={{ getDebianArch .Env.MATRIX_ARCH }}
 
 buildah:push:
 - name: wal-g
