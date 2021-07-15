@@ -2,7 +2,7 @@ ARG MATRIX_ROOTFS
 ARG MATRIX_ARCH
 ARG HOST_ARCH
 
-FROM ghcr.io/arhat-dev/builder-golang:1.16-${MATRIX_ROOTFS}-${HOST_ARCH}-${MATRIX_ARCH} AS builder
+FROM ghcr.io/arhat-dev/builder-golang:1.16-debian-${HOST_ARCH}-${MATRIX_ARCH} AS builder
 
 ARG MATRIX_ARCH
 ARG MATRIX_ROOTFS
@@ -20,7 +20,7 @@ RUN set -eux ;\
     -m arch=${MATRIX_ARCH} \
     -m rootfs=${MATRIX_ROOTFS}
 
-FROM ghcr.io/arhat-dev/golang:1.16-${MATRIX_ROOTFS}-${MATRIX_ARCH}
+FROM ghcr.io/arhat-dev/golang:1.16-debian-${MATRIX_ARCH}
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 

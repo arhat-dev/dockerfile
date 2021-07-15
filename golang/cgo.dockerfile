@@ -7,7 +7,7 @@ ARG MATRIX_ARCH
 ARG APP
 
 COPY . /app
-RUN dukkha golang local build -v verbose \
+RUN dukkha golang local build \
   ${APP} \
   -m kernel=linux \
   -m arch=${MATRIX_ARCH}

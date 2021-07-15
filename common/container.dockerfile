@@ -6,17 +6,20 @@ WORKDIR /app
 
 ARG PROGRAMMING_LANGUAGE
 COPY "${PROGRAMMING_LANGUAGE}/_container/setup.sh" \
-    /setup.sh
+    /setup-language.sh
 
 COPY "${PROGRAMMING_LANGUAGE}/_container/entrypoint.sh" \
     /usr/local/bin/entrypoint
 
+COPY common/container-setup.sh \
+    /setup.sh
+
 ARG MATRIX_ARCH
 
-# for java
 ARG TINI_VERSION
 RUN set -eux ;\
     sh /setup.sh "${MATRIX_ARCH}" && rm -f /setup.sh ;\
+    sh /setup-language.sh "${MATRIX_ARCH}" && rm -f /setup-language.sh ;\
     chmod a+x /usr/local/bin/entrypoint
 
 # TODO: shrink the final image by copy whole rootfs to scratch
