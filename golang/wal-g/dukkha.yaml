@@ -112,6 +112,8 @@ buildah:build:
   - --build-arg
   - HOST_ARCH={{ .Env.HOST_ARCH }}
   - --build-arg
+  - MATRIX_KERNEL={{ .Env.MATRIX_KERNEL }}
+  - --build-arg
   - TARGET_DEBIAN_ARCH={{ getDebianArch .Env.MATRIX_ARCH }}
 
 buildah:push:
