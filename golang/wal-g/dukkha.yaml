@@ -122,5 +122,5 @@ buildah:push:
   hooks:
     before:
     - task: buildah:login(ghcr)
-  matrix@file: *matrix
+  matrix: *matrix
   image_names@file|template: *image_names
