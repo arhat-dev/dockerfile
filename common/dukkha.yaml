@@ -13,7 +13,7 @@ workflow:run:
       include:
       EOF
       for l in ${LANGUAGES}; do
-        cat "${l}/_base/matrix.yml" >>scripts/dukkha/matrix-base.yml
+        cat "${l}/_common/matrix.yml" >>scripts/dukkha/matrix-base.yml
       done
 
   - name: generate-matrix-container.yml
@@ -21,7 +21,7 @@ workflow:run:
       {{- $target := (filepath_Join "scripts" "dukkha" "matrix-container.yml") -}}
       {{- $_ := os_WriteFile $target ("include:\n" | toBytes) -}}
       {{- range $_, $lang := .Env.LANGUAGES | splitList " " -}}
-        {{- $file := (filepath_Join $lang "_base" "matrix.yml") -}}
+        {{- $file := (filepath_Join $lang "_common" "matrix.yml") -}}
         {{- $mat := os_ReadFile $file -}}
         {{- $mat = yq ".[] |= del(.cross_arch)" $mat -}}
         {{- $_ := appendFile $target ($mat | toBytes) -}}

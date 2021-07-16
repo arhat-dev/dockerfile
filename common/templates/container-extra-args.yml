@@ -1,12 +1,18 @@
-{{- $base_image := "" -}}
+{{- $host_arch := "" -}}
+{{- if eq .Env.MATRIX_ROOTFS "debian" -}}
+  {{- $host_arch = getDebianArch .Env.MATRIX_ARCH -}}
+{{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
+  {{- $host_arch = getAlpineArch .Env.MATRIX_ARCH -}}
+{{- end -}}
 
+{{- $base_image := "" -}}
 {{- if eq .Env.MATRIX_LANGUAGE "ruby" "python" -}}
 
   {{- $suffix := "" -}}
   {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
-    {{- $suffix = printf "slim-%s" .Env.DEBIAN_VERSION -}}
+    {{- $suffix = printf "slim-%s" .Env.MATRIX_ROOTFS_VERSION -}}
   {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
-    {{- $suffix = printf "alpine%s" .Env.ALPINE_VERSION -}}
+    {{- $suffix = printf "alpine%s" .Env.MATRIX_ROOTFS_VERSION -}}
   {{- end -}}
 
   {{- $base_image = printf "docker.io/%s/%s:%s-%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_LANGUAGE .Env.MATRIX_VERSION $suffix -}}
@@ -15,9 +21,9 @@
 
   {{- $suffix := "" -}}
   {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
-    {{- $suffix = printf "%s-slim" .Env.DEBIAN_VERSION -}}
+    {{- $suffix = printf "%s-slim" .Env.MATRIX_ROOTFS_VERSION -}}
   {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
-    {{- $suffix = printf "alpine%s" .Env.ALPINE_VERSION -}}
+    {{- $suffix = printf "alpine%s" .Env.MATRIX_ROOTFS_VERSION -}}
   {{- end -}}
 
   {{- $base_image = printf "docker.io/%s/node:%s-%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_VERSION $suffix -}}
@@ -26,9 +32,9 @@
 
   {{- $suffix := "" -}}
   {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
-    {{- $suffix = printf "%s-slim" .Env.DEBIAN_VERSION -}}
+    {{- $suffix = printf "%s-slim" .Env.MATRIX_ROOTFS_VERSION -}}
   {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
-    {{- $suffix = printf "%s" .Env.ALPINE_VERSION -}}
+    {{- $suffix = printf "%s" .Env.MATRIX_ROOTFS_VERSION -}}
   {{- end -}}
 
   {{- $base_image = printf "docker.io/%s/%s:%s" (getDockerHubArch .Env.MATRIX_ARCH) .Env.MATRIX_ROOTFS $suffix -}}
@@ -67,6 +73,15 @@
 
 - --build-arg
 - MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
+
+- --build-arg
+- MATRIX_ROOTFS={{ .Env.MATRIX_ROOTFS }}
+
+- --build-arg
+- MATRIX_ROOTFS_VERSION={{ .Env.MATRIX_ROOTFS_VERSION }}
+
+- --build-arg
+- HOST_ARCH={{ $host_arch }}
 
 # for tini installation
 - --build-arg

@@ -18,9 +18,9 @@
 
 {{- $suffix := "" -}}
 {{- if eq .Env.MATRIX_ROOTFS "debian" -}}
-  {{- $suffix = .Env.DEBIAN_VERSION -}}
+  {{- $suffix = .Env.MATRIX_ROOTFS_VERSION -}}
 {{- else if eq .Env.MATRIX_ROOTFS "alpine" -}}
-  {{- $suffix = printf "alpine%s" .Env.ALPINE_VERSION -}}
+  {{- $suffix = printf "alpine%s" .Env.MATRIX_ROOTFS_VERSION -}}
 {{- end -}}
 
 {{- $base_image := "" -}}
@@ -88,6 +88,9 @@
 
 - --build-arg
 - MATRIX_CROSS_ARCH={{ .Env.MATRIX_CROSS_ARCH }}
+
+- --build-arg
+- MATRIX_ROOTFS_VERSION={{ .Env.MATRIX_ROOTFS_VERSION }}
 
 # for java
 - --build-arg

@@ -32,7 +32,16 @@ install_maven3() {
   echo "maven installed to ${dest}"
 }
 
-install_maven3 /usr/local/maven3
+matrix_arch="$1"
 
-echo "maven3 installed to /usr/local/maven3"
-echo "update your PATH to include /usr/local/maven3/bin"
+case "${matrix_arch}" in
+ppc64le)
+  # maven3 doesn't support ppc64le
+  echo "maven3 not installed (unsupported arch ${matrix_arch})"
+  ;;
+*)
+  install_maven3 /usr/local/maven3
+  echo "maven3 installed to /usr/local/maven3"
+  echo "update your PATH to include /usr/local/maven3/bin"
+  ;;
+esac

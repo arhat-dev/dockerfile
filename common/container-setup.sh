@@ -4,7 +4,10 @@ set -eux
 
 # requires build-arg TINI_VERSION
 
-matrix_arch="${1}"
+matrix_rootfs="$1"
+matrix_arch="$2"
+
+# rootfs_host_arch="$3"
 
 install_tini() {
   tini_arch=""
@@ -52,4 +55,23 @@ install_tini() {
   echo "tini installed to /bin/tini"
 }
 
-install_tini
+case "${matrix_rootfs}" in
+debian)
+  export DEBIAN_FRONTEND=noninteractive
+  apt-get update
+  apt-get install -y curl
+
+  install_tini
+
+  apt-get autoremove -y curl
+
+  rm -rf /var/lib/apt/lists/*
+  ;;
+alpine)
+  apk add --no-cache --virtual .fetch-deps curl
+
+  install_tini
+
+  apk del --purge .fetch-deps
+  ;;
+esac

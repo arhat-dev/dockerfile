@@ -2,9 +2,16 @@
 
 set -eux
 
-cross_arch="$2"
+# matrix_rootfs="$1"
+# matrix_arch="$2"
+matrix_cross_arch="$3"
+# matrix_rootfs_version="$4"
+#
+# rootfs_host_arch="$5"
+# rootfs_cross_arch="$6"
+# rootfs_cross_triple_name="$7"
 
-case "${cross_arch}" in
+case "${matrix_cross_arch}" in
 armv5 | armv6)
   rustup target add arm-unknown-linux-gnueabi
   rustup target add arm-unknown-linux-musleabi

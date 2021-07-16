@@ -14,13 +14,16 @@ COPY "${PROGRAMMING_LANGUAGE}/_container/entrypoint.sh" \
 COPY common/container-setup.sh \
     /setup.sh
 
+ARG MATRIX_ROOTFS
 ARG MATRIX_ARCH
+ARG HOST_ARCH
 
 # for tini installation
 ARG TINI_VERSION
+ARG MATRIX_ROOTFS
 RUN set -eux ;\
-    sh /setup.sh "${MATRIX_ARCH}" ;\
-    sh /setup-language.sh "${MATRIX_ARCH}" ;\
+    sh /setup.sh "${MATRIX_ROOTFS}" "${MATRIX_ARCH}" "${HOST_ARCH}" ;\
+    sh /setup-language.sh "${MATRIX_ROOTFS}" "${MATRIX_ARCH}" "${HOST_ARCH}" ;\
     rm -f /setup*.sh ;\
     chmod a+x /usr/local/bin/entrypoint
 

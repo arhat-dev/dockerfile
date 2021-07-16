@@ -10,7 +10,7 @@ COPY --from=dukkha /dukkha /usr/local/bin/dukkha
 
 ARG PROGRAMMING_LANGUAGE
 
-COPY "${PROGRAMMING_LANGUAGE}/_builder/build.sh" /build.sh
+COPY "${PROGRAMMING_LANGUAGE}/_common/build.sh" /build.sh
 RUN set -eux ;\
     chmod +x /usr/local/bin/dukkha
 

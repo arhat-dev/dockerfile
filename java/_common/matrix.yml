@@ -16,6 +16,8 @@
   - linux
   rootfs:
   - alpine
+  rootfs_version: &__java_alpine_version
+  - "3.13"
   arch:
   - amd64
   cross_arch: [""]
@@ -29,6 +31,8 @@
   - linux
   rootfs:
   - debian
+  rootfs_version: &__java_debian_version
+  - buster
   arch:
   # debian has no armv6 support
   - amd64
@@ -51,6 +55,7 @@
   - linux
   rootfs:
   - debian
+  rootfs_version: *__java_debian_version
   arch:
   # debian has no armv6 support
   - arm64
@@ -73,6 +78,7 @@
   - linux
   rootfs:
   - debian
+  rootfs_version: *__java_debian_version
   arch:
   - armv7
   - ppc64le
