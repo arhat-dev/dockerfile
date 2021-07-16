@@ -169,9 +169,10 @@ jobs:
       env:
         GHCR_USER: ${{ github.actor }}
         GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
+        DUKKHA_BIN: ${HOME}/bin/dukkha
       run: |-
-        sudo -E dukkha buildah local build ${{ matrix.app }}
-        sudo -E dukkha buildah local push ${{ matrix.app }}
+        sudo -E "${DUKKHA_BIN}" buildah local build ${{ matrix.app }}
+        sudo -E "${DUKKHA_BIN}" buildah local push ${{ matrix.app }}
 
     - name: Inspect Images
       if: always()
