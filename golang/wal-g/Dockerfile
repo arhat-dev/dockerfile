@@ -14,12 +14,10 @@ RUN set -eux ;\
 COPY . /app
 WORKDIR /app
 
-ARG APP
 ARG MATRIX_ARCH
 
 RUN set -eux ;\
-    dukkha golang local build \
-        "${APP}" \
+    dukkha golang local build wal-g \
         -m kernel=linux \
         -m "arch=${MATRIX_ARCH}"
 
@@ -27,7 +25,5 @@ FROM scratch
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
-ARG APP
-ARG MATRIX_KERNEL
 ARG MATRIX_ARCH
-COPY --from=builder /output/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}/* /
+COPY --from=builder /output/wal-g.linux.${MATRIX_ARCH}/* /

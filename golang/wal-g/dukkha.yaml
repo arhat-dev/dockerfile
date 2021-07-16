@@ -20,7 +20,7 @@ golang:build:
     - x86
     - mips64le
     cmd@env|shell: |-
-      cd "/app/build/${APP}/cmd"
+      cd /app/build/wal-g/main
       find . -mindepth 1 -maxdepth 1 -type d -exec echo '- {}' \;
   hooks:
     before:
@@ -30,7 +30,7 @@ golang:build:
         ulimit -a
         # ulimit -l unlimited
 
-        cd "/app/build/${APP}"
+        cd /app/build/wal-g
 
         {{ if ne .Env.HOST_ARCH .Env.MATRIX_ARCH }}
         export CC={{ .Env.MATRIX_ARCH | getDebianTripleName }}-gcc
@@ -39,19 +39,20 @@ golang:build:
 
         make link_external_deps
 
-  chdir@env: /app/build/${APP}
-  path@env: ./cmd/${MATRIX_CMD}
+  chdir@env: /app/build/wal-g
+  path@template: ./main/{{ trimPrefix "./" .Env.MATRIX_CMD }}
   outputs@template|env:
-  - /output/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}/${APP}.{{ trimPrefix "./" .Env.MATRIX_CMD }}
+  - /output/wal-g.${MATRIX_KERNEL}.${MATRIX_ARCH}/wal-g.{{ trimPrefix "./" .Env.MATRIX_CMD }}
   cgo:
     enabled: true
   ldflags@template|env:
   - -s -w
+  # not able to static link glibc
   - -extldflags=-static
   # ref: https://github.com/wal-g/wal-g/blob/master/Makefile#L38
   - -X "github.com/wal-g/wal-g/cmd/{{ trimPrefix "./" .Env.MATRIX_CMD }}.buildDate=$(date -u +%Y.%m.%d_%H:%M:%S)"
-  - -X "github.com/wal-g/wal-g/cmd/{{ trimPrefix "./" .Env.MATRIX_CMD }}.gitRevision=$(git -C /app/build/${APP} rev-parse --short HEAD)"
-  - -X "github.com/wal-g/wal-g/cmd/{{ trimPrefix "./" .Env.MATRIX_CMD }}.walgVersion=$(git -C /app/build/${APP} tag -l --points-at HEAD)"
+  - -X "github.com/wal-g/wal-g/cmd/{{ trimPrefix "./" .Env.MATRIX_CMD }}.gitRevision=$(git -C /app/build/wal-g rev-parse --short HEAD)"
+  - -X "github.com/wal-g/wal-g/cmd/{{ trimPrefix "./" .Env.MATRIX_CMD }}.walgVersion=$(git -C /app/build/wal-g tag -l --points-at HEAD)"
   tags:
   - brotli
   - libsodium
@@ -74,23 +75,19 @@ buildah:build:
   hooks:
     before:
     - shell@env: |-
-        [ -d "build/${APP}" ] && exit 0
+        [ -d build/wal-g ] && exit 0
 
         git clone --recursive --depth 1 -b ${VERSION} \
           https://github.com/wal-g/wal-g.git \
-          "build/${APP}"
+          build/wal-g
 
-        cd "build/${APP}"
+        cd build/wal-g
         GOPROXY=direct GOSUMDB=off go mod vendor -v
 
         sed_cmd="sed"
         if command -v gsed ; then
           sed_cmd="gsed"
         fi
-
-        # https://github.com/wal-g/wal-g/blob/master/Makefile#L228
-        \${sed_cmd} -i 's|\(#cgo LDFLAGS:\) .*|\1 -Wl,-Bstatic -llzo2 -Wl,-Bdynamic|' \
-          vendor/github.com/cyberdelia/lzo/lzo.go
 
   file: golang/wal-g/Dockerfile
   image_names@file|template: &image_names |-
