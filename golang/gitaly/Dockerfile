@@ -1,4 +1,3 @@
-ARG MATRIX_ROOTFS
 ARG HOST_ARCH
 ARG MATRIX_ARCH
 
@@ -54,6 +53,6 @@ FROM scratch
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
-ARG MATRIX_ARCH
 ARG APP
-COPY --from=builder /output/${APP}.linux.${MATRIX_ARCH}.* /
+ARG MATRIX_ARCH
+COPY --from=builder /output/${APP}.linux.${MATRIX_ARCH}/* /

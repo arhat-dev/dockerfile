@@ -40,19 +40,18 @@ golang:build:
         make link_external_deps
 
   chdir@env: /app/build/${APP}
-  path@env: ./cmd/${MATRIX_DB}
-  outputs@env:
+  path@env: ./cmd/${MATRIX_CMD}
+  outputs@template|env:
   - /output/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}/${APP}.{{ trimPrefix "./" .Env.MATRIX_CMD }}
   cgo:
     enabled: true
-    ldflags: []
-  ldflags@env:
+  ldflags@template|env:
   - -s -w
   - -extldflags=-static
   # ref: https://github.com/wal-g/wal-g/blob/master/Makefile#L38
-  - -X "github.com/wal-g/wal-g/cmd/${MATRIX_DB}.buildDate=$(date -u +%Y.%m.%d_%H:%M:%S)"
-  - -X "github.com/wal-g/wal-g/cmd/${MATRIX_DB}.gitRevision=$(git -C /app/build/${APP} rev-parse --short HEAD)"
-  - -X "github.com/wal-g/wal-g/cmd/${MATRIX_DB}.walgVersion=$(git -C /app/build/${APP} tag -l --points-at HEAD)"
+  - -X "github.com/wal-g/wal-g/cmd/{{ trimPrefix "./" .Env.MATRIX_CMD }}.buildDate=$(date -u +%Y.%m.%d_%H:%M:%S)"
+  - -X "github.com/wal-g/wal-g/cmd/{{ trimPrefix "./" .Env.MATRIX_CMD }}.gitRevision=$(git -C /app/build/${APP} rev-parse --short HEAD)"
+  - -X "github.com/wal-g/wal-g/cmd/{{ trimPrefix "./" .Env.MATRIX_CMD }}.walgVersion=$(git -C /app/build/${APP} tag -l --points-at HEAD)"
   tags:
   - brotli
   - libsodium

@@ -79,17 +79,17 @@ jobs:
     strategy:
       matrix:
         app:
-        - proton-bridge
-        - kubeval
-        - helm
-        - conftest
-        - editorconfig-checker
+        # - proton-bridge
+        # - kubeval
+        # - helm
+        # - conftest
+        # - editorconfig-checker
         - golangci-lint
         # cgo build
-        - kine
-        - litestream
+        # - kine
+        # - litestream
         - gitaly
-        - gitlab-shell
+        # - gitlab-shell
       fail-fast: false
     # needs:
     # - common
