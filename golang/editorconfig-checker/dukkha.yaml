@@ -5,7 +5,7 @@ golang:build:
   - APP=editorconfig-checker
   # source(git-tags): https://github.com/editorconfig-checker/editorconfig-checker
   - VERSION=2.3.5
-  matrix@file: &matrix golang/matrix-nocgo-all.yml
+  matrix@file: &matrix golang/matrix-nocgo-norootfs-all.yml
   chdir@env: /app/build/${APP}
   path: ./cmd/editorconfig-checker/
   outputs@env:

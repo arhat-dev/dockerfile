@@ -2,7 +2,7 @@ ARG HOST_ARCH
 ARG MATRIX_ARCH
 
 ARG VERSION
-FROM ghcr.io/arhat-dev/gitaly-ruby:${VERSION}-debian-${MATRIX_ARCH} AS ruby-builder
+FROM ghcr.io/arhat-dev/gitaly-ruby:${VERSION}-${MATRIX_ARCH} AS ruby-builder
 
 # go part of gitaly
 FROM ghcr.io/arhat-dev/builder-golang:1.16-debian-${HOST_ARCH}-${MATRIX_ARCH} AS builder
@@ -15,8 +15,9 @@ ENV BUNDLE_FORCE_RUBY_PLATFORM=true
 RUN set -eux ;\
     apt-get update ;\
     apt-get install -y cmake ;\
-    touch "/app/build/gitaly/.ruby-bundle" ;\
+    touch /app/build/gitaly/.ruby-bundle ;\
     export PKG_CONFIG_PATH="/app/build/gitaly/_build/deps/libgit2/install/lib/pkgconfig" ;\
+    # dukkha will build libgit2 in `before` hook
     dukkha golang local build gitaly \
       -m kernel=linux \
       -m arch=${MATRIX_ARCH}
@@ -29,10 +30,10 @@ ARG MATRIX_ARCH
 
 COPY --from=ruby-builder /app /srv/gitaly-ruby
 COPY --from=builder /output/gitaly.linux.${MATRIX_ARCH}/* /usr/local/bin/
-COPY golang/gitlay/config.toml /etc/gitaly/config.toml
-COPY golang/gitlay/gitconfig /usr/local/etc/gitconfig
-COPY golang/gitlay/healthcheck.sh /usr/local/bin/healthcheck
-COPY golang/gitlay/entrypoint.sh /usr/local/bin/entrypoint
+COPY golang/gitaly/config.toml /etc/gitaly/config.toml
+COPY golang/gitaly/gitconfig /usr/local/etc/gitconfig
+COPY golang/gitaly/healthcheck.sh /usr/local/bin/healthcheck
+COPY golang/gitaly/entrypoint.sh /usr/local/bin/entrypoint
 
 RUN set -eux ;\
     adduser --disabled-password --gecos 'GitLab' git ;\

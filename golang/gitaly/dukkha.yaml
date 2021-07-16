@@ -27,12 +27,12 @@ golang:build:
 
         export CGO_ENABLED=1
         export GOOS=linux
-        export GOARCH="${TARGET_GOARCH}"
+        export GOARCH="{{ .Env.MATRIX_ARCH | getGolangArch }}"
 
         {{ if ne .Env.HOST_ARCH .Env.MATRIX_ARCH }}
         export CC={{ .Env.MATRIX_ARCH | getDebianTripleName }}-gcc
         export CXX={{ .Env.MATRIX_ARCH | getDebianTripleName }}-g++
-        {{- end }}
+        {{ end }}
 
         make libgit2
 

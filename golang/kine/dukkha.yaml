@@ -4,7 +4,7 @@ golang:build:
   - APP=kine
   # source(git-tags): https://github.com/k3s-io/kine
   - VERSION=v0.6.1
-  matrix@file: &matrix golang/matrix-cgo-all.yml
+  matrix@file: &matrix golang/matrix-cgo-norootfs-all.yml
   chdir@env: /app/build/${APP}
   path: ./
   cgo:

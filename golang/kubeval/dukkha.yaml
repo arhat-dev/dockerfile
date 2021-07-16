@@ -5,7 +5,7 @@ golang:build:
   - APP=kubeval
   # source(git-tags): https://github.com/instrumenta/kubeval
   - VERSION=v0.16.1
-  matrix@file: &matrix golang/matrix-nocgo-all.yml
+  matrix@file: &matrix golang/matrix-nocgo-norootfs-all.yml
   chdir@env: /app/build/${APP}
   path: ./
   outputs@env:

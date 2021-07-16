@@ -5,11 +5,15 @@ golang:build:
   - APP=etcd
   # source(git-tags): https://github.com/etcd-io/etcd
   - VERSION=v3.5.0
-  matrix@file: &matrix golang/matrix-nocgo-all.yml
+  matrix:
+    kernel:
+    - linux
+    rootfs:
+    - debian
   chdir@env: /app/build/${APP}
   path: ./
   outputs@template|env:
-  - /output/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}/{{ trimPrefix "./" .Env.MATRIX_CMD }}
+  - /output/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}/{{ .Env.MATRIX_CMD }}
   cgo:
     enabled: false
   tags:
@@ -28,7 +32,7 @@ golang:build:
 buildah:build:
 - name: etcd
   env: *env
-  matrix@file: *matrix
+  matrix@file: &matrix golang/matrix-nocgo-norootfs-all.yml
   hooks:
     before:
     - shell@env: |-

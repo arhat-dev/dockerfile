@@ -44,7 +44,7 @@ golang:build:
 buildah:build:
 - name: gitlab-shell
   env: *env
-  matrix@file: &matrix golang/matrix-nocgo-all.yml
+  matrix@file: &matrix golang/matrix-nocgo-norootfs-all.yml
   hooks:
     before:
     - shell@env: |-

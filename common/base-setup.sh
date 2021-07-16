@@ -22,13 +22,17 @@ setup_debian() {
   apt-get update
   apt-get upgrade -y
   apt-get install -y --no-install-recommends \
-    git make curl build-essential wget ca-certificates
+    git make cmake curl build-essential wget ca-certificates
+
+  rm -rf /var/lib/apt/lists/*
 }
 
 setup_alpine() {
   apk update
   apk add --no-cache \
-    wget build-base curl git make bash ca-certificates
+    git make cmake curl build-base wget bash ca-certificates
+
+  rm -rf /var/cache/apk/*
 }
 
 case "${matrix_rootfs}" in

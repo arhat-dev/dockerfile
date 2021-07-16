@@ -1,0 +1,16 @@
+# cgo-all: using cgo, no rootfs info
+kernel:
+- linux
+rootfs:
+# currently we only support debian for cross compiling
+- debian
+arch:
+- amd64
+- arm64
+- armv7
+- armv5
+- ppc64le
+- s390x
+- x86
+- mips64le
+# - armv6 # debian has no armv6 image

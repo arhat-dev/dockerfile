@@ -2,7 +2,7 @@
 
 ARG MATRIX_ARCH
 
-FROM ghcr.io/arhat-dev/builder-ruby:2.7-debian-${MATRIX_ARCH} AS ruby-builder
+FROM ghcr.io/arhat-dev/builder-ruby:2.7-debian-${MATRIX_ARCH} AS builder
 
 COPY build/gitaly-ruby/ruby /app
 
@@ -16,3 +16,8 @@ RUN set -eux ;\
     bundle config ;\
     bundle install --jobs 4 ;\
     rm -rf spec features
+
+FROM scratch
+
+# keep gitaly-ruby only
+COPY --from=builder /app /
