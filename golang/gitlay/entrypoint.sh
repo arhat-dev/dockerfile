@@ -10,9 +10,7 @@ echo "Starting Gitaly"
 /usr/local/bin/gitaly "$GITALY_CONFIG_FILE" >> /var/log/gitaly/gitaly.log 2>&1 &
 
 if command -v xtail >/dev/null; then
-    xtail /var/log/gitaly
+    exec xtail /var/log/gitaly
 else
-    tail -f /var/log/gitaly/*
+    exec tail -f /var/log/gitaly/*
 fi
-
-wait

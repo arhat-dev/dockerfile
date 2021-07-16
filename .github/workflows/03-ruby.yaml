@@ -1,4 +1,4 @@
-name: golang
+name: ruby
 
 # yamllint disable-line rule:truthy
 on:
@@ -11,19 +11,19 @@ on:
     - master
     paths:
     - common/**
-    - golang/**
-    - .github/workflows/*-golang.yaml
+    - ruby/**
+    - .github/workflows/*-ruby.yaml
   schedule:
-  - cron: "0 0 * * *"
+  - cron: "0 3 * * *"
 
 jobs:
 #   common:
 #     strategy:
 #       matrix:
 #         version:
-#         - "1.16.6"
-#         - "1.15.14"
-#         - "1.17rc1"
+#         - "2.7.4"
+#         - "3.0.2"
+#         - "2.6.8"
 #       fail-fast: false
 #     runs-on: ubuntu-latest
 #     steps:
@@ -47,27 +47,27 @@ jobs:
 #         sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
 #
 #         dukkha buildah local build linux/base \
-#           -m language=golang \
+#           -m language=ruby \
 #           -m version=${{ matrix.version }}
 #
 #         dukkha buildah local push linux/base \
-#           -m language=golang \
+#           -m language=ruby \
 #           -m version=${{ matrix.version }}
 #
 #         dukkha buildah local build linux/builder \
-#           -m language=golang \
+#           -m language=ruby \
 #           -m version=${{ matrix.version }}
 #
 #         dukkha buildah local push linux/builder \
-#           -m language=golang \
+#           -m language=ruby \
 #           -m version=${{ matrix.version }}
 #
 #         dukkha buildah local build linux/container \
-#           -m language=golang \
+#           -m language=ruby \
 #           -m version=${{ matrix.version }}
 #
 #         dukkha buildah local push linux/container \
-#           -m language=golang \
+#           -m language=ruby \
 #           -m version=${{ matrix.version }}
 #
 #     - name: Inspect Images
@@ -75,63 +75,18 @@ jobs:
 #       run: |-
 #         buildah images
 
-#   apps:
-#     strategy:
-#       matrix:
-#         app:
-#         # - proton-bridge
-#         # - kubeval
-#         # - helm
-#         # - conftest
-#         # - editorconfig-checker
-#         # - golangci-lint
-#         # cgo build
-#         # - kine
-#         # - litestream
-#         # - gitaly
-#         # - gitlab-shell
-#       fail-fast: false
-#     # needs:
-#     # - common
-#     runs-on: ubuntu-20.04
-#     steps:
-#     - uses: actions/checkout@v2
-#     - name: Install dukkha
-#       run: |-
-#         mkdir -p "${HOME}/bin"
-#         echo "${HOME}/bin" >> $GITHUB_PATH
-#
-#         docker pull ghcr.io/arhat-dev/dukkha:latest
-#         ctr_id=$(docker create ghcr.io/arhat-dev/dukkha:latest : 2>/dev/null)
-#         docker cp ${ctr_id}:/dukkha "${HOME}/bin/dukkha"
-#
-#         chmod +x "${HOME}/bin/dukkha"
-#
-#     - name: Enable Multiarch Support
-#       run: |-
-#         sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
-#
-#         sudo apt update
-#         sudo apt install -y qemu-user-static
-#
-#     - name: Build and Push ${{ matrix.app }}
-#       env:
-#         GHCR_USER: ${{ github.actor }}
-#         GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
-#       run: |-
-#         dukkha buildah local build ${{ matrix.app }}
-#         dukkha buildah local push ${{ matrix.app }}
-#
-#     - name: Inspect Images
-#       if: always()
-#       run: |-
-#         buildah images
-
-  apps-privleged:
+  gitaly-ruby:
     strategy:
       matrix:
-        app:
-        - wal-g
+        arch:
+        - amd64
+        - arm64
+        - armv7
+        - armv5
+        - ppc64le
+        - s390x
+        - x86
+        - mips64le
       fail-fast: false
     # needs:
     # - common
@@ -156,15 +111,16 @@ jobs:
         sudo apt update
         sudo apt install -y qemu-user-static
 
-    - name: Build and Push ${{ matrix.app }}
+    - name: Build and Push gitlay-ruby
       env:
         GHCR_USER: ${{ github.actor }}
         GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
       run: |-
-        export DUKKHA_BIN="${HOME}/bin/dukkha"
+        dukkha buildah local build gitlay-ruby \
+          -m arch=${{ matrix.arch }}
 
-        sudo -E "${DUKKHA_BIN}" buildah local build ${{ matrix.app }}
-        sudo -E "${DUKKHA_BIN}" buildah local push ${{ matrix.app }}
+        dukkha buildah local push gitlay-ruby \
+          -m arch=${{ matrix.arch }}
 
     - name: Inspect Images
       if: always()

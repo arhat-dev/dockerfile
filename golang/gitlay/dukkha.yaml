@@ -1,5 +1,4 @@
 # this build instruction is used in container
-# WORKDIR /app
 golang:build:
 - name: gitaly
   env: &env
@@ -80,7 +79,7 @@ buildah:build:
           https://gitlab.com/gitlab-org/gitaly \
           build/gitaly
 
-  file: ruby/gitaly/Dockerfile
+  file: golang/gitaly/Dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
   extra_args@file|env|template: templates/image-extra-args/env[APP].yml
