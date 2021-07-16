@@ -1,0 +1,22 @@
+kernel:
+- linux
+rootfs:
+- debian
+arch:
+- amd64
+- arm64
+- armv7
+- armv5
+- ppc64le
+- x86
+- mips64le
+
+# s390x is disabled due to boringssl error
+#   third_party/boringssl-with-bazel/err_data.c
+#   In file included from third_party/boringssl-with-bazel/err_data.c:17:
+#   third_party/boringssl-with-bazel/src/include/openssl/base.h:122:2: error: #error
+#   "Unknown target CPU"
+#   error "Unknown target CPU"
+# - s390x
+
+# - armv6 # debian has no armv6 image

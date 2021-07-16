@@ -84,7 +84,7 @@ jobs:
         - armv7
         - armv5
         - ppc64le
-        - s390x
+        # - s390x
         - x86
         - mips64le
       fail-fast: false

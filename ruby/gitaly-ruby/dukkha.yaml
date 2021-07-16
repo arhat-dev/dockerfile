@@ -2,10 +2,10 @@
 buildah:build:
 - name: gitaly-ruby
   env: &env
-  - APP=gitaly
+  - APP=gitaly-ruby
   # source(git-tags): https://gitlab.com/gitlab-org/gitaly
   - VERSION=v14.0.5
-  matrix@file: &matrix golang/matrix-cgo-all.yml
+  matrix@file: &matrix ruby/gitaly-ruby/matrix.yml
   hooks:
     before:
     - shell@env: |-
