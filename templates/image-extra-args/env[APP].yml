@@ -23,6 +23,9 @@
 - MATRIX_KERNEL={{ .Env.MATRIX_KERNEL }}
 
 - --build-arg
+- TARGET_DEBIAN_ARCH={{ getDebianArch .Env.MATRIX_ARCH }}
+
+- --build-arg
 - TARGET_DEBIAN_TRIPLE_NAME={{ getDebianTripleName .Env.MATRIX_ARCH }}
 
 - --build-arg

@@ -5,6 +5,7 @@ include:
 - java/*/dukkha.yaml
 - golang/*/dukkha.yaml
 - python/*/dukkha.yaml
+- ruby/*/dukkha.yaml
 - kind/dukkha.yaml
 
 bootstrap:

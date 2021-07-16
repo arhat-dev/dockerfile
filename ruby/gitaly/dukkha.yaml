@@ -19,12 +19,28 @@ golang:build:
     - x86
     - mips64le
     cmd@env|shell: |-
-      cd "/app/build/${APP}/cmd"
+      cd "/app/build/gitaly/cmd"
       find . -mindepth 1 -maxdepth 1 -type d -exec echo '- {}' \;
-  chdir@env: /app/build/${APP}
+  hooks:
+    before:
+    - shell@template: |-
+        cd "/app/build/gitaly"
+
+        export CGO_ENABLED=1
+        export GOOS=linux
+        export GOARCH="${TARGET_GOARCH}"
+
+        {{ if ne .Env.HOST_ARCH .Env.MATRIX_ARCH }}
+        export CC={{ .Env.MATRIX_ARCH | getDebianTripleName }}-gcc
+        export CXX={{ .Env.MATRIX_ARCH | getDebianTripleName }}-g++
+        {{- end }}
+
+        make libgit2
+
+  chdir@env: /app/build/gitaly
   path@env: ./cmd/${MATRIX_CMD}/
   outputs@template|env:
-  - /output/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}/{{ trimPrefix "./" .Env.MATRIX_CMD }}
+  - /output/gitaly.${MATRIX_KERNEL}.${MATRIX_ARCH}/{{ trimPrefix "./" .Env.MATRIX_CMD }}
   cgo:
     enabled: true
     # cflags@template:
@@ -58,13 +74,13 @@ buildah:build:
   hooks:
     before:
     - shell@env: |-
-        [ -d build/${APP} ] && exit 0
+        [ -d build/gitaly ] && exit 0
 
         git clone --depth 1 --branch ${VERSION} \
           https://gitlab.com/gitlab-org/gitaly \
-          build/${APP}
+          build/gitaly
 
-  file: golang/gitaly/Dockerfile
+  file: ruby/gitaly/Dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
   extra_args@file|env|template: templates/image-extra-args/env[APP].yml
