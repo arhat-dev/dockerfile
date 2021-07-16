@@ -12,7 +12,7 @@ buildah:build:
         [ -d build/gitaly-ruby ] && exit 0
 
         git clone --depth 1 --branch ${VERSION} \
-          https://gitlab.com/gitlab-org/gitaly-ruby \
+          https://gitlab.com/gitlab-org/gitaly \
           build/gitaly-ruby
 
   file: ruby/gitaly-ruby/Dockerfile
