@@ -10,7 +10,7 @@ golang:build:
   chdir@env: /app/build/${APP}
   path: ./cmd/golangci-lint/
   outputs@env:
-  - /app/build/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}
+  - /output/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}/${APP}
   cgo:
     enabled: false
   ldflags@env:

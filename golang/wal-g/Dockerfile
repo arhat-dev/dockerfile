@@ -3,12 +3,12 @@ ARG MATRIX_ARCH
 
 FROM ghcr.io/arhat-dev/builder-golang:1.16-debian-${HOST_ARCH}-${MATRIX_ARCH} AS builder
 
-ARG DEBIAN_ARCH
+ARG TARGET_DEBIAN_ARCH
 ENV DEBIAN_FRONTEND=noninteractive
 RUN set -eux ;\
     apt-get update ;\
     # wal-g build script will download libsodium, do not install
-    apt-get install -y cmake "liblzo2-dev:${DEBIAN_ARCH}" ;\
+    apt-get install -y cmake "liblzo2-dev:${TARGET_DEBIAN_ARCH}" ;\
     rm -rf /var/lib/apt/lists/*
 
 COPY . /app
@@ -27,6 +27,7 @@ FROM scratch
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
-ARG MATRIX_ARCH
 ARG APP
-COPY --from=builder /app/build/* /
+ARG MATRIX_KERNEL
+ARG MATRIX_ARCH
+COPY --from=builder /output/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}/* /

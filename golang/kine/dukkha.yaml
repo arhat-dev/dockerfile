@@ -11,7 +11,7 @@ golang:build:
     # sqlite driver requires cgo
     enabled: true
   outputs@env:
-  - /app/build/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}
+  - /output/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}/${APP}
   ldflags@env:
   - -s -w
   - -extldflags=-static
@@ -37,11 +37,11 @@ buildah:build:
     - shell: |-
         [ -d build/${APP} ] && exit 0
 
-        git clone -b ${VERSION} \
+        git clone --depth 1 --branch ${VERSION} \
           https://github.com/k3s-io/kine.git \
           build/${APP}
 
-  file: golang/cgo.dockerfile
+  file: golang/cgo-norootfs.dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
   extra_args@file|env|template: templates/image-extra-args/env[APP].yml

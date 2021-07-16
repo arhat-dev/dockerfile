@@ -9,7 +9,7 @@ golang:build:
   chdir@env: /app/build/${APP}
   path: ./cmd/litestream
   outputs@env:
-  - /app/build/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}
+  - /output/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}/${APP}
   cgo:
     enabled: true
   ldflags@env:
@@ -40,7 +40,7 @@ buildah:build:
           https://github.com/benbjohnson/litestream.git \
           build/${APP}
 
-  file: golang/cgo.dockerfile
+  file: golang/cgo-norootfs.dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
   extra_args@file|env|template: templates/image-extra-args/env[APP].yml

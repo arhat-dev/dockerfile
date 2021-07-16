@@ -16,7 +16,7 @@ ARG APP
 ARG MATRIX_KERNEL
 ARG MATRIX_ARCH
 COPY --from=builder \
-    "/app/build/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}" \
+    "/output/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}/${APP}" \
     /proton-bridge
 
 ARG MATRIX_ROOTFS

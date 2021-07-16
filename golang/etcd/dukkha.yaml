@@ -8,8 +8,8 @@ golang:build:
   matrix@file: &matrix golang/matrix-nocgo-all.yml
   chdir@env: /app/build/${APP}
   path: ./
-  outputs@env:
-  - /app/build/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}
+  outputs@template|env:
+  - /output/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}/{{ trimPrefix "./" .Env.MATRIX_CMD }}
   cgo:
     enabled: false
   tags:
@@ -34,7 +34,7 @@ buildah:build:
     - shell@env: |-
         [ -d build/${APP} ] && exit 0
 
-        git clone --branch ${VERSION} \
+        git clone --depth 1 --branch ${VERSION} \
           https://github.com/etcd-io/etcd.git \
           build/${APP}
 

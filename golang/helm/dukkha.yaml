@@ -9,7 +9,7 @@ golang:build:
   chdir@env: /app/build/${APP}
   path: ./cmd/helm
   outputs@env:
-  - /app/build/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}
+  - /output/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}/${APP}
   cgo:
     enabled: false
   ldflags@env:
@@ -40,11 +40,11 @@ buildah:build:
     - shell@env: |-
         [ -d build/${APP} ] && exit 0
 
-        git clone --branch ${VERSION} \
+        git clone --depth 1 --branch ${VERSION} \
           https://github.com/helm/helm.git \
           build/${APP}
 
-  file: golang/nocgo.dockerfile
+  file: golang/nocgo-norootfs.dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
   extra_args@file|env|template: templates/image-extra-args/env[APP].yml

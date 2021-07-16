@@ -25,4 +25,4 @@ ARG MATRIX_ROOTFS
 COPY golang/golangci-lint/setup.sh /setup.sh
 RUN sh /setup.sh && rm -f /setup.sh
 
-COPY --from=builder /app/build/${APP}.linux.${MATRIX_ARCH} /${APP}
+COPY --from=builder /output/${APP}.linux.${MATRIX_ARCH} /${APP}

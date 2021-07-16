@@ -56,4 +56,4 @@ LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
 ARG MATRIX_ARCH
 ARG APP
-COPY --from=builder /app/build/${APP}.linux.${MATRIX_ARCH}.* /
+COPY --from=builder /output/${APP}.linux.${MATRIX_ARCH}.* /

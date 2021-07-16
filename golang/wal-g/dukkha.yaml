@@ -19,13 +19,9 @@ golang:build:
     - s390x
     - x86
     - mips64le
-    db:
-    - fdb
-    - mongo
-    - mysql
-    - pg
-    - redis
-    - sqlserver
+    cmd@env|shell: |-
+      cd "/app/build/${APP}/cmd"
+      find . -mindepth 1 -maxdepth 1 -type d -exec echo '- {}' \;
   hooks:
     before:
     - shell@template|env: |-
@@ -46,7 +42,7 @@ golang:build:
   chdir@env: /app/build/${APP}
   path@env: ./cmd/${MATRIX_DB}
   outputs@env:
-  - /app/build/${APP}.${MATRIX_DB}.${MATRIX_KERNEL}.${MATRIX_ARCH}
+  - /output/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}/${APP}.{{ trimPrefix "./" .Env.MATRIX_CMD }}
   cgo:
     enabled: true
     ldflags: []
@@ -117,7 +113,7 @@ buildah:build:
   - --build-arg
   - HOST_ARCH={{ .Env.HOST_ARCH }}
   - --build-arg
-  - DEBIAN_ARCH={{ getDebianArch .Env.MATRIX_ARCH }}
+  - TARGET_DEBIAN_ARCH={{ getDebianArch .Env.MATRIX_ARCH }}
 
 buildah:push:
 - name: wal-g

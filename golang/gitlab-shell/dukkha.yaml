@@ -1,76 +1,66 @@
 # this build instruction is used in container
-# WORKDIR /app
 golang:build:
-- name: gitaly
+- name: gitlab-shell
   env: &env
-  - APP=gitaly
-  # source(git-tags): https://gitlab.com/gitlab-org/gitaly
-  - VERSION=v14.0.5
+  - APP=gitlab-shell
+  # source(git-tags): https://gitlab.com/gitlab-org/gitlab-shell
+  - VERSION=v13.20.0
   matrix:
     kernel:
     - linux
-    arch: &arch
+    arch:
     - amd64
     - arm64
     - armv7
+    - armv6
     - armv5
-    - ppc64le
     - s390x
-    - x86
     - mips64le
+    - ppc64le
+    - x86
     cmd@env|shell: |-
       cd "/app/build/${APP}/cmd"
       find . -mindepth 1 -maxdepth 1 -type d -exec echo '- {}' \;
   chdir@env: /app/build/${APP}
-  path@env: ./cmd/${MATRIX_CMD}/
+  path@env: ./cmd/${MATRIX_CMD}
   outputs@template|env:
   - /output/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}/{{ trimPrefix "./" .Env.MATRIX_CMD }}
   cgo:
-    enabled: true
-    # cflags@template:
-    # - -arch={{ getGolangArch .Env.MATRIX_ARCH }}
-    # ldflags@template:
-    # - -arch={{ getGolangArch .Env.MATRIX_ARCH }}
+    enabled: false
   ldflags@env:
   - -s -w
-  - -extldflags=-static
-  # ref: https://gitlab.com/gitlab-org/gitaly/-/blob/master/Makefile#L65
-  - -X "gitlab.com/gitlab-org/gitaly/v14/internal/version.version=${VERSION}"
-  - -X "gitlab.com/gitlab-org/gitaly/v14/internal/version.buildtime=$(date +"%Y%m%d.%H%M%S")"
-  - -X "gitlab.com/gitlab-org/gitaly/v14/internal/version.moduleVersion=$(go list -m)"
+  # https://gitlab.com/gitlab-org/gitlab-shell/-/blob/main/Makefile#L7
+  - -X "main.Version=${VERSION}"
+  - -X "main.BuildTime=$(date -u +%Y%m%d.%H%M%S)"
   tags:
   - netgo
   - osusergo
-  # just in case it requires tzdata
-  - timetzdata
   - tracer_static
   - tracer_static_jaeger
-  - static
-  - system_libgit2
   extra_args:
   - -trimpath
   - -mod=readonly
 
 buildah:build:
-- name: gitaly
+- name: gitlab-shell
   env: *env
-  matrix@file: &matrix golang/matrix-cgo-all.yml
+  matrix@file: &matrix golang/matrix-nocgo-all.yml
   hooks:
     before:
     - shell@env: |-
         [ -d build/${APP} ] && exit 0
 
         git clone --depth 1 --branch ${VERSION} \
-          https://gitlab.com/gitlab-org/gitaly \
+          https://gitlab.com/gitlab-org/gitlab-shell \
           build/${APP}
 
-  file: golang/gitaly/Dockerfile
+  file: golang/nocgo-norootfs.dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
   extra_args@file|env|template: templates/image-extra-args/env[APP].yml
 
 buildah:push:
-- name: gitaly
+- name: gitlab-shell
   env: *env
   hooks:
     before:

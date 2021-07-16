@@ -28,7 +28,7 @@ golang:build:
   chdir@env: /app/build/${APP}
   path: ./cmd/Desktop-Bridge/
   outputs@env:
-  - /app/build/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}
+  - /output/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}/${APP}
   cgo:
     enabled: false
   ldflags@env:
@@ -55,7 +55,7 @@ buildah:build:
         set -ex
         [ -d build/${APP} ] && exit 0
 
-        git clone --branch ${VERSION} \
+        git clone --depth 1 --branch ${VERSION} \
             https://github.com/ProtonMail/proton-bridge.git \
             build/${APP}
 
