@@ -295,6 +295,8 @@ include:
   - linux
   rootfs:
   - alpine
+  rootfs_version: &__python_alpine_version
+  - "3.13"
   arch:
   # alpine has no armv5 and mips64le support
   - amd64
@@ -317,6 +319,8 @@ include:
   - linux
   rootfs:
   - debian
+  rootfs_version: &__python_debian_version
+  - buster
   arch:
   # debian has no armv6 support
   - amd64
@@ -339,6 +343,7 @@ include:
   - linux
   rootfs:
   - debian
+  rootfs_version: *__python_debian_version
   arch:
   # debian has no armv6 support
   - arm64
@@ -361,6 +366,7 @@ include:
   - linux
   rootfs:
   - debian
+  rootfs_version: *__python_debian_version
   arch:
   # debian has no armv6 support
   - armv7
@@ -388,6 +394,8 @@ include:
   - linux
   rootfs:
   - alpine
+  rootfs_version: &__ruby_alpine_version
+  - "3.13"
   arch:
   # alpine has no armv5 and mips64le support
   - amd64
@@ -410,6 +418,8 @@ include:
   - linux
   rootfs:
   - debian
+  rootfs_version: &__ruby_debian_version
+  - buster
   arch:
   # debian has no armv6 support
   - amd64
@@ -432,6 +442,7 @@ include:
   - linux
   rootfs:
   - debian
+  rootfs_version: *__ruby_debian_version
   arch:
   # debian has no armv6 support
   - arm64
@@ -454,6 +465,7 @@ include:
   - linux
   rootfs:
   - debian
+  rootfs_version: *__ruby_debian_version
   arch:
   # debian has no armv6 support
   - armv7
@@ -480,6 +492,8 @@ include:
   - linux
   rootfs:
   - alpine
+  rootfs_version: &__rust_alpine_version
+  - "3.13"
   arch:
   - amd64
   - arm64
@@ -493,6 +507,8 @@ include:
   - linux
   rootfs:
   - debian
+  rootfs_version: &__rust_debian_version
+  - buster
   arch:
   - amd64
   cross_arch:
@@ -509,6 +525,7 @@ include:
   - linux
   rootfs:
   - debian
+  rootfs_version: *__rust_debian_version
   arch:
   - arm64
   cross_arch:
@@ -526,6 +543,7 @@ include:
   - linux
   rootfs:
   - debian
+  rootfs_version: *__rust_debian_version
   arch:
   - armv7
   - x86

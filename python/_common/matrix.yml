@@ -17,6 +17,8 @@
   - linux
   rootfs:
   - alpine
+  rootfs_version: &__python_alpine_version
+  - "3.13"
   arch:
   # alpine has no armv5 and mips64le support
   - amd64
@@ -39,6 +41,8 @@
   - linux
   rootfs:
   - debian
+  rootfs_version: &__python_debian_version
+  - buster
   arch:
   # debian has no armv6 support
   - amd64
@@ -61,6 +65,7 @@
   - linux
   rootfs:
   - debian
+  rootfs_version: *__python_debian_version
   arch:
   # debian has no armv6 support
   - arm64
@@ -83,6 +88,7 @@
   - linux
   rootfs:
   - debian
+  rootfs_version: *__python_debian_version
   arch:
   # debian has no armv6 support
   - armv7

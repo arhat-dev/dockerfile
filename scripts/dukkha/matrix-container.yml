@@ -224,6 +224,8 @@ include:
     - 3.9.6
   rootfs:
     - alpine
+  rootfs_version:
+    - "3.13"
   version:
     - 3.6.14
     - 3.7.11
@@ -239,6 +241,8 @@ include:
     - 3.9.6
   rootfs:
     - debian
+  rootfs_version:
+    - buster
   version:
     - 3.6.14
     - 3.7.11
@@ -254,6 +258,8 @@ include:
     - 3.9.6
   rootfs:
     - debian
+  rootfs_version:
+    - buster
   version:
     - 3.6.14
     - 3.7.11
@@ -274,6 +280,8 @@ include:
     - 3.9.6
   rootfs:
     - debian
+  rootfs_version:
+    - buster
   version:
     - 3.6.14
     - 3.7.11
@@ -291,6 +299,8 @@ include:
     - 3.0.2
   rootfs:
     - alpine
+  rootfs_version:
+    - "3.13"
   version:
     - 2.7.4
     - 3.0.2
@@ -305,6 +315,8 @@ include:
     - 3.0.2
   rootfs:
     - debian
+  rootfs_version:
+    - buster
   version:
     - 2.7.4
     - 3.0.2
@@ -319,6 +331,8 @@ include:
     - 3.0.2
   rootfs:
     - debian
+  rootfs_version:
+    - buster
   version:
     - 2.7.4
     - 3.0.2
@@ -338,6 +352,8 @@ include:
     - 3.0.2
   rootfs:
     - debian
+  rootfs_version:
+    - buster
   version:
     - 2.7.4
     - 3.0.2
@@ -353,6 +369,8 @@ include:
     - 1.53.0
   rootfs:
     - alpine
+  rootfs_version:
+    - "3.13"
   version:
     - 1.53.0
 - arch:
@@ -365,6 +383,8 @@ include:
     - 1.53.0
   rootfs:
     - debian
+  rootfs_version:
+    - buster
   version:
     - 1.53.0
 - arch:
@@ -377,6 +397,8 @@ include:
     - 1.53.0
   rootfs:
     - debian
+  rootfs_version:
+    - buster
   version:
     - 1.53.0
 - arch:
@@ -390,5 +412,7 @@ include:
     - 1.53.0
   rootfs:
     - debian
+  rootfs_version:
+    - buster
   version:
     - 1.53.0
