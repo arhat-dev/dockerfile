@@ -75,67 +75,20 @@ jobs:
 #       run: |-
 #         buildah images
 
-  apps:
-    strategy:
-      matrix:
-        app:
-        # - proton-bridge
-        # - kubeval
-        # - helm
-        # - conftest
-        # - editorconfig-checker
-        # - golangci-lint
-        # cgo build
-        # - kine
-        # - litestream
-        - gitaly
-      fail-fast: false
-    # needs:
-    # - common
-    runs-on: ubuntu-20.04
-    steps:
-    - uses: actions/checkout@v2
-    - name: Install dukkha
-      run: |-
-        mkdir -p "${HOME}/bin"
-        echo "${HOME}/bin" >> $GITHUB_PATH
-
-        docker pull ghcr.io/arhat-dev/dukkha:latest
-        ctr_id=$(docker create ghcr.io/arhat-dev/dukkha:latest : 2>/dev/null)
-        docker cp ${ctr_id}:/dukkha "${HOME}/bin/dukkha"
-
-        chmod +x "${HOME}/bin/dukkha"
-
-    - name: Enable Multiarch Support
-      run: |-
-        sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
-
-        sudo apt update
-        sudo apt install -y qemu-user-static
-
-    - name: Install Protoc
-      uses: arduino/setup-protoc@v1
-      with:
-        version: '3.x'
-
-    - name: Build and Push ${{ matrix.app }}
-      env:
-        GHCR_USER: ${{ github.actor }}
-        GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
-      run: |-
-        dukkha buildah local build ${{ matrix.app }}
-        dukkha buildah local push ${{ matrix.app }}
-
-    - name: Inspect Images
-      if: always()
-      run: |-
-        buildah images
-
-#   apps-privleged:
+#   apps:
 #     strategy:
 #       matrix:
 #         app:
-#         - wal-g
+#         # - proton-bridge
+#         # - kubeval
+#         # - helm
+#         # - conftest
+#         # - editorconfig-checker
+#         # - golangci-lint
+#         # cgo build
+#         # - kine
+#         # - litestream
+#         - gitaly
 #       fail-fast: false
 #     # needs:
 #     # - common
@@ -170,10 +123,57 @@ jobs:
 #         GHCR_USER: ${{ github.actor }}
 #         GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
 #       run: |-
-#         sudo dukkha buildah local build ${{ matrix.app }}
-#         sudo dukkha buildah local push ${{ matrix.app }}
+#         dukkha buildah local build ${{ matrix.app }}
+#         dukkha buildah local push ${{ matrix.app }}
 #
 #     - name: Inspect Images
 #       if: always()
 #       run: |-
 #         buildah images
+
+  apps-privleged:
+    strategy:
+      matrix:
+        app:
+        - wal-g
+      fail-fast: false
+    # needs:
+    # - common
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dukkha
+      run: |-
+        mkdir -p "${HOME}/bin"
+        echo "${HOME}/bin" >> $GITHUB_PATH
+
+        docker pull ghcr.io/arhat-dev/dukkha:latest
+        ctr_id=$(docker create ghcr.io/arhat-dev/dukkha:latest : 2>/dev/null)
+        docker cp ${ctr_id}:/dukkha "${HOME}/bin/dukkha"
+
+        chmod +x "${HOME}/bin/dukkha"
+
+    - name: Enable Multiarch Support
+      run: |-
+        sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+        sudo apt update
+        sudo apt install -y qemu-user-static
+
+    - name: Install Protoc
+      uses: arduino/setup-protoc@v1
+      with:
+        version: '3.x'
+
+    - name: Build and Push ${{ matrix.app }}
+      env:
+        GHCR_USER: ${{ github.actor }}
+        GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
+      run: |-
+        sudo -E dukkha buildah local build ${{ matrix.app }}
+        sudo -E dukkha buildah local push ${{ matrix.app }}
+
+    - name: Inspect Images
+      if: always()
+      run: |-
+        buildah images
