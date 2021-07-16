@@ -1,4 +1,7 @@
-# TODO: ruby have to use qemu for gem compilation, what we can do?
+# TODO: do we really have to use qemu for ruby gem compilation?
+
+ARG MATRIX_ARCH
+
 FROM ghcr.io/arhat-dev/builder-ruby:2.7-debian-${MATRIX_ARCH} AS ruby-builder
 
 COPY build/gitaly-ruby/ruby /app
