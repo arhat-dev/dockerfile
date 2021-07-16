@@ -53,15 +53,18 @@ golang:build:
   ldflags@env:
   - -s -w
   - -extldflags=-static
+  # ref: https://github.com/wal-g/wal-g/blob/master/Makefile#L38
   - -X "github.com/wal-g/wal-g/cmd/${MATRIX_DB}.buildDate=$(date -u +%Y.%m.%d_%H:%M:%S)"
   - -X "github.com/wal-g/wal-g/cmd/${MATRIX_DB}.gitRevision=$(git -C /app/build/${APP} rev-parse --short HEAD)"
   - -X "github.com/wal-g/wal-g/cmd/${MATRIX_DB}.walgVersion=$(git -C /app/build/${APP} tag -l --points-at HEAD)"
   tags:
-  - netgo
-  - osusergo
   - brotli
   - libsodium
   - lzo
+  - netgo
+  - osusergo
+  # just in case it requires tzdata
+  - timetzdata
   extra_args:
   - -trimpath
   - -mod=vendor

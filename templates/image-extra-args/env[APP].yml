@@ -17,10 +17,13 @@
 - GO_VERSION={{ .Env.GO_VERSION }}
 
 - --build-arg
-- PROTOC_VERSION={{ .Env.PROTOC_VERSION }}
-
-- --build-arg
 - HOST_ARCH={{ .Env.HOST_ARCH }}
 
 - --build-arg
 - MATRIX_KERNEL={{ .Env.MATRIX_KERNEL }}
+
+- --build-arg
+- TARGET_DEBIAN_TRIPLE_NAME={{ getDebianTripleName .Env.MATRIX_ARCH }}
+
+- --build-arg
+- TARGET_GOARCH={{ getGolangArch .Env.MATRIX_ARCH }}

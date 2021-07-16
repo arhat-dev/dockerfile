@@ -21,6 +21,7 @@ golang:build:
   - -X "main.date=$(git -C /app/build/golangci-lint rev-parse --short=8 HEAD)"
   tags:
   - netgo
+  - osusergo
   extra_args:
   - -trimpath
   - -mod=readonly

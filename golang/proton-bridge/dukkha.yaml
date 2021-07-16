@@ -39,6 +39,9 @@ golang:build:
   - -X "github.com/ProtonMail/proton-bridge/internal/constants.BuildTime=$(date +%FT%T%z)"
   tags:
   - netgo
+  - osusergo
+  # just in case it requires tzdata
+  - timetzdata
   extra_args:
   - -trimpath
   - -mod=readonly

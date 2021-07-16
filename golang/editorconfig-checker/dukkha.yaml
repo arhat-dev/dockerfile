@@ -16,6 +16,7 @@ golang:build:
   - -X "main.version=${VERSION}"
   tags:
   - netgo
+  - osusergo
   extra_args:
   - -trimpath
   - -mod=readonly

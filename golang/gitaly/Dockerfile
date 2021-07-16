@@ -1,30 +1,59 @@
 ARG MATRIX_ROOTFS
+ARG HOST_ARCH
 ARG MATRIX_ARCH
 
-FROM ghcr.io/arhat-dev/builder-golang:1.16-${MATRIX_ROOTFS}-${MATRIX_ARCH} AS builder
+FROM ghcr.io/arhat-dev/builder-ruby:2.7-debian-${HOST_ARCH}-${MATRIX_ARCH} AS ruby-builder
 
-ARG PROTOC_VERSION
-COPY scripts/install-protoc.sh /install-protoc.sh
-# always install amd64 version of protoc, run in qemu
-RUN MATRIX_ARCH="amd64" \
-    sh /install-protoc.sh && rm -f /install-protoc.sh
+ARG APP
+COPY "build/${APP}" /app
 
-ARG MATRIX_ARCH
-ARG MATRIX_ROOTFS
+WORKDIR /app
+RUN set -eux ;\
+    apt-get update ;\
+    apt-get install -y cmake ;\
+    make /app/.ruby-bundle
+
+FROM ghcr.io/arhat-dev/builder-golang:1.16-debian-${HOST_ARCH}-${MATRIX_ARCH} AS builder
+
 ARG APP
 
 COPY . /app
-RUN dukkha golang local build -v verbose \
-  ${APP} \
-  -m kernel=linux \
-  -m arch=${MATRIX_ARCH} \
-  -m rootfs=${MATRIX_ROOTFS}
+COPY --from=ruby-builder \
+    /app/.ruby-bundle \
+    "/app/build/${APP}/.ruby-bundle"
 
-FROM ghcr.io/arhat-dev/golang:1.16-${MATRIX_ROOTFS}-${MATRIX_ARCH}
+COPY --from=ruby-builder \
+    /app/ruby/vendor \
+    "/app/build/${APP}/ruby/vendor"
+
+# COPY --from=ruby-builder \
+#     /app/ruby/.bundle \
+#     "/app/build/${APP}/ruby/.bundle"
+
+ARG MATRIX_ARCH
+ARG TARGET_DEBIAN_TRIPLE_NAME
+ARG TARGET_GOARCH
+RUN set -eux ;\
+    apt-get update ;\
+    apt-get install -y cmake ;\
+    cd "/app/build/${APP}" ;\
+    export CGO_ENABLED=1 ;\
+    export GOOS=linux ;\
+    export GOARCH="${TARGET_GOARCH}" ;\
+    export CC="$(command -v ${TARGET_DEBIAN_TRIPLE_NAME}-gcc)" ;\
+    export CXX="$(command -v ${TARGET_DEBIAN_TRIPLE_NAME}-g++)" ;\
+    make libgit2 ;\
+    export PKG_CONFIG_PATH="/app/build/${APP}/_build/deps/libgit2/install/lib/pkgconfig" ;\
+    cd /app ;\
+    dukkha golang local build \
+      "${APP}" \
+      -m kernel=linux \
+      -m arch=${MATRIX_ARCH}
+
+FROM scratch
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
 ARG MATRIX_ARCH
-ARG MATRIX_ROOTFS
 ARG APP
-COPY --from=builder /app/build/${APP}.linux.${MATRIX_ROOTFS}.${MATRIX_ARCH} /${APP}
+COPY --from=builder /app/build/${APP}.linux.${MATRIX_ARCH}.* /

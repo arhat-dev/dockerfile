@@ -3,10 +3,13 @@ ARG MATRIX_ARCH
 
 FROM ghcr.io/arhat-dev/builder-golang:1.16-debian-${HOST_ARCH}-${MATRIX_ARCH} AS builder
 
-COPY golang/wal-g/setup.sh /setup.sh
-
 ARG DEBIAN_ARCH
-RUN sh /setup.sh && rm -f /setup.sh
+ENV DEBIAN_FRONTEND=noninteractive
+RUN set -eux ;\
+    apt-get update ;\
+    # wal-g build script will download libsodium, do not install
+    apt-get install -y cmake "liblzo2-dev:${DEBIAN_ARCH}" ;\
+    rm -rf /var/lib/apt/lists/*
 
 COPY . /app
 WORKDIR /app

@@ -24,4 +24,7 @@
 - GO_VERSION={{ .Env.GO_VERSION }}
 
 - --build-arg
-- PROTOC_VERSION={{ .Env.PROTOC_VERSION }}
+- TARGET_DEBIAN_TRIPLE_NAME={{ getDebianTripleName .Env.MATRIX_ARCH }}
+
+- --build-arg
+- TARGET_GOARCH={{ getGolangArch .Env.MATRIX_ARCH }}

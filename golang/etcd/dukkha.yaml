@@ -1,53 +1,50 @@
+# this build instruction is used in container
 golang:build:
-- name: kine
+- name: etcd
   env: &env
-  - APP=kine
-  # source(git-tags): https://github.com/k3s-io/kine
-  - VERSION=v0.6.1
-  matrix@file: &matrix golang/matrix-cgo-all.yml
+  - APP=etcd
+  # source(git-tags): https://github.com/etcd-io/etcd
+  - VERSION=v3.5.0
+  matrix@file: &matrix golang/matrix-nocgo-all.yml
   chdir@env: /app/build/${APP}
   path: ./
-  cgo:
-    # sqlite driver requires cgo
-    enabled: true
   outputs@env:
   - /app/build/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}
-  ldflags@env:
-  - -s -w
-  - -extldflags=-static
-  # ref: https://github.com/k3s-io/kine/blob/master/scripts/build
-  - -X github.com/k3s-io/kine.Version=${VERSION}
-  - -X github.com/k3s-io/kine.GitCommit=$(git -C /app/build/${APP} rev-parse --short HEAD)
+  cgo:
+    enabled: false
   tags:
   - netgo
   - osusergo
   # just in case it requires tzdata
   - timetzdata
+  ldflags@env:
+  - -s -w
+  - -X "go.etcd.io/etcd/api/v3/version.GitSHA=$(git rev-parse --short HEAD)"
   extra_args:
   - -v
   - -trimpath
   - -mod=readonly
 
 buildah:build:
-- name: kine
+- name: etcd
   env: *env
   matrix@file: *matrix
   hooks:
     before:
-    - shell: |-
+    - shell@env: |-
         [ -d build/${APP} ] && exit 0
 
-        git clone -b ${VERSION} \
-          https://github.com/k3s-io/kine.git \
+        git clone --branch ${VERSION} \
+          https://github.com/etcd-io/etcd.git \
           build/${APP}
 
-  file: golang/cgo.dockerfile
+  file: golang/nocgo.dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
   extra_args@file|env|template: templates/image-extra-args/env[APP].yml
 
 buildah:push:
-- name: kine
+- name: etcd
   env: *env
   hooks:
     before:

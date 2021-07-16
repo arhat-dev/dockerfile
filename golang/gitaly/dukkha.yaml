@@ -6,28 +6,47 @@ golang:build:
   - APP=gitaly
   # source(git-tags): https://gitlab.com/gitlab-org/gitaly
   - VERSION=v14.0.5
-  - GITALY_PACKAGE=gitlab.com/gitlab-org/gitaly/v14
-  hooks:
-    before:
-    # install protoc-gen-go and protoc-gen-go-grpc
-    - cmd: [sh, /app/golang/gitaly/install-protoc-gen.sh]
-    - shell: |-
-        //
-        mv ${GOPATH}/
-  matrix@file: &matrix golang/matrix-nocgo-all.yml
+  matrix:
+    kernel:
+    - linux
+    arch: &arch
+    - amd64
+    - arm64
+    - armv7
+    - armv5
+    - ppc64le
+    - s390x
+    - x86
+    - mips64le
+    cmd@env|shell: |-
+      cd "/app/build/${APP}/cmd"
+      find . -mindepth 1 -maxdepth 1 -type d -exec echo '- {}' \;
   chdir@env: /app/build/${APP}
-  path: ./cmd/gitaly/
+  path@env: ./cmd/${MATRIX_CMD}/
   outputs@env:
-  - /app/build/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}
+  - /app/build/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}.${MATRIX_CMD}
   cgo:
     enabled: true
+    # cflags@template:
+    # - -arch={{ getGolangArch .Env.MATRIX_ARCH }}
+    # ldflags@template:
+    # - -arch={{ getGolangArch .Env.MATRIX_ARCH }}
   ldflags@env:
   - -s -w
-  - -X "${GITALY_PACKAGE}/internal/version.version=${VERSION}"
-  - -X "${GITALY_PACKAGE}/internal/version.buildtime=$(date +"%Y%m%d.%H%M%S")"
-  - -X "${GITALY_PACKAGE}/internal/version.moduleVersion=$(go list -m)"
+  - -extldflags=-static
+  # ref: https://gitlab.com/gitlab-org/gitaly/-/blob/master/Makefile#L65
+  - -X "gitlab.com/gitlab-org/gitaly/v14/internal/version.version=${VERSION}"
+  - -X "gitlab.com/gitlab-org/gitaly/v14/internal/version.buildtime=$(date +"%Y%m%d.%H%M%S")"
+  - -X "gitlab.com/gitlab-org/gitaly/v14/internal/version.moduleVersion=$(go list -m)"
   tags:
   - netgo
+  - osusergo
+  # just in case it requires tzdata
+  - timetzdata
+  - tracer_static
+  - tracer_static_jaeger
+  - static
+  - system_libgit2
   extra_args:
   - -trimpath
   - -mod=readonly
@@ -35,7 +54,7 @@ golang:build:
 buildah:build:
 - name: gitaly
   env: *env
-  matrix@file: *matrix
+  matrix@file: &matrix golang/matrix-cgo-all.yml
   hooks:
     before:
     - shell@env: |-
@@ -45,7 +64,7 @@ buildah:build:
           https://gitlab.com/gitlab-org/gitaly \
           build/${APP}
 
-  file: golang/Dockerfile
+  file: golang/gitaly/Dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
   extra_args@file|env|template: templates/image-extra-args/env[APP].yml

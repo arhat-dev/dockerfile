@@ -19,9 +19,10 @@ golang:build:
   tags:
   - netgo
   - osusergo
-  - sqlite_omit_load_extension
   # just in case it requires tzdata
   - timetzdata
+  # ref: https://github.com/benbjohnson/litestream/blob/main/Dockerfile#L7
+  - sqlite_omit_load_extension
   extra_args:
   - -trimpath
   - -mod=readonly

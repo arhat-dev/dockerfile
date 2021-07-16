@@ -26,6 +26,7 @@ golang:build:
   - -X "helm.sh/helm/v3/pkg/chartutil.k8sVersionMinor=21"
   tags:
   - netgo
+  - osusergo
   extra_args:
   - -trimpath
   - -mod=readonly

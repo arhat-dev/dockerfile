@@ -17,6 +17,7 @@ golang:build:
     enabled: false
   tags:
   - netgo
+  - osusergo
   extra_args:
   - -trimpath
   - -mod=readonly
