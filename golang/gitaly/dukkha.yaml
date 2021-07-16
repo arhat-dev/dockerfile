@@ -3,8 +3,8 @@ golang:build:
 - name: gitaly
   env: &env
   - APP=gitaly
-  # source(git-tags): https://gitlab.com/gitlab-org/gitaly
-  - VERSION=v14.0.5
+  # source(docker): ghcr.io/arhat-dev/gitaly-ruby
+  - VERSION=14.0.5
   matrix:
     kernel:
     - linux
@@ -14,16 +14,16 @@ golang:build:
     - armv7
     - armv5
     - ppc64le
-    - s390x
+    # - s390x
     - x86
     - mips64le
     cmd@env|shell: |-
-      cd "/app/build/gitaly/cmd"
+      cd /app/build/gitaly/cmd
       find . -mindepth 1 -maxdepth 1 -type d -exec echo '- {}' \;
   hooks:
     before:
     - shell@template: |-
-        cd "/app/build/gitaly"
+        cd /app/build/gitaly
 
         export CGO_ENABLED=1
         export GOOS=linux
@@ -69,7 +69,7 @@ golang:build:
 buildah:build:
 - name: gitaly
   env: *env
-  matrix@file: &matrix golang/matrix-cgo-all.yml
+  matrix@file: &matrix ruby/gitaly-ruby/matrix.yml
   hooks:
     before:
     - shell@env: |-
@@ -82,7 +82,7 @@ buildah:build:
   file: golang/gitaly/Dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
-  extra_args@file|env|template: templates/image-extra-args/env[APP].yml
+  extra_args@file|env|template: templates/image-extra-args/env[VERSION].yml
 
 buildah:push:
 - name: gitaly
