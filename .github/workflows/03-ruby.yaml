@@ -111,15 +111,15 @@ jobs:
         sudo apt update
         sudo apt install -y qemu-user-static
 
-    - name: Build and Push gitlay-ruby
+    - name: Build and Push gitaly-ruby
       env:
         GHCR_USER: ${{ github.actor }}
         GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
       run: |-
-        dukkha buildah local build gitlay-ruby \
+        dukkha buildah local build gitaly-ruby \
           -m arch=${{ matrix.arch }}
 
-        dukkha buildah local push gitlay-ruby \
+        dukkha buildah local push gitaly-ruby \
           -m arch=${{ matrix.arch }}
 
     - name: Inspect Images

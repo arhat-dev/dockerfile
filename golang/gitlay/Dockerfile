@@ -2,7 +2,7 @@ ARG HOST_ARCH
 ARG MATRIX_ARCH
 
 ARG VERSION
-FROM ghcr.io/arhat-dev/gitlay-ruby:${VERSION}-debian-${MATRIX_ARCH} AS ruby-builder
+FROM ghcr.io/arhat-dev/gitaly-ruby:${VERSION}-debian-${MATRIX_ARCH} AS ruby-builder
 
 # go part of gitaly
 FROM ghcr.io/arhat-dev/builder-golang:1.16-debian-${HOST_ARCH}-${MATRIX_ARCH} AS builder
