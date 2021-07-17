@@ -15,11 +15,14 @@ RUN sh /setup.sh && rm -f /setup.sh
 
 ENV USER="nixuser" \
     ENV="/etc/profile" \
-    NIX_PATH="/nix/var/nix/profiles/per-user/${USER}/channels" \
+    NIX_PATH="/nix/var/nix/profiles/per-user/nixuser/channels" \
     GIT_SSL_CAINFO="/etc/ssl/certs/ca-certificates.crt" \
     NIX_SSL_CERT_FILE="/etc/ssl/certs/ca-certificates.crt"
 
 ENV PATH="/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:${PATH}"
+
+COPY nix/entrypoint.sh /usr/local/bin/nix-entrypoint
+RUN chmod a+x /usr/local/bin/nix-entrypoint
 
 USER nixuser
 
@@ -43,15 +46,16 @@ LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
 ENV PATH="/nix/var/nix/profiles/default/sbin:${PATH}" \
     PATH="/nix/var/nix/profiles/default/bin:${PATH}" \
-# /nixuser/bin doesn't really exits now, and should be used by final app image
-    PATH="/nixuser/bin:/nixuser/.nix-profile/bin:${PATH}"
+    PATH="/nixuser/.nix-profile/bin:${PATH}"
 
 ENV USER="nixuser" \
     ENV="/etc/profile" \
-    NIX_PATH="/nix/var/nix/profiles/per-user/${USER}/channels" \
+    NIX_PATH="/nix/var/nix/profiles/per-user/nixuser/channels" \
     GIT_SSL_CAINFO="/etc/ssl/certs/ca-certificates.crt" \
     NIX_SSL_CERT_FILE="/etc/ssl/certs/ca-certificates.crt"
 
 USER 20000
 
 WORKDIR /nixuser
+
+ENTRYPOINT [ "/usr/local/bin/nix-entrypoint" ]
