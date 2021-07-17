@@ -7,7 +7,7 @@ LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 # nodejs
 # also used to build renovate
 RUN set -ex ;\
-    nix-env -iA \
+    nix-entrypoint nix-env -iA \
 # TODO: keep required packages in sync with slim-base
 # required packages to build renovate
         stable.nodejs \
@@ -54,9 +54,9 @@ RUN set -ex ;\
         unstable.kubernetes-helm ;\
 # cleanup
     rm /nix/var/nix/gcroots/auto/* || true ;\
-    nix-store --gc ;\
+    nix-entrypoint nix-store --gc ;\
 # TODO: compare optimise vs non-optimise in container
 #       currently disabled due to `Operation not permitted`
     # nix optimise-store ;\
     # nix-store --gc ;\
-    nix-store --verify --check-contents
+    nix-entrypoint nix-store --verify --check-contents

@@ -6,7 +6,7 @@ WORKDIR /nixuser
 
 ARG VERSION
 RUN set -ex ;\
-    nix-env -iA \
+    nix-entrypoint nix-env -iA \
 # re2 requires node-gyp to recompile for arm64
 # and node-gyp requires
 #   python3 (already installed in base image)
@@ -50,18 +50,18 @@ RUN chmod +x dist/*.js ;\
     node -e "new require('re2')('.*').exec('test')"
 
 # remove packages only required by renovate build
-RUN nix-env --uninstall \
+RUN nix-entrypoint nix-env --uninstall \
         stable.nodePackages.node-gyp \
         stable.gcc \
         stable.gnumake ;\
 # cleanup
     rm /nix/var/nix/gcroots/auto/* || true ;\
-    nix-store --gc ;\
+    nix-entrypoint nix-store --gc ;\
 # TODO: compare optimise vs non-optimise in container
 #       currently disabled due to `Operation not permitted`
     # nix optimise-store ;\
     # nix-store --gc ;\
-    nix-store --verify --check-contents
+    nix-entrypoint nix-store --verify --check-contents
 
 # TODO: find a better way to cleanup
 FROM scratch
@@ -76,7 +76,7 @@ ENV PATH="/nix/var/nix/profiles/default/sbin:${PATH}" \
 
 ENV USER="nixuser" \
     ENV="/etc/profile" \
-    NIX_PATH="/nix/var/nix/profiles/per-user/${USER}/channels" \
+    NIX_PATH="/nix/var/nix/profiles/per-user/nixuser/channels" \
     GIT_SSL_CAINFO="/etc/ssl/certs/ca-certificates.crt" \
     NIX_SSL_CERT_FILE="/etc/ssl/certs/ca-certificates.crt"
 
