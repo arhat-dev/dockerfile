@@ -7,10 +7,10 @@ golang:build:
   - VERSION=v1.41.1
   - DEFAULT_ROOTFS=alpine
   matrix@file: &matrix golang/matrix-all.yml
-  chdir@env: /app/build/${APP}
+  chdir@env: /app/build/golangci-lint
   path: ./cmd/golangci-lint/
   outputs@env:
-  - /output/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}/${APP}
+  - /output/golangci-lint.${MATRIX_KERNEL}.${MATRIX_ARCH}/golangci-lint
   cgo:
     enabled: false
   ldflags@env:
