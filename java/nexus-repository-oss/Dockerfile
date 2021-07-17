@@ -16,7 +16,8 @@ ENV PATH="/usr/local/maven3/bin:${PATH}"
 COPY build/nexus3-keycloak-plugin /keycloak-plugin
 WORKDIR /keycloak-plugin
 RUN set -eux ;\
-    mvn clean install \
+# we are using nexus v3.15+ use kar instead of jar
+    mvn -PbuildKar clean package \
       -Dmaven.test.skip=true \
       -Dmaven.javadoc.skip=true \
       -DskipTests \
@@ -29,7 +30,7 @@ ARG VERSION
 COPY build/nexus-public /nexus
 WORKDIR /nexus
 RUN set -eux ;\
-    ./mvnw -V clean install \
+    ./mvnw clean install \
       -Dmaven.test.skip=true \
       -Dmaven.javadoc.skip=true \
       -DskipTests \
@@ -60,8 +61,8 @@ ARG KEYCLOAK_PLUGIN_VERSION
 
 COPY --from=builder /opt/nexus "${NEXUS_HOME}"
 COPY --from=builder \
-    "/keycloak-plugin/target/nexus3-keycloak-plugin-${KEYCLOAK_PLUGIN_VERSION}.jar" \
-    "${NEXUS_HOME}/system/org/github/flytreeleft/nexus3-keycloak-plugin/nexus3-keycloak-plugin-${KYECLOAK_PLUGIN_VERSION}.jar"
+    "/keycloak-plugin/target/nexus3-keycloak-plugin-${KEYCLOAK_PLUGIN_VERSION}-bundle.kar" \
+    "${NEXUS_HOME}/deploy/"
 
 COPY java/nexus-repository-oss/nexus.vmoptions "${NEXUS_HOME}/bin/nexus.vmoptions"
 COPY java/nexus-repository-oss/entrypoint.sh "${SONATYPE_DIR}/start-nexus-repository-manager.sh"
@@ -87,6 +88,6 @@ RUN set -eux ;\
 USER 200
 EXPOSE 8081
 
-VOLUME "${NEXUS_DATA}"
+VOLUME "${NEXUS_DATA}" "${NEXUS_HOME}/etc/keycloak.json"
 
 ENTRYPOINT ["/bin/tini", "--", "/opt/sonatype/start-nexus-repository-manager.sh"]
