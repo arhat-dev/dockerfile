@@ -17,7 +17,7 @@ RUN set -eux ;\
     bundle install --jobs 4 ;\
     rm -rf spec features
 
-FROM scratch
+FROM ghcr.io/arhat-dev/ruby:2.7-debian-${MATRIX_ARCH}
 
 # keep gitaly-ruby only
-COPY --from=builder /app /
+COPY --from=builder /app /gitaly-ruby
