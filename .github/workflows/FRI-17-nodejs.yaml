@@ -2,6 +2,12 @@ name: nodejs
 
 # yamllint disable-line rule:truthy
 on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'reason to run this workflow'
+        required: false
+        default: 'test'
   check_run:
     types:
     - rerequested
