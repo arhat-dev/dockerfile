@@ -25,10 +25,10 @@ golang:build:
         ./credits.sh bridge
         ./credits.sh importexport
 
-  chdir@env: /app/build/${APP}
+  chdir@env: /app/build/proton-bridge
   path: ./cmd/Desktop-Bridge/
   outputs@env:
-  - /output/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}/${APP}
+  - /output/proton-bridge.${MATRIX_KERNEL}.${MATRIX_ARCH}/proton-bridge
   cgo:
     enabled: false
   ldflags@env:
@@ -53,14 +53,14 @@ buildah:build:
     before:
     - shell@env: |-
         set -ex
-        [ -d build/${APP} ] && exit 0
+        [ -d build/proton-bridge ] && exit 0
 
         git clone --depth 1 --branch ${VERSION} \
             https://github.com/ProtonMail/proton-bridge.git \
-            build/${APP}
+            build/proton-bridge
 
   matrix@file: *matrix
-  file@env: golang/${APP}/Dockerfile
+  file@env: golang/proton-bridge/Dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
   extra_args@file|env|template: templates/image-extra-args/env[APP].yml

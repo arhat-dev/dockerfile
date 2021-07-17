@@ -65,9 +65,9 @@ _start() {
 
   _import_proton_bridge_credentials
 
-  do_login="/proton-bridge --cli"
+  do_login="proton-bridge --cli"
   if [ "${PROTONMAIL_USERNAME}" != "" ]; then
-    # automated login if both username is set (implies password also set)
+    # automated login if username is set (implies password also set)
     do_login="login.exp ${do_login}"
   fi
 
@@ -95,7 +95,7 @@ _start() {
   mkfifo "${fake_tty}"
 
   echo "Starting proton-bridge..."
-  exec cat "${fake_tty}" | /proton-bridge --cli 2>&1
+  exec cat "${fake_tty}" | proton-bridge --cli 2>&1
 }
 
 case "$1" in

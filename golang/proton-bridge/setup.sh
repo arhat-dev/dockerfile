@@ -2,6 +2,8 @@
 
 set -ex
 
+matrix_rootfs="$1"
+
 setup_debian() {
   addgroup --gid 1000 proton-bridge
   adduser --system --home /home/proton \
@@ -32,7 +34,7 @@ setup_alpine() {
     expect socat pass ca-certificates coreutils libnotify
 }
 
-case "${MATRIX_ROOTFS}" in
+case "${matrix_rootfs}" in
 debian)
   setup_debian
   ;;
@@ -40,7 +42,7 @@ alpine)
   setup_alpine
   ;;
 *)
-  echo "Unsupported rootfs"
+  echo "Unsupported rootfs '${matrix_rootfs}'"
   exit 1
   ;;
 esac
