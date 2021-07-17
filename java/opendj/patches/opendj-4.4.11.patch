@@ -1,13 +1,8 @@
 diff --git a/opendj-dsml-servlet/pom.xml b/opendj-dsml-servlet/pom.xml
-index bddd4fc242..0cce0cabd1 100644
+index bddd4fc242..3efb393750 100644
 --- a/opendj-dsml-servlet/pom.xml
 +++ b/opendj-dsml-servlet/pom.xml
-@@ -79,11 +79,11 @@
-             <version>${project.version}</version>
-             <scope>provided</scope>
-         </dependency>
--
-+
+@@ -83,7 +83,7 @@
          <dependency>
          	<groupId>com.sun.xml.ws</groupId>
  		    <artifactId>jaxws-ri</artifactId>

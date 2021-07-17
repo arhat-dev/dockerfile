@@ -12,12 +12,13 @@ buildah:build:
         git clone --recursive --branch ${VERSION} \
           https://github.com/OpenIdentityPlatform/OpenDJ.git \
           build/opendj
+
     - shell@env: |-
-        patch -u --reverse --verbose --reject-file /dev/null \
+        patch -u --reverse --verbose --reject-file .dukkha/opendj-pom-xml.rej \
           build/opendj/opendj-dsml-servlet/pom.xml \
           -i java/opendj/patches/opendj-${VERSION}.patch || true
 
-        patch -u --verbose --reject-file /dev/null \
+        patch -u --verbose --reject-file .dukkha/opendj-pom-xml.rej \
           build/opendj/opendj-dsml-servlet/pom.xml \
           -i java/opendj/patches/opendj-${VERSION}.patch
 
