@@ -74,7 +74,7 @@ buildah:build:
     - DEMO=false
 
     - --build-arg
-    - COMPRESS=true
+    - COMPRESS=false
 
     - --build-arg
     - TIMESCALEDB_APACHE_ONLY=false

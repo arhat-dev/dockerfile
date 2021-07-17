@@ -10,7 +10,9 @@ FROM docker.io/${DOCKERHUB_ARCH}/ubuntu:18.04 as base
 
 # TODO: very strange, spilo build will error if this directory is not removed
 #       they are using `rm -rf` as well
-RUN rm -rf /usr/share/man
+RUN set -eux ;\
+    rm -rf /usr/share/man ;\
+    ln -s -f /bin/true /usr/bin/chfn
 
 FROM scratch
 
