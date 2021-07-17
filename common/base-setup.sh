@@ -22,7 +22,7 @@ setup_debian() {
   apt-get update
   apt-get upgrade -y
   apt-get install -y --no-install-recommends \
-    git make cmake curl build-essential wget ca-certificates
+    git make cmake curl build-essential wget ca-certificates unzip
 
   rm -rf /var/lib/apt/lists/*
 }
@@ -30,7 +30,7 @@ setup_debian() {
 setup_alpine() {
   apk update
   apk add --no-cache \
-    git make cmake curl build-base wget bash ca-certificates
+    git make cmake curl build-base wget bash ca-certificates unzip
 
   rm -rf /var/cache/apk/*
 }
