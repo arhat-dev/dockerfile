@@ -11,9 +11,8 @@ on:
     - master
     paths:
     - kind/**
-    - .github/workflows/*-kind.yaml
   schedule:
-  - cron: "0 22 * * *"
+  - cron: "0 22 * * SAT"
 
 jobs:
   kind:

@@ -1,4 +1,4 @@
-name: java
+name: apps-tier-1-ruby
 
 # yamllint disable-line rule:truthy
 on:
@@ -10,22 +10,19 @@ on:
     branches:
     - master
     paths:
-    - common/**
-    - java/**
-    - .github/workflows/*-java.yaml
+    - ruby/**
+    paths-ignore:
+    - ruby/_common
   schedule:
-  - cron: "0 7 * * *"
+  - cron: "0 4 * * SAT"
 
 jobs:
-#   common:
-#     strategy:
-#       matrix:
-#         version:
-#         - "8"
-#         - "11"
-#         - "16"
-#       fail-fast: false
-#     runs-on: ubuntu-latest
+#   build:
+#     # strategy:
+#     #   matrix:
+#     #     app: []
+#     #   fail-fast: false
+#     runs-on: ubuntu-20.04
 #     steps:
 #     - uses: actions/checkout@v2
 #     - name: Install dukkha
@@ -39,53 +36,42 @@ jobs:
 #
 #         chmod +x "${HOME}/bin/dukkha"
 #
-#     - name: Build and Push Images
-#       env:
-#         GHCR_USER: ${{ github.actor }}
-#         GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
-#       run: |
+#     - name: Enable Multiarch Support
+#       run: |-
 #         sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
 #
-#         dukkha buildah local build linux/base \
-#           -m language=java \
-#           -m version=${{ matrix.version }}
+#         sudo apt update
+#         sudo apt install -y qemu-user-static
 #
-#         dukkha buildah local push linux/base \
-#           -m language=java \
-#           -m version=${{ matrix.version }}
-#
-#         dukkha buildah local build linux/builder \
-#           -m language=java \
-#           -m version=${{ matrix.version }}
-#
-#         dukkha buildah local push linux/builder \
-#           -m language=java \
-#           -m version=${{ matrix.version }}
-#
-#         dukkha buildah local build linux/container \
-#           -m language=java \
-#           -m version=${{ matrix.version }}
-#
-#         dukkha buildah local push linux/container \
-#           -m language=java \
-#           -m version=${{ matrix.version }}
+#     # - name: Build and Push ${{ matrix.app }}
+#     #   env:
+#     #     GHCR_USER: ${{ github.actor }}
+#     #     GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
+#     #   run: |-
+#     #     dukkha buildah local build ${{ matrix.app }}
+#     #     dukkha buildah local push ${{ matrix.app }}
 #
 #     - name: Inspect Images
 #       if: always()
 #       run: |-
 #         buildah images
 
-  apps:
+  gitaly-ruby:
     strategy:
       matrix:
-        app:
-        # TODO: elasticsearch-7 cross compile always fail
-        # - elasticsearch-7
-        - sonarqube
+        arch:
+        - amd64
+        - arm64
+        - armv7
+        - armv5
+        - ppc64le
+        # - s390x
+        - x86
+        - mips64le
       fail-fast: false
     # needs:
     # - common
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
     - name: Install dukkha
@@ -106,13 +92,16 @@ jobs:
         sudo apt update
         sudo apt install -y qemu-user-static
 
-    - name: Build and Push ${{ matrix.app }}
+    - name: Build and Push gitaly-ruby
       env:
         GHCR_USER: ${{ github.actor }}
         GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
       run: |-
-        dukkha buildah local build ${{ matrix.app }}
-        dukkha buildah local push ${{ matrix.app }}
+        dukkha buildah local build gitaly-ruby \
+          -m arch=${{ matrix.arch }}
+
+        dukkha buildah local push gitaly-ruby \
+          -m arch=${{ matrix.arch }}
 
     - name: Inspect Images
       if: always()

@@ -1,4 +1,4 @@
-name: nodejs
+name: golang
 
 # yamllint disable-line rule:truthy
 on:
@@ -11,19 +11,18 @@ on:
     - master
     paths:
     - common/**
-    - nodejs/**
-    - .github/workflows/*-nodejs.yaml
+    - golang/_common/**
   schedule:
-  - cron: "0 14 * * *"
+  - cron: "0 12 * * FRI"
 
 jobs:
   common:
     strategy:
       matrix:
         version:
-        - "12.22.3"
-        - "14.17.3"
-        - "16.5.0"
+        - "1.16.6"
+        - "1.15.14"
+        - "1.17rc1"
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
@@ -47,27 +46,27 @@ jobs:
         sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
         dukkha buildah local build linux/base \
-          -m language=nodejs \
+          -m language=golang \
           -m version=${{ matrix.version }}
 
         dukkha buildah local push linux/base \
-          -m language=nodejs \
+          -m language=golang \
           -m version=${{ matrix.version }}
 
         dukkha buildah local build linux/builder \
-          -m language=nodejs \
+          -m language=golang \
           -m version=${{ matrix.version }}
 
         dukkha buildah local push linux/builder \
-          -m language=nodejs \
+          -m language=golang \
           -m version=${{ matrix.version }}
 
         dukkha buildah local build linux/container \
-          -m language=nodejs \
+          -m language=golang \
           -m version=${{ matrix.version }}
 
         dukkha buildah local push linux/container \
-          -m language=nodejs \
+          -m language=golang \
           -m version=${{ matrix.version }}
 
     - name: Inspect Images

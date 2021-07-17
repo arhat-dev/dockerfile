@@ -1,4 +1,4 @@
-name: apps
+name: apps-tier-1-rust
 
 # yamllint disable-line rule:truthy
 on:
@@ -10,18 +10,18 @@ on:
     branches:
     - master
     paths:
-    - app/**
-    - .github/workflows/*-apps.yaml
+    - rust/**
+    paths-ignore:
+    - rust/_common
   schedule:
-  - cron: "0 21 * * *"
+  - cron: "0 2 * * SAT"
 
 jobs:
-  apps:
-    strategy:
-      matrix:
-        app:
-        - spilo
-      fail-fast: false
+  build:
+    # strategy:
+    #   matrix:
+    #     app: []
+    #   fail-fast: false
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
@@ -43,13 +43,13 @@ jobs:
         sudo apt update
         sudo apt install -y qemu-user-static
 
-    - name: Build and Push ${{ matrix.app }}
-      env:
-        GHCR_USER: ${{ github.actor }}
-        GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
-      run: |-
-        dukkha buildah local build ${{ matrix.app }}
-        dukkha buildah local push ${{ matrix.app }}
+    # - name: Build and Push ${{ matrix.app }}
+    #   env:
+    #     GHCR_USER: ${{ github.actor }}
+    #     GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
+    #   run: |-
+    #     dukkha buildah local build ${{ matrix.app }}
+    #     dukkha buildah local push ${{ matrix.app }}
 
     - name: Inspect Images
       if: always()
