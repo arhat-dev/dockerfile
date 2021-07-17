@@ -19,24 +19,22 @@ ENV USER="nixuser" \
     GIT_SSL_CAINFO="/etc/ssl/certs/ca-certificates.crt" \
     NIX_SSL_CERT_FILE="/etc/ssl/certs/ca-certificates.crt"
 
-ENV PATH="/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:${PATH}"
-
 COPY nix/entrypoint.sh /usr/local/bin/nix-entrypoint
 RUN chmod a+x /usr/local/bin/nix-entrypoint
 
 USER nixuser
 
 RUN set -eux ;\
-    nix-channel --add \
+    nix-entrypoint nix-channel --add \
       https://nixos.org/channels/nixpkgs-unstable unstable ;\
-    nix-channel --add \
+    nix-entrypoint nix-channel --add \
       https://channels.nixos.org/nixos-21.05-small stable ;\
-    nix-channel --update ;\
-    nix-env -iA stable.tini ;\
+    nix-entrypoint nix-channel --update ;\
+    nix-entrypoint nix-env -iA stable.tini ;\
     rm /nix/var/nix/gcroots/auto/* || true ;\
-    nix-store --gc ;\
-    nix optimise-store ;\
-    nix-store --verify --check-contents
+    nix-entrypoint nix-store --gc ;\
+    nix-entrypoint nix optimise-store ;\
+    nix-entrypoint nix-store --verify --check-contents
 
 FROM scratch
 
