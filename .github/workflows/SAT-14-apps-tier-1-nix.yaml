@@ -27,8 +27,6 @@ jobs:
         - alpine
       fail-fast: false
     runs-on: ubuntu-20.04
-    needs:
-    - nix
     steps:
     - uses: actions/checkout@v2
     - name: Install dukkha
