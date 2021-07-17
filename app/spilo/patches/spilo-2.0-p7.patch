@@ -1,0 +1,27 @@
+diff --git a/postgres-appliance/Dockerfile b/postgres-appliance/Dockerfile
+index 8710b44..a377b33 100644
+--- a/postgres-appliance/Dockerfile
++++ b/postgres-appliance/Dockerfile
+@@ -24,11 +24,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
+ \
+     && if [ "$DEMO" != "true" ]; then \
+         # Required for wal-e
+-        apt-get install -y pv lzop \
+-        # install etcdctl
+-        && ETCDVERSION=2.3.8 \
+-        && curl -L https://github.com/coreos/etcd/releases/download/v${ETCDVERSION}/etcd-v${ETCDVERSION}-linux-amd64.tar.gz \
+-                | tar xz -C /bin --strip=1 --wildcards --no-anchored etcdctl etcd; \
++        apt-get install -y pv lzop; \
+     fi \
+ \
+     # Cleanup all locales but en_US.UTF-8 and optionally specified in ADDITIONAL_LOCALES arg
+@@ -382,9 +378,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
+ \
+     && if [ "$DEMO" != "true" ]; then \
+         EXTRAS=",etcd,consul,zookeeper,aws" \
+-        && curl -sL https://github.com/wal-g/wal-g/releases/download/$WALG_VERSION/wal-g.linux-amd64.tar.gz \
+-                | tar -C /usr/local/bin -xz \
+-        && strip /usr/local/bin/wal-g \
+         && apt-get install -y python3-etcd python3-consul python3-kazoo python3-meld3 \
+                         python3-boto python3-gevent python3-greenlet python3-cachetools \
+                         python3-rsa python3-pyasn1-modules python3-swiftclient \
