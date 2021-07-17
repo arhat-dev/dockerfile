@@ -5,6 +5,10 @@ golang:build:
   - APP=gitlab-shell
   # source(git-tags): https://gitlab.com/gitlab-org/gitlab-shell
   - VERSION=v13.20.0
+  # source(docker): ghcr.io/arhat-dev/gitlab-logger
+  - GITLAB_LOGGER_VERSION=1.2.0
+  # source(docker): ghcr.io/arhat-dev/gomplate
+  - GOMPLATE_VERSION=3.9.0
   matrix:
     kernel:
     - linux
@@ -19,12 +23,12 @@ golang:build:
     - ppc64le
     - x86
     cmd@env|shell: |-
-      cd "/app/build/${APP}/cmd"
+      cd "/app/build/gitlab-shell/cmd"
       find . -mindepth 1 -maxdepth 1 -type d -exec echo '- {}' \;
-  chdir@env: /app/build/${APP}
+  chdir@env: /app/build/gitlab-shell
   path@env: ./cmd/${MATRIX_CMD}
   outputs@template|env:
-  - /output/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}/{{ trimPrefix "./" .Env.MATRIX_CMD }}
+  - /output/gitlab-shell.${MATRIX_KERNEL}.${MATRIX_ARCH}/{{ trimPrefix "./" .Env.MATRIX_CMD }}
   cgo:
     enabled: false
   ldflags@env:
@@ -48,16 +52,21 @@ buildah:build:
   hooks:
     before:
     - shell@env: |-
-        [ -d build/${APP} ] && exit 0
+        [ -d build/gitlab-shell ] && exit 0
 
         git clone --depth 1 --branch ${VERSION} \
           https://gitlab.com/gitlab-org/gitlab-shell \
-          build/${APP}
+          build/gitlab-shell
 
   file: golang/nocgo-norootfs.dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
   extra_args@file|env|template: templates/image-extra-args/env[APP].yml
+    - --build-arg
+    - GITLAB_LOGGER_VERSION={{ .ENv.GITLAB_LOGGER_VERSION }}
+
+    - --build-arg
+    - GOMPLATE_VERSION={{ .ENv.GOMPLATE_VERSION }}
 
 buildah:push:
 - name: gitlab-shell
