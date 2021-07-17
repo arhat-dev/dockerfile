@@ -75,7 +75,7 @@ buildah:build:
     - shell@env: |-
         [ -d build/gitaly ] && exit 0
 
-        git clone --depth 1 --branch ${VERSION} \
+        git clone --depth 1 --branch v${VERSION} \
           https://gitlab.com/gitlab-org/gitaly \
           build/gitaly
 
