@@ -12,12 +12,6 @@ on:
     types:
     - rerequested
     - requested_action
-  push:
-    branches:
-    - master
-    paths:
-    - common/**
-    - golang/_common/**
   schedule:
   - cron: "0 12 * * FRI"
 

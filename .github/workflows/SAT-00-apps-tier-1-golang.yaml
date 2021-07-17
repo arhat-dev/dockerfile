@@ -12,15 +12,6 @@ on:
     types:
     - rerequested
     - requested_action
-  push:
-    branches:
-    - master
-    paths:
-    - golang/**
-    - "!golang/_common"
-    # tier-2 apps
-    - "!golang/gitaly"
-    - "!golang/gitlab-shell"
   schedule:
   - cron: "0 0 * * SAT"
 

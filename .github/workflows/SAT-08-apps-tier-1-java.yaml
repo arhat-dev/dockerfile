@@ -12,12 +12,6 @@ on:
     types:
     - rerequested
     - requested_action
-  push:
-    branches:
-    - master
-    paths:
-    - java/**
-    - "!java/_common"
   schedule:
   - cron: "0 8 * * SAT"
 

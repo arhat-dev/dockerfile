@@ -12,12 +12,6 @@ on:
     types:
     - rerequested
     - requested_action
-  push:
-    branches:
-    - master
-    paths:
-    - ruby/**
-    - "!ruby/_common"
   schedule:
   - cron: "0 4 * * SAT"
 

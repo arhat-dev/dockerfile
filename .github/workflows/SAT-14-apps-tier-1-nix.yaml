@@ -12,15 +12,6 @@ on:
     types:
     - rerequested
     - requested_action
-  push:
-    branches:
-    - master
-    paths:
-    - nix/**
-    - "!nix/Dockerfile"
-    - "!nix/*.md"
-    - "!nix/*.sh"
-    - "!nix/*.yaml"
   schedule:
   - cron: "0 14 * * SAT"
 

@@ -12,12 +12,6 @@ on:
     types:
     - rerequested
     - requested_action
-  push:
-    branches:
-    - master
-    paths:
-    - common/**
-    - python/_common/**
   schedule:
   - cron: "0 16 * * FRI"
 

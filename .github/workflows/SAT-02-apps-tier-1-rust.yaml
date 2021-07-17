@@ -12,12 +12,6 @@ on:
     types:
     - rerequested
     - requested_action
-  push:
-    branches:
-    - master
-    paths:
-    - rust/**
-    - "!rust/_common"
   schedule:
   - cron: "0 2 * * SAT"
 

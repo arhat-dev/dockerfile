@@ -12,12 +12,6 @@ on:
     types:
     - rerequested
     - requested_action
-  push:
-    branches:
-    - master
-    paths:
-    - common/**
-    - ruby/_common/**
   schedule:
   - cron: "0 14 * * FRI"
 

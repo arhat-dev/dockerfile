@@ -12,12 +12,6 @@ on:
     types:
     - rerequested
     - requested_action
-  push:
-    branches:
-    - master
-    paths:
-    - golang/gitlab-shell
-    - golang/gitaly
   schedule:
   - cron: "0 0 * * SUN"
 

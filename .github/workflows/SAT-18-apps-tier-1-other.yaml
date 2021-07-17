@@ -12,11 +12,6 @@ on:
     types:
     - rerequested
     - requested_action
-  push:
-    branches:
-    - master
-    paths:
-    - app/**
   schedule:
   - cron: "0 18 * * SAT"
 
