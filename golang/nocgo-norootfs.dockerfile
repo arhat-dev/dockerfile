@@ -20,3 +20,5 @@ ARG MATRIX_ARCH
 COPY --from=builder /output/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}/* /
 
 ENV PATH=/
+
+ENTRYPOINT []
