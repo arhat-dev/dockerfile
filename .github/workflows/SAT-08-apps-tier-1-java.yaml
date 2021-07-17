@@ -29,6 +29,8 @@ jobs:
         # TODO: elasticsearch-7 cross compile always fail
         # - elasticsearch-7
         - sonarqube
+        - opendj
+        - nexus-repository-oss
       fail-fast: false
     runs-on: ubuntu-20.04
     steps:

@@ -1,0 +1,49 @@
+buildah:build:
+- name: nexus-repository-oss
+  env@template: &env
+  - APP=nexus-repository-oss
+  # source(git-tags): https://github.com/sonatype/nexus-public
+  - VERSION=release-3.32.0-03
+  # source(git-tags): https://github.com/flytreeleft/nexus3-keycloak-plugin
+  - KEYCLOAK_PLUGIN_VERSION=v0.5.0
+  hooks:
+    before:
+    - shell@env: |-
+        [ -d build/nexus-public ] && exit 0
+
+        git clone --recursive --branch ${VERSION} \
+          https://github.com/sonatype/nexus-public.git \
+          build/nexus-public
+
+    - shell@env: |-
+        [ -d build/nexus3-keycloak-plugin ] && exit 0
+
+        git clone --depth 1 --branch ${KEYCLOAK_PLUGIN_VERSION} \
+          https://github.com/flytreeleft/nexus3-keycloak-plugin.git \
+          build/nexus3-keycloak-plugin
+
+  matrix@file: &matrix java/matrix-8-all.yml
+  file: java/nexus-repository-oss/Dockerfile
+  image_names@file|template: &image_names |-
+    templates/image-names/no-rootfs-info/env[APP:VERSION].yml
+  extra_args@template: |-
+    - --pull-always
+    - --ulimit
+    - memlock=16384,nofile=1048576
+    - --build-arg
+    - APP={{ .Env.APP }}
+    - --build-arg
+    - MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
+    - --build-arg
+    - VERSION={{ .Env.VERSION }}
+    - --build-arg
+    - KEYCLOAK_PLUGIN_VERSION={{ .Env.KEYCLOAK_PLUGIN_VERSION }}
+
+buildah:push:
+- name: nexus-repository-oss
+  env@template: *env
+  hooks:
+    before:
+    - task: buildah:login(ghcr)
+  matrix@file: *matrix
+  image_names@file|template: *image_names

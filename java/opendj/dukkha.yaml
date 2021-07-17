@@ -4,16 +4,22 @@ buildah:build:
   - APP=opendj
   # source(git-tags): https://github.com/OpenIdentityPlatform/OpenDJ
   - VERSION=4.4.11
-  # source(git-tags): https://github.com/apache/maven
-  - MAVEN3_VERSION=3.8.1
   hooks:
     before:
     - shell@env: |-
-        [ -d "build/${APP}" ] && exit 0
+        [ -d build/opendj ] && exit 0
 
         git clone --recursive --branch ${VERSION} \
           https://github.com/OpenIdentityPlatform/OpenDJ.git \
-          "build/${APP}"
+          build/opendj
+    - shell@env: |-
+        patch -u --reverse --verbose --reject-file /dev/null \
+          build/opendj/opendj-dsml-servlet/pom.xml \
+          -i java/opendj/patches/opendj-${VERSION}.patch || true
+
+        patch -u --verbose --reject-file /dev/null \
+          build/opendj/opendj-dsml-servlet/pom.xml \
+          -i java/opendj/patches/opendj-${VERSION}.patch
 
   matrix@file: &matrix java/matrix-8-all.yml
   file: java/opendj/Dockerfile
@@ -21,8 +27,8 @@ buildah:build:
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
   extra_args@env|template: |-
     - --pull-always
-    - --build-arg
-    - APP=${APP}
+    - --ulimit
+    - memlock=16384,nofile=1048576
     - --build-arg
     - VERSION=${VERSION}
     - --build-arg

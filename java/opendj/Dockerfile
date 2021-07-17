@@ -4,32 +4,27 @@ FROM ghcr.io/arhat-dev/builder-java:8-debian-${MATRIX_ARCH} AS builder
 
 ENV PATH="/usr/local/maven3/bin:${PATH}"
 
-ARG APP
-COPY "build/${APP}" /opendj
+# build opendj
+COPY build/opendj /opendj
 WORKDIR /opendj
-
-# Build opendj
 ARG VERSION
 RUN set -eux ;\
-    mvn -V \
+    apt-get update ;\
+    apt-get install unzip ;\
+    mvn -V clean install \
+      -Dmaven.test.skip=true \
       -Dmaven.javadoc.skip=true \
       -DskipTests \
-      -Darguments=-DskipTests \
       -Dresume=false \
       -DignoreSnapshots=true \
       -DpushChanges=false \
-      -P distribution \
-      install ;\
-    mkdir -p /opt ;\
-    ls -alh **
-    # mv build/distribution/local/opendj-${VERSION}-SNAPSHOT \
-    #     /opt/opendj ;\
-
-COPY "build/${APP}/opendj-packages/opendj-docker/bootstrap/" \
-    /opt/opendj/bootstrap/
-
-COPY "build/${APP}/opendj-packages/opendj-docker/run.sh" \
-    /opt/opendj/run.sh
+      -P distribution ;\
+    unzip -d /opt/opendj-tmp /opendj/opendj-server-legacy/target/package/opendj-4.4.11.zip ;\
+    mv /opt/opendj-tmp/* /opt/opendj ;\
+    mv /opendj/opendj-packages/opendj-docker/bootstrap/ \
+        /opt/opendj/bootstrap/ ;\
+    mv /opendj/opendj-packages/opendj-docker/run.sh \
+        /opt/opendj/run.sh
 
 RUN set -eux ;\
     chmod +x /opt/opendj/run.sh \
@@ -50,7 +45,6 @@ ARG SECRET_VOLUME=""
 ARG OPENDJ_SSL_OPTIONS="--generateSelfSignedCertificate"
 ARG MASTER_SERVER=""
 ARG OPENDJ_REPLICATION_TYPE=""
-ARG OPENDJ_USER="opendj"
 
 ENV ADD_BASE_ENTRY="${ADD_BASE_ENTRY}" \
     BASE_DN="${BASE_DN}" \
@@ -60,23 +54,25 @@ ENV ADD_BASE_ENTRY="${ADD_BASE_ENTRY}" \
     OPENDJ_SSL_OPTIONS="${OPENDJ_SSL_OPTIONS}" \
     MASTER_SERVER="${MASTER_SERVER}" \
     OPENDJ_REPLICATION_TYPE="${OPENDJ_REPLICATION_TYPE}" \
-    OPENDJ_USER="opendj"
-
-RUN set -eux ;\
-    groupadd "${OPENDJ_USER}" ;\
-    useradd -m -r -u 1001 -g "${OPENDJ_USER}" "${OPENDJ_USER}"
-
-COPY --chown="${OPENDJ_USER}:${OPENDJ_USER}" \
-    --from=builder /opt/opendj /opt/opendj
-
-RUN set -eux ;\
-    install -d -o "${OPENDJ_USER}" /opt/opendj/data
-
-ENV PORT=1389 \
+    OPENDJ_USER="opendj" \
+    PORT=1389 \
     LDAPS_PORT=1636
 
-EXPOSE "${PORT}" "${LDAPS_PORT}" 4444
+COPY --from=builder /opt/opendj /opt/opendj
+RUN set -eux ;\
+    addgroup --gid 1001 opendj ;\
+    adduser --system --no-create-home \
+        --shell "$(which false)" \
+        --disabled-password \
+        --uid 1001 opendj ;\
+    adduser opendj opendj ;\
+    mkdir -p /opt/opendj/data ;\
+    chown -R opendj:opendj /opt/opendj ;\
+    chmod -R g=u /opt/opendj
 
 USER 1001
+
+# expose ldap-port ldaps-port initial-cluster-port
+EXPOSE "${PORT}" "${LDAPS_PORT}" 4444
 
 ENTRYPOINT ["/bin/tini", "--", "/opt/opendj/run.sh"]
