@@ -18,7 +18,9 @@ on:
     paths:
     - golang/**
     - "!golang/_common"
+    # tier-2 apps
     - "!golang/gitaly"
+    - "!golang/gitlab-shell"
   schedule:
   - cron: "0 0 * * SAT"
 
@@ -36,8 +38,9 @@ jobs:
         # cgo build
         - kine
         - litestream
-        - gitlab-shell
         - etcd
+        - gitlab-logger
+        - gomplate
       fail-fast: false
     runs-on: ubuntu-20.04
     steps:

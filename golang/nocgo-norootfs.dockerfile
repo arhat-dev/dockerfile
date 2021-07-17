@@ -1,14 +1,13 @@
-ARG MATRIX_ARCH
-
 FROM ghcr.io/arhat-dev/builder-golang:1.16-alpine AS builder
 
-ARG MATRIX_ARCH
 ARG APP
+ARG MATRIX_KERNEL
+ARG MATRIX_ARCH
 
 COPY . /app
 RUN dukkha golang local build \
-      "${APP}" \
-      -m kernel=linux \
+      ${APP} \
+      -m kernel=${MATRIX_KERNEL} \
       -m arch=${MATRIX_ARCH}
 
 FROM scratch

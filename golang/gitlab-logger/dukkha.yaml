@@ -1,0 +1,51 @@
+# this build instruction is used in container
+golang:build:
+- name: gitlab-logger
+  env: &env
+  - APP=gitlab-logger
+  # source(git-tags): https://gitlab.com/gitlab-org/charts/components/gitlab-logger
+  - VERSION=v1.2.0
+  matrix@file: &matrix golang/matrix-nocgo-norootfs-all.yml
+  chdir@env: /app/build/gitlab-logger
+  path: ./
+  outputs@env:
+  - /output/gitlab-logger.${MATRIX_KERNEL}.${MATRIX_ARCH}/gitlab-logger
+  cgo:
+    enabled: false
+  tags:
+  - netgo
+  - osusergo
+  ldflags@env|template:
+  - -s -w
+  - -X github.com/hairyhenderson/gitlab-logger/v3/version.GitCommit=$(git -C /app/build/gitlab-logger rev-parse --short HEAD 2>/dev/null)
+  - -X github.com/hairyhenderson/gitlab-logger/v3/version.Version={{ trimPrefix "v" .Env.VERSION }}
+  extra_args:
+  - -trimpath
+  - -mod=readonly
+
+buildah:build:
+- name: gitlab-logger
+  env: *env
+  matrix@file: *matrix
+  hooks:
+    before:
+    - shell@env: |-
+        [ -d build/gitlab-logger ] && exit 0
+
+        git clone --depth 1 --branch ${VERSION} \
+          https://gitlab.com/gitlab-org/charts/components/gitlab-logger.git \
+          build/gitlab-logger
+
+  file: golang/nocgo-norootfs.dockerfile
+  image_names@file|template: &image_names |-
+    templates/image-names/no-rootfs-info/env[APP:VERSION].yml
+  extra_args@file|env|template: templates/image-extra-args/env[APP].yml
+
+buildah:push:
+- name: gitlab-logger
+  env: *env
+  hooks:
+    before:
+    - task: buildah:login(ghcr)
+  matrix@file: *matrix
+  image_names@file|template: *image_names
