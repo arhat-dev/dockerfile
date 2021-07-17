@@ -18,4 +18,4 @@ LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 ARG APP
 ARG MATRIX_KERNEL
 ARG MATRIX_ARCH
-COPY --from=builder /output/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}/* /${APP}
+COPY --from=builder /output/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}/* /

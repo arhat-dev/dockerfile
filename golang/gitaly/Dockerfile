@@ -2,7 +2,7 @@ ARG HOST_ARCH
 ARG MATRIX_ARCH
 
 ARG VERSION
-FROM ghcr.io/arhat-dev/gitaly-ruby:${VERSION}-${MATRIX_ARCH} AS ruby-builder
+FROM ghcr.io/arhat-dev/gitaly-ruby:${VERSION}-${MATRIX_ARCH} AS gitaly-ruby
 
 # go part of gitaly
 FROM ghcr.io/arhat-dev/builder-golang:1.16-debian-${HOST_ARCH}-${MATRIX_ARCH} AS builder
@@ -28,7 +28,7 @@ LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
 ARG MATRIX_ARCH
 
-COPY --from=ruby-builder /app /srv/gitaly-ruby
+COPY --from=gitaly-ruby /app /srv/gitaly-ruby
 COPY --from=builder /output/gitaly.linux.${MATRIX_ARCH}/* /usr/local/bin/
 COPY golang/gitaly/config.toml /etc/gitaly/config.toml
 COPY golang/gitaly/gitconfig /usr/local/etc/gitconfig
@@ -46,7 +46,6 @@ RUN set -eux ;\
 # install runtime deps
 # ref: https://gitlab.com/gitlab-org/build/CNG/-/blob/master/gitaly/Dockerfile#L17
     apt-get install -y --no-install-recommends \
-        zlib1g liblzma libmsgpack \
         libicu63 net-tools openssh-client xtail ;\
     rm -rf /var/lib/apt/lists/*
 

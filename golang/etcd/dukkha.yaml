@@ -8,12 +8,28 @@ golang:build:
   matrix:
     kernel:
     - linux
-    rootfs:
-    - debian
-  chdir@env: /app/build/${APP}
+    rootfs: [""]
+    arch:
+    - amd64
+    - x86
+    - arm64
+    - armv7
+    - armv6
+    - s390x
+    - mips64le
+    - armv5
+    - ppc64le
+    cmd: [etcdctl, etcdutl, etcd]
+  chdir@template: |-
+    /app/build/etcd/
+    {{- if eq .Env.MATRIX_CMD "etcd" -}}
+      server
+    {{- else -}}
+      {{ .Env.MATRIX_CMD }}
+    {{- end -}}
   path: ./
-  outputs@template|env:
-  - /output/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}/{{ .Env.MATRIX_CMD }}
+  outputs@env:
+  - /output/etcd.${MATRIX_KERNEL}.${MATRIX_ARCH}/${MATRIX_CMD}
   cgo:
     enabled: false
   tags:
@@ -23,9 +39,12 @@ golang:build:
   - timetzdata
   ldflags@env:
   - -s -w
-  - -X "go.etcd.io/etcd/api/v3/version.GitSHA=$(git rev-parse --short HEAD)"
+  # ref: https://github.com/etcd-io/etcd/blob/main/build.sh#L14
+  - -X "go.etcd.io/etcd/api/v3/version.GitSHA=$(git -C /app/build/etcd rev-parse --short HEAD)"
   extra_args:
   - -v
+  # ref: https://github.com/etcd-io/etcd/blob/main/build.sh#L45
+  - -installsuffix=cgo
   - -trimpath
   - -mod=readonly
 
@@ -36,13 +55,13 @@ buildah:build:
   hooks:
     before:
     - shell@env: |-
-        [ -d build/${APP} ] && exit 0
+        [ -d build/etcd ] && exit 0
 
         git clone --depth 1 --branch ${VERSION} \
           https://github.com/etcd-io/etcd.git \
-          build/${APP}
+          build/etcd
 
-  file: golang/nocgo.dockerfile
+  file: golang/nocgo-norootfs.dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
   extra_args@file|env|template: templates/image-extra-args/env[APP].yml
