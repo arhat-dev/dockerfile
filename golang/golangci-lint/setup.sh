@@ -2,7 +2,9 @@
 
 set -ex
 
-case "${MATRIX_ROOTFS}" in
+matrix_rootfs="$1"
+
+case "${matrix_rootfs}" in
 debian)
   export DEBIAN_FRONTEND=noninteractive
 
@@ -15,7 +17,7 @@ alpine)
   apk --no-cache add gcc musl-dev git
   ;;
 *)
-  echo "Unsupported rootfs ${MATRIX_ROOTFS}"
+  echo "Unsupported rootfs ${matrix_rootfs}"
   exit 1
   ;;
 esac

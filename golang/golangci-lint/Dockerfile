@@ -18,8 +18,9 @@ FROM ghcr.io/arhat-dev/base-golang:1.16-${MATRIX_ROOTFS}-${MATRIX_ARCH}
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
+ARG MATRIX_ROOTFS
 COPY golang/golangci-lint/setup.sh /setup.sh
-RUN sh /setup.sh && rm -f /setup.sh
+RUN sh /setup.sh "${MATRIX_ROOTFS}" && rm -f /setup.sh
 
 ARG MATRIX_KERNEL
 ARG MATRIX_ARCH
