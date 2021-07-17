@@ -10,5 +10,5 @@ echo "Starting Gitaly"
 
 cd /srv/gitaly-ruby
 
-bundle exec /usr/local/bin/gitaly \
-  "$GITALY_CONFIG_FILE" | tee /var/log/gitaly/gitaly.log 2>&1
+bundle exec sh -c \
+  "/usr/local/bin/gitaly \"$GITALY_CONFIG_FILE\" | tee /var/log/gitaly/gitaly.log 2>&1"

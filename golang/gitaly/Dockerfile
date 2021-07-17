@@ -1,10 +1,10 @@
 ARG HOST_ARCH
 ARG MATRIX_ARCH
 
+ARG GITLAB_SHELL_VERSION
 ARG VERSION
-FROM ghcr.io/arhat-dev/gitaly-ruby:${VERSION}-${MATRIX_ARCH} AS gitaly-ruby
 
-# go part of gitaly
+FROM ghcr.io/arhat-dev/gitaly-ruby:${VERSION}-${MATRIX_ARCH} AS gitaly-ruby
 FROM ghcr.io/arhat-dev/builder-golang:1.16-debian-${HOST_ARCH}-${MATRIX_ARCH} AS builder
 
 COPY . /app
@@ -15,31 +15,36 @@ ENV BUNDLE_FORCE_RUBY_PLATFORM=true
 RUN set -eux ;\
     apt-get update ;\
     apt-get install -y cmake ;\
+    # skip gitaly-ruby build
     touch /app/build/gitaly/.ruby-bundle ;\
     export PKG_CONFIG_PATH="/app/build/gitaly/_build/deps/libgit2/install/lib/pkgconfig" ;\
-    # dukkha will build libgit2 in `before` hook
     dukkha golang local build gitaly \
       -m kernel=linux \
       -m arch=${MATRIX_ARCH}
 
-FROM ghcr.io/arhat-dev/ruby:2.7-debian-${MATRIX_ARCH}
+FROM ghcr.io/arhat-dev/gitlab-shell:${GITLAB_SHELL_VERSION}-${MATRIX_ARCH}
+USER root
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
 ARG MATRIX_ARCH
 
-COPY --from=gitaly-ruby /app /srv/gitaly-ruby
+COPY --from=gitaly-ruby /gitaly-ruby /srv/gitaly-ruby
 COPY --from=builder /output/gitaly.linux.${MATRIX_ARCH}/* /usr/local/bin/
+
 COPY golang/gitaly/config.toml /etc/gitaly/config.toml
 COPY golang/gitaly/gitconfig /usr/local/etc/gitconfig
 COPY golang/gitaly/healthcheck.sh /usr/local/bin/healthcheck
 COPY golang/gitaly/entrypoint.sh /usr/local/bin/entrypoint
 
+ENV CONFIG_TEMPLATE_DIRECTORY=/etc/gitaly
+
 RUN set -eux ;\
-    adduser --disabled-password --gecos 'GitLab' git ;\
-    mkdir -p /home/git/repositories ;\
-    sed -i "s/git:!/git:*/" /etc/shadow ;\
-    chown -R git:git /etc/gitaly /srv/gitaly-ruby
+    mkdir -p /home/git/repositories /var/log/gitaly ;\
+    touch /var/log/gitaly/gitaly.log ;\
+    touch /var/log/gitaly/gitlab-shell.log ;\
+    chown -R git:git /etc/gitaly /srv/gitaly-ruby /var/log/gitaly ;\
+    chmod +x /usr/local/bin/entrypoint
 
 RUN set -eux ;\
     apt-get update ;\
@@ -48,5 +53,9 @@ RUN set -eux ;\
     apt-get install -y --no-install-recommends \
         libicu63 net-tools openssh-client xtail ;\
     rm -rf /var/lib/apt/lists/*
+
+VOLUME /var/log/gitaly
+
+USER git
 
 ENTRYPOINT [ "/bin/tini", "--", "/usr/local/bin/entrypoint" ]
