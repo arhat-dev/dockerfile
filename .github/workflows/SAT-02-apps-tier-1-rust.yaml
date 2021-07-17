@@ -11,8 +11,7 @@ on:
     - master
     paths:
     - rust/**
-    paths-ignore:
-    - rust/_common
+    - "!rust/_common"
   schedule:
   - cron: "0 2 * * SAT"
 

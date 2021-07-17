@@ -11,11 +11,10 @@ on:
     - master
     paths:
     - nix/**
-    paths-ignore:
-    - nix/Dockerfile
-    - nix/*.md
-    - nix/*.sh
-    - nix/*.yaml
+    - "!nix/Dockerfile"
+    - "!nix/*.md"
+    - "!nix/*.sh"
+    - "!nix/*.yaml"
   schedule:
   - cron: "0 14 * * SAT"
 

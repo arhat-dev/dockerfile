@@ -11,8 +11,7 @@ on:
     - master
     paths:
     - python/**
-    paths-ignore:
-    - python/_common
+    - "!python/_common"
   schedule:
   - cron: "0 10 * * SAT"
 

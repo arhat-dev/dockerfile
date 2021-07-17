@@ -11,9 +11,8 @@ on:
     - master
     paths:
     - golang/**
-    paths-ignore:
-    - golang/_common
-    - golang/gitaly
+    - "!golang/_common"
+    - "!golang/gitaly"
   schedule:
   - cron: "0 0 * * SAT"
 

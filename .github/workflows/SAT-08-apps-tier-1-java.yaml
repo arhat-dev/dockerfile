@@ -11,8 +11,7 @@ on:
     - master
     paths:
     - java/**
-    paths-ignore:
-    - java/_common
+    - "!java/_common"
   schedule:
   - cron: "0 8 * * SAT"
 

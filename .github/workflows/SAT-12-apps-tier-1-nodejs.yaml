@@ -11,8 +11,7 @@ on:
     - master
     paths:
     - nodejs/**
-    paths-ignore:
-    - nodejs/_common
+    - "!nodejs/_common"
   schedule:
   - cron: "0 12 * * SAT"
 
