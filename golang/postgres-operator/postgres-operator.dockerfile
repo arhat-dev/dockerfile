@@ -20,7 +20,7 @@ ARG MATRIX_KERNEL
 ARG MATRIX_ARCH
 COPY --from=builder \
       /output/postgres-operator.${MATRIX_KERNEL}.${MATRIX_ARCH}/postgres-operator \
-      /usr/local/bin/postgres-operator
+      /postgres-operator
 
 ARG MATRIX_ROOTFS
 RUN set -eux ;\
