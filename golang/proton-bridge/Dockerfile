@@ -42,6 +42,6 @@ USER 1000
 
 VOLUME [ "/data" ]
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint"]
 
 CMD ["start"]

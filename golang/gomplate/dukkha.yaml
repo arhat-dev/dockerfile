@@ -5,6 +5,10 @@ golang:build:
   - APP=gomplate
   # source(git-tags): https://github.com/hairyhenderson/gomplate
   - VERSION=v3.9.0
+  # enabled due to error:
+  #   go: github.com/hairyhenderson/toml@v0.3.1-0.20191004034452-2a4f3b6160f2: invalid version: unknown revision 2a4f3b6160f2
+  - GOPROXY=https://proxy.golang.org,direct
+  - GOSUMDB=sum.golang.org
   matrix@file: &matrix golang/matrix-nocgo-norootfs-all.yml
   chdir@env: /app/build/gomplate
   path: ./cmd/gomplate
