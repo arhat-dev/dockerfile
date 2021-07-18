@@ -1,0 +1,85 @@
+# this build instruction is used in container
+golang:build:
+- name: postgres-operator
+  env: &env
+  - APP=postgres-operator
+  # source(git-tags): https://github.com/zalando/postgres-operator
+  - &version VERSION=v1.6.3
+  matrix@file: &matrix golang/matrix-nocgo-all.yml
+  chdir@env: /app/build/postgres-operator
+  path: ./cmd
+  outputs@env:
+  - /output/postgres-operator.${MATRIX_KERNEL}.${MATRIX_ARCH}/postgres-operator
+  cgo:
+    enabled: false
+  ldflags@env:
+  - -s -w
+  - -X "main.version=${VERSION}"
+  tags:
+  - netgo
+  - osusergo
+  - timetzdata
+  extra_args:
+  - -trimpath
+  - -mod=vendor
+
+buildah:build:
+
+- name: postgres-operator
+  env: *env
+  matrix@file: *matrix
+  hooks: &image_build_hooks
+    before:
+    - shell@env: |-
+        [ -d build/postgres-operator ] && exit 0
+
+        git clone --depth 1 --branch ${VERSION} \
+          https://github.com/zalando/postgres-operator.git \
+          build/postgres-operator
+
+    - shell: |-
+        cd build/postgres-operator
+        go mod vendor
+
+  file: golang/postgres-operator/postgres-operator.dockerfile
+  image_names@file|template: &image_names |-
+    templates/image-names/no-rootfs-info/env[APP:VERSION].yml
+  extra_args@file|env|template: |-
+    templates/image-extra-args/env[APP].yml
+
+- name: postgres-operator-logical-backup
+  env: &logical_backup_env
+  - APP=postgres-operator-logical-backup
+  - *version
+  matrix: &logical_backup_matrix
+    kernel:
+    - linux
+    rootfs:
+    - debian
+    arch:
+    - amd64
+    - arm64
+    # - x86
+    # - ppc64le
+  hooks: *image_build_hooks
+  file: golang/postgres-operator/logical-backup.dockerfile
+  image_names@file|template: &logical_backup_image_names |-
+    templates/image-names/no-rootfs-info/env[APP:VERSION].yml
+  extra_args@file|env|template: templates/image-extra-args/env[APP].yml
+
+buildah:push:
+- name: postgres-operator
+  env: *env
+  hooks:
+    before:
+    - task: buildah:login(ghcr)
+  matrix@file: *matrix
+  image_names@file|template: *image_names
+
+- name: postgres-operator-logical-backup
+  env: *logical_backup_env
+  hooks:
+    before:
+    - task: buildah:login(ghcr)
+  matrix@file: *logical_backup_matrix
+  image_names@file|template: *logical_backup_image_names

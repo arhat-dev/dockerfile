@@ -20,6 +20,8 @@ jobs:
     strategy:
       matrix:
         app:
+        - postgres-operator
+        - postgres-operator-logical-backup
         - gitlab-shell # requires gomplate and gitlab-logger
       fail-fast: false
     runs-on: ubuntu-20.04

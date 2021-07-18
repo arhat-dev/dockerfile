@@ -3,7 +3,7 @@ kernel:
 - linux
 rootfs:
 # currently we only support debian for cross compiling
-- debian
+- ""
 arch:
 - amd64
 - arm64
