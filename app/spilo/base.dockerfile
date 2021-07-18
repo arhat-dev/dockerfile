@@ -20,5 +20,5 @@ FROM scratch
 
 COPY --from=base / /
 
-COPY --from=walg_img /wal-g.pg /usr/loca/bin/wal-g
+COPY --from=walg_img /wal-g.pg /bin/
 COPY --from=etcd_img /etcdctl /etcd /bin/
