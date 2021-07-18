@@ -15,7 +15,7 @@ RUN dukkha golang local build \
       -m arch=${MATRIX_ARCH} ;\
     rm -rf /app/build/gitlab-shell/internal/testhelper/testdata
 
-FROM FROM ghcr.io/arhat-dev/ruby:2.7-debian-${MATRIX_ARCH}
+FROM ghcr.io/arhat-dev/ruby:2.7-debian-${MATRIX_ARCH}
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
