@@ -36,10 +36,6 @@ RUN set -eux ;\
     nix-entrypoint nix optimise-store ;\
     nix-entrypoint nix-store --verify --check-contents
 
-FROM scratch
-
-COPY --from=builder / /
-
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
 
 ENV PATH="/nix/var/nix/profiles/default/sbin:${PATH}" \

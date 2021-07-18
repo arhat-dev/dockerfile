@@ -13,17 +13,14 @@ RUN set -ex ;\
 #   make and c/c++ toolchain
         stable.nodePackages.node-gyp \
         stable.gcc \
-        stable.gnumake
-
-RUN git clone --depth 1 --branch "${VERSION}" \
+        stable.gnumake ;\
+    git clone --depth 1 --branch "${VERSION}" \
         https://github.com/renovatebot/renovate.git \
-        renovate
-
-WORKDIR /nixuser/renovate
-
+        renovate ;\
+    cd /nixuser/renovate ;\
 # configure yarn and npm
 # ref: https://github.com/renovatebot/renovate/blob/main/.github/workflows/build.yml
-RUN yarn config set version-git-tag false ;\
+    yarn config set version-git-tag false ;\
     npm config set scripts-prepend-node-path true ;\
 # build renovate from source
 # ref: https://github.com/renovatebot/renovate/blob/main/.github/workflows/release-npm.yml
@@ -32,25 +29,21 @@ RUN yarn config set version-git-tag false ;\
     yarn install --dev ;\
     yarn build ;\
     yarn cache clean --all ;\
-    rm -rf /nixuser/.cache
-
-RUN chmod +x dist/*.js ;\
+    rm -rf /nixuser/.cache ;\
+    chmod +x dist/*.js ;\
 # create symlinks for renovate
     mkdir -p /nixuser/bin ;\
-    ln -s \
-    /nixuser/renovate/dist/renovate.js \
-    /nixuser/bin/renovate ;\
-    ln -s \
-    /nixuser/renovate/dist/config-validator.js \
-    /nixuser/bin/renovate-config-validator ;\
+    ln -s /nixuser/renovate/dist/renovate.js \
+        /nixuser/bin/renovate ;\
+    ln -s /nixuser/renovate/dist/config-validator.js \
+        /nixuser/bin/renovate-config-validator ;\
 # test whether renovate works
 # ref: https://github.com/renovatebot/docker-renovate-full/blob/main/Dockerfile#L113
     /nixuser/bin/renovate --version ;\
     /nixuser/bin/renovate-config-validator ;\
-    node -e "new require('re2')('.*').exec('test')"
-
+    node -e "new require('re2')('.*').exec('test')" ;\
 # remove packages only required by renovate build
-RUN nix-entrypoint nix-env --uninstall \
+    nix-entrypoint nix-env --uninstall \
         stable.nodePackages.node-gyp \
         stable.gcc \
         stable.gnumake ;\
@@ -64,11 +57,8 @@ RUN nix-entrypoint nix-env --uninstall \
     nix-entrypoint nix-store --verify --check-contents
 
 # TODO: find a better way to cleanup
-FROM scratch
 
 LABEL org.opencontainers.image.source https://github.com/arhat-dev/dockerfile
-
-COPY --from=builder / /
 
 ENV PATH="/nix/var/nix/profiles/default/sbin:${PATH}" \
     PATH="/nix/var/nix/profiles/default/bin:${PATH}" \
