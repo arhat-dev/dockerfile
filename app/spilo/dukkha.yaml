@@ -1,16 +1,16 @@
 buildah:build:
-- name: spilo-ubuntu-base
+- name: spilo-rootfs-base
   matrix: &matrix
     kernel:
     - linux
     arch:
     - amd64
     - arm64
-    - ppc64le
-    - x86
-  file: app/spilo/ubuntu.dockerfile
+    # - ppc64le
+    # - x86
+  file: app/spilo/base.dockerfile
   image_names@env:
-  - image: spilo-ubuntu-base:${MATRIX_ARCH}
+  - image: spilo-rootfs-base:${MATRIX_ARCH}
   extra_args@template:
   - --pull-always
   - --build-arg
@@ -43,7 +43,7 @@ buildah:build:
           -i app/spilo/patches/spilo-${VERSION}.patch
 
     before:matrix:
-    - task: buildah:build(spilo-ubuntu-base)
+    - task: buildah:build(spilo-rootfs-base)
 
   file@env: build/spilo/postgres-appliance/Dockerfile
   context@env: build/spilo/postgres-appliance
@@ -51,7 +51,7 @@ buildah:build:
   - image: spilo-base:${MATRIX_ARCH}
 
   extra_args@template|env: |-
-    {{- $base_image_name := printf "spilo-ubuntu-base:%s" .Env.MATRIX_ARCH -}}
+    {{- $base_image_name := printf "spilo-rootfs-base:%s" .Env.MATRIX_ARCH -}}
     {{- $base_image_id := os_ReadFile (getBuildahImageIDFile $base_image_name) -}}
     - --pull-never
     # - --os={{ .Env.MATRIX_ARCH | getDockerOS }}
