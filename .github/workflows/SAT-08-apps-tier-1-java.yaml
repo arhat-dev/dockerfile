@@ -25,6 +25,7 @@ jobs:
         - sonarqube
         - opendj
         - nexus-repository-oss
+        - keycloak
       fail-fast: false
     runs-on: ubuntu-20.04
     steps:
