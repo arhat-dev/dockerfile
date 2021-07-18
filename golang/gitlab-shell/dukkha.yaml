@@ -58,15 +58,17 @@ buildah:build:
           https://gitlab.com/gitlab-org/gitlab-shell \
           build/gitlab-shell
 
-  file: golang/nocgo-norootfs.dockerfile
+  file: golang/gitlab-shell/Dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
-  extra_args@file|env|template: templates/image-extra-args/env[APP].yml
-    - --build-arg
-    - GITLAB_LOGGER_VERSION={{ .ENv.GITLAB_LOGGER_VERSION }}
-
-    - --build-arg
-    - GOMPLATE_VERSION={{ .ENv.GOMPLATE_VERSION }}
+  extra_args@template:
+  - --pull-always
+  - --build-arg
+  - MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
+  - --build-arg
+  - GITLAB_LOGGER_VERSION={{ .Env.GITLAB_LOGGER_VERSION }}
+  - --build-arg
+  - GOMPLATE_VERSION={{ .Env.GOMPLATE_VERSION }}
 
 buildah:push:
 - name: gitlab-shell
