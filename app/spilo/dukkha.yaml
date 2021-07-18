@@ -54,7 +54,7 @@ buildah:build:
     {{- $base_image_name := printf "spilo-rootfs-base:%s" .Env.MATRIX_ARCH -}}
     {{- $base_image_id := os_ReadFile (getBuildahImageIDFile $base_image_name) -}}
     - --pull-never
-    # - --os={{ .Env.MATRIX_ARCH | getDockerOS }}
+    # - --os={{ .Env.MATRIX_KERNEL | getDockerOS }}
     # - --arch={{ .Env.MATRIX_ARCH | getDockerArch }}
     # - --variant={{ .Env.MATRIX_ARCH | getDockerArchVariant }}
 
