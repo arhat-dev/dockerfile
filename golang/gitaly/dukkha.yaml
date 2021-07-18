@@ -44,10 +44,6 @@ golang:build:
   - /output/gitaly.${MATRIX_KERNEL}.${MATRIX_ARCH}/{{ trimPrefix "./" .Env.MATRIX_CMD }}
   cgo:
     enabled: true
-    # cflags@template:
-    # - -arch={{ getGolangArch .Env.MATRIX_ARCH }}
-    # ldflags@template:
-    # - -arch={{ getGolangArch .Env.MATRIX_ARCH }}
   ldflags@env:
   - -s -w
   - -extldflags=-static
@@ -84,7 +80,15 @@ buildah:build:
   file: golang/gitaly/Dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
-  extra_args@file|env|template: templates/image-extra-args/env[VERSION].yml
+  extra_args@template:
+    - --pull-always
+    - --layers=true
+    - --build-arg
+    - HOST_ARCH={{ .Env.HOST_ARCH }}
+    - --build-arg
+    - MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
+    - --build-arg
+    - VERSION={{ .Env.VERSION }}
     - --build-arg
     - GITLAB_SHELL_VERSION={{ .Env.GITLAB_SHELL_VERSION }}
 
