@@ -1,6 +1,7 @@
+ARG HOST_ARCH
 ARG MATRIX_ARCH
 
-FROM ghcr.io/arhat-dev/builder-java:8-debian-${MATRIX_ARCH} AS builder
+FROM ghcr.io/arhat-dev/builder-java:8-debian-${HOST_ARCH} AS builder
 
 ENV PATH="/usr/local/maven3/bin:${PATH}"
 

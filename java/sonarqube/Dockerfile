@@ -1,5 +1,7 @@
 ARG MATRIX_ARCH
 
+# TODO: sonarqube uses nodejs, we have to compile in qemu
+#       to get native js dependencies working
 FROM ghcr.io/arhat-dev/builder-java:11-debian-${MATRIX_ARCH} AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive

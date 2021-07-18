@@ -34,6 +34,8 @@ buildah:build:
     - VERSION={{ .Env.VERSION }}
     - --build-arg
     - MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
+    - --build-arg
+    - HOST_ARCH={{ .Env.HOST_ARCH }}
 
 buildah:push:
 - name: opendj

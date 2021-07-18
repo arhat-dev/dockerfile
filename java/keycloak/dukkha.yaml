@@ -1,0 +1,43 @@
+buildah:build:
+- name: keycloak
+  env@template: &env
+  - APP=keycloak
+  # source(git-tags): https://github.com/keycloak/keycloak
+  - VERSION=14.0.0
+  # the version tag seems in sync with
+  # https://github.com/keycloak/keycloak-containers
+  hooks:
+    before:
+    - shell@env: |-
+        [ -d build/keycloak-containers ] && exit 0
+
+        git clone --recursive --depth 1 --branch ${VERSION} \
+          https://github.com/keycloak/keycloak-containers.git \
+          build/keycloak-containers
+
+  matrix@file: &matrix java/matrix-amd64-arm64.yml
+  file: build/keycloak-containers/server/Dockerfile
+  context: build/keycloak-containers/server
+  image_names@file|template: &image_names |-
+    templates/image-names/no-rootfs-info/env[APP:VERSION].yml
+  extra_args@template:
+    - --pull-always
+    - --os={{ .Env.MATRIX_KERNEL | getDockerOS }}
+    - --arch={{ .Env.MATRIX_ARCH | getDockerArch }}
+    - --variant={{ .Env.MATRIX_ARCH | getDockerArchVariant }}
+    - --ulimit
+    - memlock=16384,nofile=1048576
+    # https://github.com/keycloak/keycloak-containers/blob/master/server/README.md#building-image-with-keycloak-from-different-sources
+    - --build-arg
+    - GIT_REPO=keycloak/keycloak
+    - --build-arg
+    - GIT_BRANCH={{ .Env.VERSION }}
+
+buildah:push:
+- name: keycloak
+  env@template: *env
+  hooks:
+    before:
+    - task: buildah:login(ghcr)
+  matrix@file: *matrix
+  image_names@file|template: *image_names
