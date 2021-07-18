@@ -83,7 +83,7 @@ RUN set -eux ;\
     ln -s "${NEXUS_DATA}" "${SONATYPE_WORK}/nexus3" ;\
     chmod 0755 "${SONATYPE_DIR}" "${SONATYPE_WORK}" "${NEXUS_HOME}" ;\
     chmod -R 0755 "${NEXUS_DATA}" ;\
-    chown -R nexus:nexus "${NEXUS_DATA}" ;\
+    chown -R nexus:nexus "${NEXUS_DATA}"
 
 USER 200
 EXPOSE 8081
