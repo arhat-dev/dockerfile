@@ -60,7 +60,7 @@ buildah:build:
 
     - --build-arg
     # source(git-tags): https://github.com/timescale/timescaledb
-    - TIMESCALEDB=2.3.0
+    - TIMESCALEDB=2.3.1
 
     - --build-arg
     - BASE_IMAGE={{ $base_image_id }}
