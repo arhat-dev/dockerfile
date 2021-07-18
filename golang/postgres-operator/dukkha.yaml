@@ -81,5 +81,5 @@ buildah:push:
   hooks:
     before:
     - task: buildah:login(ghcr)
-  matrix@file: *logical_backup_matrix
+  matrix: *logical_backup_matrix
   image_names@file|template: *logical_backup_image_names
