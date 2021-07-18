@@ -1,0 +1,41 @@
+buildah:build:
+- name: pgbouncer
+  env: &env
+  - APP=pgbouncer
+  # source(git-refs): https://github.com/edoburu/docker-pgbouncer
+  - VERSION=v1.15.x
+  matrix: &matrix
+    kernel:
+    - linux
+    arch:
+    - amd64
+    - arm64
+    # - ppc64le
+    # - x86
+  hooks:
+    before:
+    - shell@env: |-
+        [ -d build/docker-pgbouncer ] && exit 0
+
+        git clone --depth 1 --branch ${VERSION} \
+          https://github.com/edoburu/docker-pgbouncer.git \
+          build/docker-pgbouncer
+
+  file: build/docker-pgbouncer/Dockerfile
+  image_names@file|template: &image_names |-
+    templates/image-names/no-rootfs-info/env[APP:VERSION].yml
+  context: build/docker-pgbouncer/
+  extra_args@template:
+  - --pull-always
+  - --os={{ .Env.MATRIX_KERNEL | getDockerOS }}
+  - --arch={{ .Env.MATRIX_ARCH | getDockerArch }}
+  - --variant={{ .Env.MATRIX_ARCH | getDockerArchVariant }}
+
+buildah:push:
+- name: pgbouncer
+  env: *env
+  hooks:
+    before:
+    - task: buildah:login(ghcr)
+  matrix: *matrix
+  image_names@file|template: *image_names
