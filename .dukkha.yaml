@@ -65,6 +65,9 @@ tools:
 
   golang:
   - name: local
+    env:
+    - GOPROXY=direct
+    - GOSUMDB=off
   workflow:
   - name: local
   - name: in-docker
