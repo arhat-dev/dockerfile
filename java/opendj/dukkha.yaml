@@ -9,7 +9,7 @@ buildah:build:
     - shell@env: |-
         [ -d build/opendj ] && exit 0
 
-        git clone --recursive --branch ${VERSION} \
+        git clone --recursive --depth 1 --branch ${VERSION} \
           https://github.com/OpenIdentityPlatform/OpenDJ.git \
           build/opendj
 
@@ -22,18 +22,18 @@ buildah:build:
           build/opendj/opendj-dsml-servlet/pom.xml \
           -i java/opendj/patches/opendj-${VERSION}.patch
 
-  matrix@file: &matrix java/matrix-8-all.yml
+  matrix@file: &matrix java/matrix-amd64-arm64.yml
   file: java/opendj/Dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
-  extra_args@env|template: |-
+  extra_args@template: |-
     - --pull-always
     - --ulimit
     - memlock=16384,nofile=1048576
     - --build-arg
-    - VERSION=${VERSION}
+    - VERSION={{ .Env.VERSION }}
     - --build-arg
-    - MATRIX_ARCH=${MATRIX_ARCH}
+    - MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
 
 buildah:push:
 - name: opendj

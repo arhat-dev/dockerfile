@@ -5,7 +5,7 @@ FROM ghcr.io/arhat-dev/builder-java:8-debian-${MATRIX_ARCH} AS builder
 ENV DEBIAN_FRONTEND=noninteractive
 RUN set -ex ;\
     curl -sL https://deb.nodesource.com/setup_14.x \
-    -o /nodesource_setup.sh ;\
+        -o /nodesource_setup.sh ;\
     bash /nodesource_setup.sh ;\
     apt-get update ;\
     apt-get install -y nodejs unzip ;\

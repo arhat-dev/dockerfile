@@ -12,7 +12,7 @@ buildah:build:
     - shell@env: |-
         [ -d build/nexus-public ] && exit 0
 
-        git clone --recursive --branch ${RELEASE_VERSION} \
+        git clone --recursive --depth 1 --branch ${RELEASE_VERSION} \
           https://github.com/sonatype/nexus-public.git \
           build/nexus-public
 
@@ -23,7 +23,7 @@ buildah:build:
           https://github.com/flytreeleft/nexus3-keycloak-plugin.git \
           build/nexus3-keycloak-plugin
 
-  matrix@file: &matrix java/matrix-8-all.yml
+  matrix@file: &matrix java/matrix-amd64-arm64.yml
   file: java/nexus-repository-oss/Dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml

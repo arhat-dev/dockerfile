@@ -5,7 +5,7 @@ FROM ghcr.io/arhat-dev/builder-java:11-debian-${MATRIX_ARCH} AS builder
 ENV DEBIAN_FRONTEND=noninteractive
 RUN set -ex ;\
     curl -sL https://deb.nodesource.com/setup_14.x \
-    -o /nodesource_setup.sh ;\
+        -o /nodesource_setup.sh ;\
     bash /nodesource_setup.sh ;\
     apt-get update ;\
     apt-get install -y nodejs unzip ;\
@@ -26,19 +26,20 @@ RUN set -ex ;\
     ./sonar-application/build.gradle
 
 # Build sonarqube
-ARG ES_ARCH
-ARG ES_VERSION
 ARG ES_CHECKSUM
 ARG ES_DOWNLOAD_URL_PATH
+ARG ES_DOWNLOAD_URL_FILE
 RUN set -ex ;\
+    if [ "${HOST_ARCH}" != "${MATRIX_ARCH}" ]; then \
+        export CC="${TARGET_DEBIAN_TRIPLE_NAME}-gcc" ;\
+        export CXX="${TARGET_DEBIAN_TRIPLE_NAME}-g++" ;\
+    fi ;\
     # tests disabled due to failure under container environment
     ./gradlew build -x test \
         --no-daemon --info --console plain \
-        -PelasticsearchDownloadUrlPath=${ES_DOWNLOAD_URL_PATH} \
-        -PelasticsearchDownloadUrlFile=elasticsearch-${ES_VERSION}-linux-${ES_ARCH}.tar.gz \
-        -PelasticsearchDownloadSha512=${ES_CHECKSUM}
-
-RUN set -ex;\
+        "-PelasticsearchDownloadUrlPath=${ES_DOWNLOAD_URL_PATH}" \
+        "-PelasticsearchDownloadUrlFile=${ES_DOWNLOAD_URL_FILE}" \
+        "-PelasticsearchDownloadSha512=${ES_CHECKSUM}" ;\
     mkdir -p /expanded ;\
     mv /build/sonar-application/build/distributions/sonar-application*.zip \
         /expanded/sonarqube.zip ;\

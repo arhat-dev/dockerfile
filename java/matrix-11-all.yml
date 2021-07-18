@@ -1,9 +1,0 @@
-include:
-- kernel:
-  - linux
-  arch:
-  - amd64
-  - ppc64le
-  - arm64
-  - armv7
-  - s390x

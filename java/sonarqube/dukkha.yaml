@@ -19,7 +19,7 @@ buildah:build:
           https://github.com/SonarSource/sonarqube.git \
           build/${APP}
 
-  matrix@file: &matrix java/matrix-11-amd64-arm64.yml
+  matrix@file: &matrix java/matrix-amd64-arm64.yml
   file: java/sonarqube/Dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
@@ -32,19 +32,17 @@ buildah:build:
     - --build-arg
     - MATRIX_ARCH=${MATRIX_ARCH}
     - --build-arg
-    - ES_VERSION=${ES_VERSION}
-    - --build-arg
     - ES_DOWNLOAD_URL_PATH=${ES_DOWNLOAD_URL_PATH}
     {{ if eq .Env.MATRIX_ARCH "arm64" }}
     - --build-arg
-    - ES_ARCH=aarch64
-    - --build-arg
     - ES_CHECKSUM=${ES_ARM64_CHECKSUM}
+    - --build-arg
+    - ES_DOWNLOAD_URL_FILE=elasticsearch-${ES_VERSION}-linux-aarch64.tar.gz
     {{ else if eq .Env.MATRIX_ARCH "amd64" }}
     - --build-arg
-    - ES_ARCH=x86_64
-    - --build-arg
     - ES_CHECKSUM=${ES_AMD64_CHECKSUM}
+    - --build-arg
+    - ES_DOWNLOAD_URL_FILE=elasticsearch-${ES_VERSION}-linux-x86_64.tar.gz
     {{ end }}
 
 buildah:push:

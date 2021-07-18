@@ -1,0 +1,5 @@
+kernel:
+- linux
+arch:
+- amd64
+- arm64
