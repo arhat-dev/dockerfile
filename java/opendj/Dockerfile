@@ -5,7 +5,7 @@ FROM ghcr.io/arhat-dev/builder-java:8-debian-${HOST_ARCH} AS builder
 
 ENV MAVEN_OPTS="-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false" \
     MAVEN_OPTS="${MAVEN_OPTS} -Dmaven.wagon.http.retryHandler.class=standard" \
-    MAVEN_OPTS="${MAVEN_OPTS} -Dmaven.wagon.http.retryHandler.count=3"
+    MAVEN_OPTS="${MAVEN_OPTS} -Dmaven.wagon.http.retryHandler.count=10"
 
 ENV PATH="/usr/local/maven3/bin:${PATH}"
 

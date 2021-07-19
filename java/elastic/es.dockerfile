@@ -2,10 +2,6 @@ ARG MATRIX_ARCH
 
 FROM ghcr.io/arhat-dev/builder-java:16-debian-${MATRIX_ARCH} AS builder
 
-ENV MAVEN_OPTS="-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false" \
-    MAVEN_OPTS="${MAVEN_OPTS} -Dmaven.wagon.http.retryHandler.class=standard" \
-    MAVEN_OPTS="${MAVEN_OPTS} -Dmaven.wagon.http.retryHandler.count=3"
-
 ARG APP
 COPY build/${APP} /es
 WORKDIR /es
