@@ -83,7 +83,7 @@ jobs:
         GHCR_USER: ${{ github.actor }}
         GHCR_PASS: ${{ secrets.GITHUB_TOKEN }}
       run: |-
-        export DUKKHA_BIN="${HOME}/bin/dukkha"
+        export DUKKHA_BIN="$(command -v dukkha 2>/dev/null)"
 
         sudo -E "${DUKKHA_BIN}" buildah local build ${{ matrix.app }}
         sudo -E "${DUKKHA_BIN}" buildah local push ${{ matrix.app }}
