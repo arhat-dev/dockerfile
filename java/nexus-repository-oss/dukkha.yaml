@@ -36,6 +36,8 @@ buildah:build:
     - --build-arg
     - MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
     - --build-arg
+    - HOST_ARCH={{ .Env.HOST_ARCH }}
+    - --build-arg
     - VERSION={{ .Env.VERSION }}
     - --build-arg
     - KEYCLOAK_PLUGIN_VERSION={{ trimPrefix "v" .Env.KEYCLOAK_PLUGIN_VERSION }}

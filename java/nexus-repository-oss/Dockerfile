@@ -1,8 +1,9 @@
+ARG HOST_ARCH
 ARG MATRIX_ARCH
 
 # TODO: nexus uses nodejs, we have to compile in qemu
 #       to get native js dependencies working
-FROM ghcr.io/arhat-dev/builder-java:8-debian-${MATRIX_ARCH} AS builder
+FROM ghcr.io/arhat-dev/builder-java:8-debian-${HOST_ARCH} AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN set -ex ;\
