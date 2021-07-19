@@ -34,13 +34,11 @@ buildah:build:
           build/spilo
 
     - shell@env: |-
-        patch -u --reverse --verbose --reject-file .dukkha/spilo-dockerfile.rej \
-          build/spilo/postgres-appliance/Dockerfile \
-          -i app/spilo/patches/spilo-${VERSION}.patch || true
+        patch -u -p1 --reverse --verbose --reject-file .dukkha/spilo.rej \
+          -d build/spilo <app/spilo/patches/${VERSION}.patch || true
 
-        patch -u --verbose --reject-file .dukkha/spilo-dockerfile.rej \
-          build/spilo/postgres-appliance/Dockerfile \
-          -i app/spilo/patches/spilo-${VERSION}.patch
+        patch -u -p1 --verbose --reject-file .dukkha/spilo.rej \
+          -d build/spilo <app/spilo/patches/${VERSION}.patch
 
     before:matrix:
     - task: buildah:build(spilo-rootfs-base)
