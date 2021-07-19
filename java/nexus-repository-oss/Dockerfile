@@ -89,7 +89,8 @@ RUN set -eux ;\
     mkdir -p "${SONATYPE_WORK}" \
         "${NEXUS_DATA}/etc" "${NEXUS_DATA}/log" "${NEXUS_DATA}/tmp" ;\
     ln -s "${NEXUS_DATA}" "${SONATYPE_WORK}/nexus3" ;\
-    chmod 0755 "${SONATYPE_DIR}" "${SONATYPE_WORK}" "${NEXUS_HOME}" ;\
+    chmod 0755 "${SONATYPE_DIR}" "${SONATYPE_WORK}" "${NEXUS_HOME}" \
+        "${SONATYPE_DIR}/start-nexus-repository-manager.sh" ;\
     chmod -R 0755 "${NEXUS_DATA}" ;\
     chown -R nexus:nexus "${NEXUS_DATA}"
 
