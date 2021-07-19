@@ -3,7 +3,7 @@ buildah:build:
   env@template: &env
   - APP=keycloak
   # source(git-tags): https://github.com/keycloak/keycloak
-  - VERSION=13.0.1
+  - VERSION=14.0.0
   # the version tag seems in sync with
   # https://github.com/keycloak/keycloak-containers
   hooks:
