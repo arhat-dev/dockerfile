@@ -24,7 +24,7 @@ RUN set -eux ;\
       -DignoreSnapshots=true \
       -DpushChanges=false \
       -P distribution ;\
-    unzip -d /opt/opendj-tmp /opendj/opendj-server-legacy/target/package/opendj-${VERSIONw}.zip ;\
+    unzip -d /opt/opendj-tmp /opendj/opendj-server-legacy/target/package/opendj-${VERSION}.zip ;\
     mv /opt/opendj-tmp/* /opt/opendj ;\
     mv /opendj/opendj-packages/opendj-docker/bootstrap/ \
         /opt/opendj/bootstrap/ ;\
