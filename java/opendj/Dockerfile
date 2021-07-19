@@ -3,20 +3,18 @@ ARG MATRIX_ARCH
 
 FROM ghcr.io/arhat-dev/builder-java:8-debian-${HOST_ARCH} AS builder
 
-ENV MAVEN_OPTS="-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false" \
-    MAVEN_OPTS="${MAVEN_OPTS} -Dmaven.wagon.http.retryHandler.class=standard" \
-    MAVEN_OPTS="${MAVEN_OPTS} -Dmaven.wagon.http.retryHandler.count=10"
-
 ENV PATH="/usr/local/maven3/bin:${PATH}"
 
 # build opendj
 COPY build/opendj /opendj
 WORKDIR /opendj
-ARG VERSION
 RUN set -eux ;\
     apt-get update ;\
     apt-get install unzip ;\
-    mvn -V clean install \
+    mvn clean install \
+      -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false \
+      -Dmaven.wagon.http.retryHandler.class=standard \
+      -Dmaven.wagon.http.retryHandler.count=10 \
       -Dmaven.test.skip=true \
       -Dmaven.javadoc.skip=true \
       -DskipTests \
@@ -24,14 +22,12 @@ RUN set -eux ;\
       -DignoreSnapshots=true \
       -DpushChanges=false \
       -P distribution ;\
-    unzip -d /opt/opendj-tmp /opendj/opendj-server-legacy/target/package/opendj-${VERSION}.zip ;\
+    unzip -d /opt/opendj-tmp /opendj/opendj-server-legacy/target/package/opendj-*.zip ;\
     mv /opt/opendj-tmp/* /opt/opendj ;\
     mv /opendj/opendj-packages/opendj-docker/bootstrap/ \
         /opt/opendj/bootstrap/ ;\
     mv /opendj/opendj-packages/opendj-docker/run.sh \
-        /opt/opendj/run.sh
-
-RUN set -eux ;\
+        /opt/opendj/run.sh ;\
     chmod +x /opt/opendj/run.sh \
         /opt/opendj/bootstrap/setup.sh \
         /opt/opendj/bootstrap/replicate.sh

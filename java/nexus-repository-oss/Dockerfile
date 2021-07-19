@@ -4,10 +4,6 @@ ARG MATRIX_ARCH
 #       to get native js dependencies working
 FROM ghcr.io/arhat-dev/builder-java:8-debian-${MATRIX_ARCH} AS builder
 
-ENV MAVEN_OPTS="-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false" \
-    MAVEN_OPTS="${MAVEN_OPTS} -Dmaven.wagon.http.retryHandler.class=standard" \
-    MAVEN_OPTS="${MAVEN_OPTS} -Dmaven.wagon.http.retryHandler.count=10"
-
 ENV DEBIAN_FRONTEND=noninteractive
 RUN set -ex ;\
     curl -sL https://deb.nodesource.com/setup_14.x \
@@ -24,6 +20,9 @@ WORKDIR /keycloak-plugin
 RUN set -eux ;\
 # we are using nexus v3.15+ use kar instead of jar
     mvn -PbuildKar clean package \
+      -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false \
+      -Dmaven.wagon.http.retryHandler.class=standard \
+      -Dmaven.wagon.http.retryHandler.count=10 \
       -Dmaven.test.skip=true \
       -Dmaven.javadoc.skip=true \
       -DskipTests \
@@ -32,11 +31,13 @@ RUN set -eux ;\
       -DpushChanges=false
 
 # build nexus3
-ARG VERSION
 COPY build/nexus-public /nexus
 WORKDIR /nexus
 RUN set -eux ;\
     ./mvnw clean install \
+      -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false \
+      -Dmaven.wagon.http.retryHandler.class=standard \
+      -Dmaven.wagon.http.retryHandler.count=10 \
       -Dmaven.test.skip=true \
       -Dmaven.javadoc.skip=true \
       -DskipTests \

@@ -4,10 +4,6 @@ ARG MATRIX_ARCH
 #       to get native js dependencies working
 FROM ghcr.io/arhat-dev/builder-java:11-debian-${MATRIX_ARCH} AS builder
 
-ENV MAVEN_OPTS="-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false" \
-    MAVEN_OPTS="${MAVEN_OPTS} -Dmaven.wagon.http.retryHandler.class=standard" \
-    MAVEN_OPTS="${MAVEN_OPTS} -Dmaven.wagon.http.retryHandler.count=10"
-
 ENV DEBIAN_FRONTEND=noninteractive
 RUN set -ex ;\
     curl -sL https://deb.nodesource.com/setup_14.x \
@@ -20,16 +16,6 @@ RUN set -ex ;\
 ARG APP
 COPY build/${APP} /build
 WORKDIR /build
-
-# patch ./server/sonar-web/build.gradle
-#   to diable non working download action (nodeSetup) performed by node plugin
-RUN set -ex ;\
-    sed -i '1s/^/node \{\n  download = false\n\}\n\n/' \
-    ./server/sonar-web/build.gradle ;\
-    # patch ./sonar-application/build.gradle
-    #   to disable size limit
-    sed -i '/def maxLength =/c\  def maxLength = 900000000' \
-    ./sonar-application/build.gradle
 
 # Build sonarqube
 ARG ES_CHECKSUM
