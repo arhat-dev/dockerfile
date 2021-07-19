@@ -1,0 +1,37 @@
+diff --git a/server/tools/build-keycloak.sh b/server/tools/build-keycloak.sh
+index 3bb9379..3a502ee 100755
+--- a/server/tools/build-keycloak.sh
++++ b/server/tools/build-keycloak.sh
+@@ -13,7 +13,7 @@ if [ "$GIT_REPO" != "" ]; then
+     microdnf install -y git
+ 
+     # Install Maven
+-    cd /opt/jboss 
++    cd /opt/jboss
+     curl -s https://apache.uib.no/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.tar.gz | tar xz
+     mv apache-maven-3.5.4 /opt/jboss/maven
+     export M2_HOME=/opt/jboss/maven
+@@ -27,8 +27,12 @@ if [ "$GIT_REPO" != "" ]; then
+     MASTER_HEAD=`git log -n1 --format="%H"`
+     echo "Keycloak from [build]: $GIT_REPO/$GIT_BRANCH/commit/$MASTER_HEAD"
+ 
+-    $M2_HOME/bin/mvn -Pdistribution -pl distribution/server-dist -am -Dmaven.test.skip clean install
+-    
++    maven_opts="-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false"
++    maven_opts="${maven_opts} -Dmaven.wagon.http.retryHandler.class=standard"
++    maven_opts="${maven_opts} -Dmaven.wagon.http.retryHandler.count=10"
++
++    $M2_HOME/bin/mvn ${maven_opts} -Pdistribution -pl distribution/server-dist -am -Dmaven.test.skip clean install
++
+     cd /opt/jboss
+ 
+     tar xfz /opt/jboss/keycloak-source/distribution/server-dist/target/keycloak-*.tar.gz
+@@ -37,7 +41,7 @@ if [ "$GIT_REPO" != "" ]; then
+     rm -rf /opt/jboss/maven
+     rm -rf /opt/jboss/keycloak-source
+     rm -rf $HOME/.m2/repository
+-    
++
+     mv /opt/jboss/keycloak-* /opt/jboss/keycloak
+ else
+     echo "Keycloak from [download]: $KEYCLOAK_DIST"
