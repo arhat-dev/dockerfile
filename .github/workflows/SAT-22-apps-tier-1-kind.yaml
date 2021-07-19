@@ -49,15 +49,7 @@ jobs:
         echo "${HOME}/bin" >> $GITHUB_PATH
 
     - name: Install dukkha
-      run: |-
-        mkdir -p "${HOME}/bin"
-        echo "${HOME}/bin" >> $GITHUB_PATH
-
-        docker pull ghcr.io/arhat-dev/dukkha:latest
-        ctr_id=$(docker create ghcr.io/arhat-dev/dukkha:latest : 2>/dev/null)
-        docker cp ${ctr_id}:/dukkha "${HOME}/bin/dukkha"
-
-        chmod +x "${HOME}/bin/dukkha"
+      uses: arhat-dev/actions-setup-dukkha@master
 
     - name: Restore cache
       uses: actions/cache@v2
