@@ -14,10 +14,10 @@ buildah:build:
           build/opendj
 
     - shell@env: |-
-        patch -u -p1 --reverse --verbose --reject-file .dukkha/opendj.rej \
+        patch -u -p1 --reverse --verbose --reject-file ../../.dukkha/opendj.rej \
           -d build/opendj <java/opendj/patches/${VERSION}.patch || true
 
-        patch -u -p1 --verbose --reject-file .dukkha/opendj.rej \
+        patch -u -p1 --verbose --reject-file ../../.dukkha/opendj.rej \
           -d build/opendj <java/opendj/patches/${VERSION}.patch
 
   matrix@file: &matrix java/matrix-amd64-arm64.yml

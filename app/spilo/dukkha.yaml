@@ -34,10 +34,10 @@ buildah:build:
           build/spilo
 
     - shell@env: |-
-        patch -u -p1 --reverse --verbose --reject-file .dukkha/spilo.rej \
+        patch -u -p1 --reverse --verbose --reject-file ../../.dukkha/spilo.rej \
           -d build/spilo <app/spilo/patches/${VERSION}.patch || true
 
-        patch -u -p1 --verbose --reject-file .dukkha/spilo.rej \
+        patch -u -p1 --verbose --reject-file ../../.dukkha/spilo.rej \
           -d build/spilo <app/spilo/patches/${VERSION}.patch
 
     before:matrix:
