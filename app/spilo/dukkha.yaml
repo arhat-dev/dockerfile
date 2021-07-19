@@ -67,7 +67,7 @@ buildah:build:
     - PGVERSION=13
 
     - --build-arg
-    - PGOLDVERSIONS='9.6 10 11 12'
+    - PGOLDVERSIONS=9.6 10 11 12
 
     - --build-arg
     - DEMO=false
