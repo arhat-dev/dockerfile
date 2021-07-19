@@ -19,6 +19,13 @@ buildah:build:
           https://github.com/SonarSource/sonarqube.git \
           build/${APP}
 
+    - shell@env: |-
+        patch -u -p1 --reverse --verbose --reject-file ../../.dukkha/sonarqube.rej \
+          -d build/sonarqube <java/sonarqube/patches/${VERSION}.patch || true
+
+        patch -u -p1 --verbose --reject-file ../../.dukkha/sonarqube.rej \
+          -d build/sonarqube <java/sonarqube/patches/${VERSION}.patch
+
   matrix@file: &matrix java/matrix-amd64-arm64.yml
   file: java/sonarqube/Dockerfile
   image_names@file|template: &image_names |-
