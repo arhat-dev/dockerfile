@@ -1,7 +1,7 @@
-# exclude: |
-#   (?x)^(
-#     vendor/.*
-#   )$
+exclude: |
+  (?x)^(
+    .*/patches/.*\.patch
+  )$
 
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks

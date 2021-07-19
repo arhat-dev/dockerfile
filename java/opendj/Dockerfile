@@ -3,6 +3,10 @@ ARG MATRIX_ARCH
 
 FROM ghcr.io/arhat-dev/builder-java:8-debian-${HOST_ARCH} AS builder
 
+ENV MAVEN_OPTS="-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false" \
+    MAVEN_OPTS="${MAVEN_OPTS} -Dmaven.wagon.http.retryHandler.class=standard" \
+    MAVEN_OPTS="${MAVEN_OPTS} -Dmaven.wagon.http.retryHandler.count=3"
+
 ENV PATH="/usr/local/maven3/bin:${PATH}"
 
 # build opendj
@@ -20,7 +24,7 @@ RUN set -eux ;\
       -DignoreSnapshots=true \
       -DpushChanges=false \
       -P distribution ;\
-    unzip -d /opt/opendj-tmp /opendj/opendj-server-legacy/target/package/opendj-4.4.11.zip ;\
+    unzip -d /opt/opendj-tmp /opendj/opendj-server-legacy/target/package/opendj-${VERSIONw}.zip ;\
     mv /opt/opendj-tmp/* /opt/opendj ;\
     mv /opendj/opendj-packages/opendj-docker/bootstrap/ \
         /opt/opendj/bootstrap/ ;\

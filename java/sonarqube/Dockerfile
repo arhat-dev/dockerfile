@@ -4,6 +4,10 @@ ARG MATRIX_ARCH
 #       to get native js dependencies working
 FROM ghcr.io/arhat-dev/builder-java:11-debian-${MATRIX_ARCH} AS builder
 
+ENV MAVEN_OPTS="-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false" \
+    MAVEN_OPTS="${MAVEN_OPTS} -Dmaven.wagon.http.retryHandler.class=standard" \
+    MAVEN_OPTS="${MAVEN_OPTS} -Dmaven.wagon.http.retryHandler.count=3"
+
 ENV DEBIAN_FRONTEND=noninteractive
 RUN set -ex ;\
     curl -sL https://deb.nodesource.com/setup_14.x \

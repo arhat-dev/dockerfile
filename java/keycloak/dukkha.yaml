@@ -15,23 +15,30 @@ buildah:build:
           https://github.com/keycloak/keycloak-containers.git \
           build/keycloak-containers
 
+    - shell@env: |-
+        patch -u -p1 --reverse --verbose --reject-file .dukkha/keycloak.rej \
+          -d build/keycloak-containers <java/keycloak/patches/${VERSION}.patch || true
+
+        patch -u -p1 --verbose --reject-file .dukkha/keycloak.rej \
+          -d build/keycloak-containers <java/keycloak/patches/${VERSION}.patch
+
   matrix@file: &matrix java/matrix-amd64-arm64.yml
   file: build/keycloak-containers/server/Dockerfile
   context: build/keycloak-containers/server
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
   extra_args@template:
-    - --pull-always
-    - --os={{ .Env.MATRIX_KERNEL | getDockerOS }}
-    - --arch={{ .Env.MATRIX_ARCH | getDockerArch }}
-    - --variant={{ .Env.MATRIX_ARCH | getDockerArchVariant }}
-    - --ulimit
-    - memlock=16384,nofile=1048576
-    # https://github.com/keycloak/keycloak-containers/blob/master/server/README.md#building-image-with-keycloak-from-different-sources
-    - --build-arg
-    - GIT_REPO=keycloak/keycloak
-    - --build-arg
-    - GIT_BRANCH={{ .Env.VERSION }}
+  - --pull-always
+  - --os={{ .Env.MATRIX_KERNEL | getDockerOS }}
+  - --arch={{ .Env.MATRIX_ARCH | getDockerArch }}
+  - --variant={{ .Env.MATRIX_ARCH | getDockerArchVariant }}
+  - --ulimit
+  - memlock=16384,nofile=1048576
+  # https://github.com/keycloak/keycloak-containers/blob/master/server/README.md#building-image-with-keycloak-from-different-sources
+  - --build-arg
+  - GIT_REPO=keycloak/keycloak
+  - --build-arg
+  - GIT_BRANCH={{ .Env.VERSION }}
 
 buildah:push:
 - name: keycloak

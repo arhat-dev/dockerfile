@@ -14,13 +14,11 @@ buildah:build:
           build/opendj
 
     - shell@env: |-
-        patch -u --reverse --verbose --reject-file .dukkha/opendj-pom-xml.rej \
-          build/opendj/opendj-dsml-servlet/pom.xml \
-          -i java/opendj/patches/opendj-${VERSION}.patch || true
+        patch -u -p1 --reverse --verbose --reject-file .dukkha/opendj.rej \
+          -d build/opendj <java/opendj/patches/${VERSION}.patch || true
 
-        patch -u --verbose --reject-file .dukkha/opendj-pom-xml.rej \
-          build/opendj/opendj-dsml-servlet/pom.xml \
-          -i java/opendj/patches/opendj-${VERSION}.patch
+        patch -u -p1 --verbose --reject-file .dukkha/opendj.rej \
+          -d build/opendj <java/opendj/patches/${VERSION}.patch
 
   matrix@file: &matrix java/matrix-amd64-arm64.yml
   file: java/opendj/Dockerfile
