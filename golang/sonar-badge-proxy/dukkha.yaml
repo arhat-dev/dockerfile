@@ -38,8 +38,8 @@ buildah:build:
 
   file: golang/nocgo-norootfs.dockerfile
   image_names@env: &image_names
-  - image: ghcr.io/arhat-dev/sonar-badge-proxy:latest-${MATRIX_ARCH}
-    manifest: ghcr.io/arhat-dev/sonar-badge-proxy:latest
+  - image: ${IMAGE_REPO}/sonar-badge-proxy:latest-${MATRIX_ARCH}
+    manifest: ${IMAGE_REPO}/sonar-badge-proxy:latest
   extra_args@file|env|template: templates/image-extra-args/env[APP].yml
 
 buildah:push:
@@ -49,4 +49,4 @@ buildah:push:
     before:
     - task: buildah:login(ghcr)
   matrix@file: *matrix
-  image_names: *image_names
+  image_names@env: *image_names
