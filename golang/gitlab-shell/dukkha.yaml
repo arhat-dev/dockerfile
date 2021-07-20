@@ -16,7 +16,7 @@ golang:build:
     - amd64
     - arm64
     - armv7
-    - armv6
+    # - armv6
     - armv5
     - s390x
     - mips64le
@@ -48,7 +48,7 @@ golang:build:
 buildah:build:
 - name: gitlab-shell
   env: *env
-  matrix@file: &matrix golang/matrix-nocgo-norootfs-all.yml
+  matrix@file: &matrix ruby/gitaly-ruby/matrix.yml
   hooks:
     before:
     - shell@env: |-
