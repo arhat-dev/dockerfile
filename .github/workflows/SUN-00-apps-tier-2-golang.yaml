@@ -22,6 +22,7 @@ jobs:
         app:
         - postgres-operator
         - postgres-operator-logical-backup
+        - sonar-badge-proxy
         - gitlab-shell # requires gomplate and gitlab-logger
       fail-fast: false
     runs-on: ubuntu-20.04
