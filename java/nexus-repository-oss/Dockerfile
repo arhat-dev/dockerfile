@@ -109,6 +109,7 @@ RUN set -eux ;\
 USER 200
 EXPOSE 8081
 
-VOLUME "${NEXUS_DATA}" "${NEXUS_HOME}/etc/keycloak.json"
+# mount "${NEXUS_HOME}/etc/keycloak.json" to get keycloak working
+VOLUME "${NEXUS_DATA}"
 
 ENTRYPOINT ["/bin/tini", "--", "/opt/sonatype/start-nexus-repository-manager.sh"]
