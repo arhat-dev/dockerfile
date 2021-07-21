@@ -40,8 +40,10 @@ COPY golang/gitlab-shell/sshd_config /etc/ssh/
 ENV CONFIG_TEMPLATE_DIRECTORY=/srv/gitlab-shell
 
 RUN set -eux ;\
+    # workaround to get rid of intermittent error
+    ln -s -f /bin/true /usr/bin/chfn ;\
     adduser --disabled-password --gecos 'GitLab' git ;\
-    sed -i "s/git:!/git:*/" /etc/shadow ;\
+    sed -i 's/git:!/git:*/' /etc/shadow ;\
     apt-get update ;\
     apt-get install -y --no-install-recommends openssh-server ;\
     rm -rf /var/lib/apt/lists/* ;\
