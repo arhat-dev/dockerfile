@@ -61,14 +61,14 @@ buildah:build:
   file: golang/gitlab-shell/Dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
-  extra_args@template:
-  - --pull-always
-  - --build-arg
+  build_args@template:
   - MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
-  - --build-arg
   - GITLAB_LOGGER_VERSION={{ .Env.GITLAB_LOGGER_VERSION }}
-  - --build-arg
   - GOMPLATE_VERSION={{ .Env.GOMPLATE_VERSION }}
+  extra_args:
+  - --pull-always
+  - --cap-add
+  - CAP_AUDIT_WRITE
 
 buildah:push:
 - name: gitlab-shell
