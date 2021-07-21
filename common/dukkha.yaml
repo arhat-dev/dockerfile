@@ -61,16 +61,14 @@ buildah:build:
   file: common/builder.dockerfile
   image_names@env:
   - image: local-dukkha:${MATRIX_ARCH}
-  extra_args@env:
-  - --target=dukkha
-  - --pull-always
-  - --build-arg
-  - DUKKHA_IMAGE=ghcr.io/arhat-dev/dukkha:latest-${MATRIX_ARCH}
-  - --build-arg
+  build_args@template:
+  - DUKKHA_IMAGE=ghcr.io/arhat-dev/dukkha:latest-{{ .Env.MATRIX_ARCH }}
   - BASE_IMAGE=scratch
   # not used, just to turn off warning message
-  - --build-arg
   - PROGRAMMING_LANGUAGE={{ .Env.MATRIX_LANGUAGE }}
+  extra_args:
+  - --target=dukkha
+  - --pull-always
 
 - name: linux/builder
   env: &builder_env
@@ -82,7 +80,7 @@ buildah:build:
   file: common/builder.dockerfile
   image_names@file|template|env: &builder_image_names common/templates/image-names.yml
 
-  extra_args@template: |-
+  build_args@template: |-
     {{- $prefix := printf "%s/base-%s" .Env.IMAGE_REPO .Env.MATRIX_LANGUAGE -}}
     {{- $tag := printf "%s-%s" .Env.MATRIX_ROOTFS .Env.MATRIX_ARCH -}}
     {{- if and (ne .Env.MATRIX_CROSS_ARCH "") (ne .Env.MATRIX_ARCH .Env.MATRIX_CROSS_ARCH) -}}
@@ -94,17 +92,12 @@ buildah:build:
 
     {{- $dukkha_image_name := printf "local-dukkha:%s" .Env.MATRIX_ARCH -}}
     {{- $dukkha_image_id := os_ReadFile (getBuildahImageIDFile $dukkha_image_name) }}
-
-    - --pull-never
-
-    - --build-arg
     - DUKKHA_IMAGE={{ $dukkha_image_id }}
-
-    - --build-arg
     - BASE_IMAGE={{ $base_image_id }}
-
-    - --build-arg
     - PROGRAMMING_LANGUAGE={{ .Env.MATRIX_LANGUAGE }}
+
+  extra_args:
+  - --pull-never
 
 ################################
 #

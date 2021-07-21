@@ -22,22 +22,18 @@ buildah:build:
     templates/image-names/include-rootfs-info/
     {{- /* multi-line join */ -}}
     env[APP:VERSION:DEFAULT_ROOTFS].yml
-  extra_args@template: |-
-    - --build-arg
+  build_args@template: |-
     - DOCKERHUB_ARCH={{ getDockerHubArch .Env.MATRIX_ARCH }}
-    - --build-arg
     - MATRIX_ROOTFS={{ .Env.MATRIX_ROOTFS }}
-    - --build-arg
     - MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
-    - --build-arg
     - VERSION={{ .Env.VERSION }}
     {{ if eq .Env.MATRIX_ROOTFS "alpine" }}
-    - --build-arg
     - ROOTFS_VERSION={{ .Env.ALPINE_VERSION }}
     {{ else if eq .Env.MATRIX_ROOTFS "debian" }}
-    - --build-arg
     - ROOTFS_VERSION={{ .Env.DEBIAN_VERSION }}
     {{ end }}
+
+  # extra_args:
 
 buildah:push:
 - name: nix

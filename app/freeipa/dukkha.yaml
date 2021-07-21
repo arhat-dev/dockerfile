@@ -17,14 +17,12 @@ buildah:build:
   file: java/freeipa/Dockerfile.fedora-34
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
-  extra_args@env|template: |-
-    - --pull-always
-    - --build-arg
-    - APP=${APP}
-    - --build-arg
-    - VERSION=${VERSION}
-    - --build-arg
-    - MATRIX_ARCH=${MATRIX_ARCH}
+  build_args@template:
+  - APP={{ .Env.APP }}
+  - VERSION={{ .Env.VERSION }}
+  - MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
+  extra_args:
+  - --pull-always
 
 buildah:push:
 - name: freeipa

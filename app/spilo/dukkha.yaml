@@ -11,12 +11,11 @@ buildah:build:
   file: app/spilo/base.dockerfile
   image_names@env:
   - image: spilo-rootfs-base:${MATRIX_ARCH}
-  extra_args@template:
-  - --pull-always
-  - --build-arg
+  build_args@template:
   - DOCKERHUB_ARCH={{ .Env.MATRIX_ARCH | getDockerHubArch }}
-  - --build-arg
   - MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
+  extra_args:
+  - --pull-always
 
 - name: spilo-base
   env: &env
@@ -47,7 +46,15 @@ buildah:build:
   context@env: build/spilo/postgres-appliance
   image_names@env:
   - image: spilo-base:${MATRIX_ARCH}
-
+  build_args@template:
+  # source(git-tags): https://github.com/timescale/timescaledb
+  - TIMESCALEDB=2.3.1
+  - BASE_IMAGE={{ $base_image_id }}
+  - PGVERSION=13
+  - PGOLDVERSIONS=9.6 10 11 12
+  - DEMO=false
+  - COMPRESS=false
+  - TIMESCALEDB_APACHE_ONLY=false
   extra_args@template|env: |-
     {{- $base_image_name := printf "spilo-rootfs-base:%s" .Env.MATRIX_ARCH -}}
     {{- $base_image_id := os_ReadFile (getBuildahImageIDFile $base_image_name) -}}
@@ -55,28 +62,6 @@ buildah:build:
     # - --os={{ .Env.MATRIX_KERNEL | getDockerOS }}
     # - --arch={{ .Env.MATRIX_ARCH | getDockerArch }}
     # - --variant={{ .Env.MATRIX_ARCH | getDockerArchVariant }}
-
-    - --build-arg
-    # source(git-tags): https://github.com/timescale/timescaledb
-    - TIMESCALEDB=2.3.1
-
-    - --build-arg
-    - BASE_IMAGE={{ $base_image_id }}
-
-    - --build-arg
-    - PGVERSION=13
-
-    - --build-arg
-    - PGOLDVERSIONS=9.6 10 11 12
-
-    - --build-arg
-    - DEMO=false
-
-    - --build-arg
-    - COMPRESS=false
-
-    - --build-arg
-    - TIMESCALEDB_APACHE_ONLY=false
 
     # required, or buildah build will fail due to unable to find
     # image resulted from `builder-false` stage
@@ -91,12 +76,12 @@ buildah:build:
   file@env: app/spilo/Dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
-  extra_args@template: |-
+  build_args@template: |-
     {{- $spilo_image_name := printf "spilo-base:%s" .Env.MATRIX_ARCH -}}
     {{- $spilo_image_id := os_ReadFile (getBuildahImageIDFile $spilo_image_name) -}}
-    - --pull-never
-    - --build-arg
     - SPILO_IMAGE={{ $spilo_image_id }}
+  extra_args@template:
+  - --pull-never
 
 buildah:push:
 - name: spilo

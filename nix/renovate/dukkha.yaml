@@ -25,7 +25,6 @@ buildah:build:
       {{- trimPrefix "v" .Env.NIX_VERSION -}}-${MATRIX_ROOTFS}-${MATRIX_ARCH}
   extra_args: &base_image_extra_args
   - --pull-always
-  - --build-arg
 
 - name: renovate-full-base
   env: &full_base_env
@@ -46,13 +45,12 @@ buildah:build:
   matrix: *matrix
   file: nix/renovate/final.dockerfile
   image_names@template|file|template: *image_names
-  extra_args@env|template: &final_image_args |-
-    - --pull-always
-    - --build-arg
-    - VERSION=${VERSION}
-    - --build-arg
-    - BASE_IMAGE=${IMAGE_REPO}/${APP}-base:
-    {{- trimPrefix "v" .Env.VERSION }}-${MATRIX_ROOTFS}-${MATRIX_ARCH}
+  build_args@template: &final_image_build_args |-
+    - VERSION={{ .Env.VERSION }}
+    - BASE_IMAGE={{ .Env.IMAGE_REPO }}/{{ .Env.APP }}-base:
+      {{- trimPrefix "v" .Env.VERSION }}-{{ .Env.MATRIX_ROOTFS }}-{{ .Env.MATRIX_ARCH }}
+  extra_args: &final_image_extra_args
+  - --pull-always
 
 - name: renovate-full
   env: &full_env
@@ -62,7 +60,8 @@ buildah:build:
   matrix: *matrix
   file: nix/renovate/final.dockerfile
   image_names@template|file|template: *image_names
-  extra_args@env|template: *final_image_args
+  build_args@template: *final_image_build_args
+  extra_args: *final_image_extra_args
 
 buildah:push:
 - name: renovate-slim-base
