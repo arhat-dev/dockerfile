@@ -6,18 +6,18 @@ golang:build:
   # source(git-tags): https://github.com/helm/helm
   - VERSION=v3.6.3
   matrix@file: &matrix golang/matrix-nocgo-norootfs-all.yml
-  chdir@env: /app/build/${APP}
+  chdir@env: /app/build/helm
   path: ./cmd/helm
   outputs@env:
-  - /output/${APP}.${MATRIX_KERNEL}.${MATRIX_ARCH}/${APP}
+  - /output/helm.${MATRIX_KERNEL}.${MATRIX_ARCH}/helm
   cgo:
     enabled: false
   ldflags@env:
   - -s -w
   - -X "helm.sh/helm/v3/internal/version.version=${VERSION}"
   # - -X "helm.sh/helm/v3/internal/version.metadata="
-  - -X "helm.sh/helm/v3/internal/version.gitCommit=$(git -C /app/build/${APP} rev-parse HEAD)"
-  - -X "helm.sh/helm/v3/internal/version.gitTreeState=$(test -n "`git -C /app/build/${APP} status --porcelain`" && printf "dirty" || printf "clean")"
+  - -X "helm.sh/helm/v3/internal/version.gitCommit=$(git -C /app/build/helm rev-parse HEAD)"
+  - -X "helm.sh/helm/v3/internal/version.gitTreeState=$(test -n "`git -C /app/build/helm status --porcelain`" && printf "dirty" || printf "clean")"
   # Update according to client-go dependency
   #  https://github.com/helm/helm/blob/main/go.mod#L44
   - -X "helm.sh/helm/v3/pkg/lint/rules.k8sVersionMajor=1"
@@ -38,11 +38,11 @@ buildah:build:
   hooks:
     before:
     - shell@env: |-
-        [ -d build/${APP} ] && exit 0
+        [ -d build/helm ] && exit 0
 
         git clone --depth 1 --branch ${VERSION} \
           https://github.com/helm/helm.git \
-          build/${APP}
+          build/helm
 
   file: golang/nocgo-norootfs.dockerfile
   image_names@file|template: &image_names |-

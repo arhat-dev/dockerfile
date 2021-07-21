@@ -48,6 +48,18 @@ RUN set -eux ;\
     unzip -d /opt/nexus-tmp assemblies/nexus-base-template/target/nexus-base-template-*.zip ;\
     mv /opt/nexus-tmp/nexus-base-template* /opt/nexus
 
+# Ref: https://github.com/klo2k/nexus3-docker/blob/master/Dockerfile
+# Fix-up: Startup error with OrientDB on ARM - replace in-place 5.4.0 with 5.5.0 lib (reference is hard-coded in config files)
+# http://bhamail.github.io/pinexus/nexussetup.html
+ADD https://repo1.maven.org/maven2/net/java/dev/jna/jna/5.5.0/jna-5.5.0.jar \
+    /opt/nexus/system/net/java/dev/jna/jna/5.4.0/jna-5.4.0.jar
+ADD https://repo1.maven.org/maven2/net/java/dev/jna/jna-platform/5.5.0/jna-platform-5.5.0.jar \
+    /opt/nexus/system/net/java/dev/jna/jna-platform/5.4.0/jna-platform-5.4.0.jar
+
+RUN chmod 644 \
+      /opt/nexus/system/net/java/dev/jna/jna/5.4.0/jna-5.4.0.jar \
+      /opt/nexus/system/net/java/dev/jna/jna-platform/5.4.0/jna-platform-5.4.0.jar
+
 FROM ghcr.io/arhat-dev/java:8-debian-${MATRIX_ARCH}
 
 ENV LANG='en_US.UTF-8' \
@@ -71,14 +83,6 @@ COPY --from=builder /opt/nexus "${NEXUS_HOME}"
 COPY --from=builder \
     "/keycloak-plugin/target/nexus3-keycloak-plugin-${KEYCLOAK_PLUGIN_VERSION}-bundle.kar" \
     "${NEXUS_HOME}/deploy/"
-
-# Ref: https://github.com/klo2k/nexus3-docker/blob/master/Dockerfile
-# Fix-up: Startup error with OrientDB on ARM - replace in-place 5.4.0 with 5.5.0 lib (reference is hard-coded in config files)
-# http://bhamail.github.io/pinexus/nexussetup.html
-ADD https://repo1.maven.org/maven2/net/java/dev/jna/jna/5.5.0/jna-5.5.0.jar \
-    "${NEXUS_HOME}/system/net/java/dev/jna/jna/5.4.0/jna-5.4.0.jar"
-ADD https://repo1.maven.org/maven2/net/java/dev/jna/jna-platform/5.5.0/jna-platform-5.5.0.jar \
-    "${NEXUS_HOME}/system/net/java/dev/jna/jna-platform/5.4.0/jna-platform-5.4.0.jar"
 
 COPY java/nexus-repository-oss/nexus.vmoptions "${NEXUS_HOME}/bin/nexus.vmoptions"
 COPY java/nexus-repository-oss/entrypoint.sh "${SONATYPE_DIR}/start-nexus-repository-manager.sh"
