@@ -21,7 +21,10 @@ buildah:build:
     templates/image-names/include-rootfs-info/
     {{- /* multi-line join */ -}}
     env[APP:VERSION:DEFAULT_ROOTFS].yml
-  extra_args@file|env|template: templates/image-extra-args/env[VERSION].yml
+  build_args@file|template: templates/image-build-args/env[VERSION].yml
+  extra_args:
+  - --pull-always
+  - --layers=true
 
 buildah:push:
 - name: brew

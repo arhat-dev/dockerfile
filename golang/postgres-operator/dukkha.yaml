@@ -44,8 +44,10 @@ buildah:build:
   file: golang/postgres-operator/postgres-operator.dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
-  extra_args@file|env|template: |-
-    templates/image-extra-args/env[APP].yml
+  build_args@file|template: templates/image-build-args/env[APP].yml
+  extra_args:
+  - --pull-always
+  - --layers=true
 
 - name: postgres-operator-logical-backup
   env: &logical_backup_env
@@ -65,7 +67,10 @@ buildah:build:
   file: golang/postgres-operator/logical-backup.dockerfile
   image_names@file|template: &logical_backup_image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
-  extra_args@file|env|template: templates/image-extra-args/env[APP].yml
+  build_args@file|template: templates/image-build-args/env[APP].yml
+  extra_args:
+  - --pull-always
+  - --layers=true
 
 buildah:push:
 - name: postgres-operator

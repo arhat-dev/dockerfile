@@ -64,7 +64,10 @@ buildah:build:
   file: golang/nocgo-norootfs.dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
-  extra_args@file|env|template: templates/image-extra-args/env[APP].yml
+  build_args@file|template: templates/image-build-args/env[APP].yml
+  extra_args:
+  - --pull-always
+  - --layers=true
 
 buildah:push:
 - name: etcd

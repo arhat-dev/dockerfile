@@ -40,7 +40,10 @@ buildah:build:
   image_names@env: &image_names
   - image: ${IMAGE_REPO}/${APP}:latest-${MATRIX_ARCH}
     manifest: ${IMAGE_REPO}/${APP}:latest
-  extra_args@file|env|template: templates/image-extra-args/env[APP].yml
+  build_args@file|template: templates/image-build-args/env[APP].yml
+  extra_args:
+  - --pull-always
+  - --layers=true
 
 buildah:push:
 - name: sonar-badge-proxy

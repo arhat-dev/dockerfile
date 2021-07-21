@@ -20,11 +20,12 @@ buildah:build:
     templates/image-names/include-rootfs-info/
     {{- /* multi-line join */ -}}
     env[APP:VERSION:DEFAULT_ROOTFS].yml
-  extra_args@env|template: &base_image_args |-
-    - --pull-always
-    - --build-arg
+  build_args@env|template: &base_image_build_args |-
     - NIX_IMAGE=${IMAGE_REPO}/nix:
-    {{- trimPrefix "v" .Env.NIX_VERSION -}}-${MATRIX_ROOTFS}-${MATRIX_ARCH}
+      {{- trimPrefix "v" .Env.NIX_VERSION -}}-${MATRIX_ROOTFS}-${MATRIX_ARCH}
+  extra_args: &base_image_extra_args
+  - --pull-always
+  - --build-arg
 
 - name: renovate-full-base
   env: &full_base_env
@@ -34,7 +35,8 @@ buildah:build:
   matrix: *matrix
   file: nix/renovate/full-base.dockerfile
   image_names@template|file|template: *image_names
-  extra_args@env|template: *base_image_args
+  build_args@env|template: *base_image_build_args
+  extra_args: *base_image_extra_args
 
 - name: renovate-slim
   env: &slim_env

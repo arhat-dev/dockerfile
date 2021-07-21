@@ -27,20 +27,16 @@ buildah:build:
   file: java/nexus-repository-oss/Dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
-  extra_args@template: |-
-    - --pull-always
-    - --ulimit
-    - memlock=16384,nofile=1048576
-    - --build-arg
-    - APP={{ .Env.APP }}
-    - --build-arg
-    - MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
-    - --build-arg
-    - HOST_ARCH={{ .Env.HOST_ARCH }}
-    - --build-arg
-    - VERSION={{ .Env.VERSION }}
-    - --build-arg
-    - KEYCLOAK_PLUGIN_VERSION={{ trimPrefix "v" .Env.KEYCLOAK_PLUGIN_VERSION }}
+  build_args@template:
+  - APP={{ .Env.APP }}
+  - MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
+  - HOST_ARCH={{ .Env.HOST_ARCH }}
+  - VERSION={{ .Env.VERSION }}
+  - KEYCLOAK_PLUGIN_VERSION={{ trimPrefix "v" .Env.KEYCLOAK_PLUGIN_VERSION }}
+  extra_args:
+  - --pull-always
+  - --ulimit
+  - memlock=16384,nofile=1048576
 
 buildah:push:
 - name: nexus-repository-oss

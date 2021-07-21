@@ -30,27 +30,20 @@ buildah:build:
   file: java/sonarqube/Dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
-  extra_args@env|template: |-
-    - --pull-always
-    - --build-arg
-    - APP=${APP}
-    - --build-arg
-    - VERSION=${VERSION}
-    - --build-arg
-    - MATRIX_ARCH=${MATRIX_ARCH}
-    - --build-arg
-    - ES_DOWNLOAD_URL_PATH=${ES_DOWNLOAD_URL_PATH}
+  build_args@template: |-
+    - APP={{ .Env.APP }}
+    - VERSION={{ .Env.VERSION }}
+    - MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
+    - ES_DOWNLOAD_URL_PATH={{ .Env.ES_DOWNLOAD_URL_PATH }}
     {{ if eq .Env.MATRIX_ARCH "arm64" }}
-    - --build-arg
-    - ES_CHECKSUM=${ES_ARM64_CHECKSUM}
-    - --build-arg
-    - ES_DOWNLOAD_URL_FILE=elasticsearch-${ES_VERSION}-linux-aarch64.tar.gz
+    - ES_CHECKSUM={{ .Env.ES_ARM64_CHECKSUM }}
+    - ES_DOWNLOAD_URL_FILE=elasticsearch-{{ .Env.ES_VERSION }}-linux-aarch64.tar.gz
     {{ else if eq .Env.MATRIX_ARCH "amd64" }}
-    - --build-arg
-    - ES_CHECKSUM=${ES_AMD64_CHECKSUM}
-    - --build-arg
-    - ES_DOWNLOAD_URL_FILE=elasticsearch-${ES_VERSION}-linux-x86_64.tar.gz
+    - ES_CHECKSUM={{ .Env.ES_AMD64_CHECKSUM }}
+    - ES_DOWNLOAD_URL_FILE=elasticsearch-{{ .Env.ES_VERSION }}-linux-x86_64.tar.gz
     {{ end }}
+  extra_args:
+  - --pull-always
 
 buildah:push:
 - name: sonarqube

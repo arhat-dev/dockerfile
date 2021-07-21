@@ -27,9 +27,6 @@ golang:build:
     - shell@template|env: |-
         set -eux
 
-        ulimit -a
-        # ulimit -l unlimited
-
         cd /app/build/wal-g
 
         {{ if ne .Env.HOST_ARCH .Env.MATRIX_ARCH }}
@@ -92,26 +89,17 @@ buildah:build:
   file: golang/wal-g/Dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
+  build_args@template:
+  - APP={{ .Env.APP }}
+  - MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
+  - HOST_ARCH={{ .Env.HOST_ARCH }}
+  - MATRIX_KERNEL={{ .Env.MATRIX_KERNEL }}
+  - TARGET_DEBIAN_ARCH={{ getDebianArch .Env.MATRIX_ARCH }}
   extra_args@template:
   - --pull-always
-  - --cap-add
-  - CAP_SYS_RESOURCE
+  # set ulimit or libsodium test will fail
   - --ulimit
   - memlock=16384,nofile=1048576
-  - --security-opt
-  - label=disable
-  - --security-opt
-  - seccomp=unconfined
-  - --build-arg
-  - APP={{ .Env.APP }}
-  - --build-arg
-  - MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
-  - --build-arg
-  - HOST_ARCH={{ .Env.HOST_ARCH }}
-  - --build-arg
-  - MATRIX_KERNEL={{ .Env.MATRIX_KERNEL }}
-  - --build-arg
-  - TARGET_DEBIAN_ARCH={{ getDebianArch .Env.MATRIX_ARCH }}
 
 buildah:push:
 - name: wal-g

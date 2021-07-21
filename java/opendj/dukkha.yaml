@@ -24,16 +24,14 @@ buildah:build:
   file: java/opendj/Dockerfile
   image_names@file|template: &image_names |-
     templates/image-names/no-rootfs-info/env[APP:VERSION].yml
-  extra_args@template: |-
-    - --pull-always
-    - --ulimit
-    - memlock=16384,nofile=1048576
-    - --build-arg
-    - VERSION={{ .Env.VERSION }}
-    - --build-arg
-    - MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
-    - --build-arg
-    - HOST_ARCH={{ .Env.HOST_ARCH }}
+  build_args@template:
+  - VERSION={{ .Env.VERSION }}
+  - MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
+  - HOST_ARCH={{ .Env.HOST_ARCH }}
+  extra_args:
+  - --pull-always
+  - --ulimit
+  - memlock=16384,nofile=1048576
 
 buildah:push:
 - name: opendj

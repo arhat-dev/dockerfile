@@ -1,0 +1,9 @@
+# requires env APP
+- APP={{ .Env.APP }}
+- MATRIX_ROOTFS={{ .Env.MATRIX_ROOTFS }}
+- MATRIX_ARCH={{ .Env.MATRIX_ARCH }}
+- HOST_ARCH={{ .Env.HOST_ARCH }}
+- MATRIX_KERNEL={{ .Env.MATRIX_KERNEL }}
+- TARGET_DEBIAN_ARCH={{ getDebianArch .Env.MATRIX_ARCH }}
+- TARGET_DEBIAN_TRIPLE_NAME={{ getDebianTripleName .Env.MATRIX_ARCH }}
+- TARGET_GOARCH={{ getGolangArch .Env.MATRIX_ARCH }}
