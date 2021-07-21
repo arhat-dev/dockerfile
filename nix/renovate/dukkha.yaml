@@ -3,7 +3,7 @@ buildah:build:
   env: &slim_base_env
   - APP=renovate-slim-base
   # source(git-tags): https://github.com/renovatebot/renovate
-  - &version VERSION=25.56.4
+  - &version VERSION=25.56.8
   - &default_rootfs DEFAULT_ROOTFS=alpine
   matrix: &matrix
     kernel:
